@@ -15,7 +15,7 @@ sim_index = similarities.MatrixSimilarity.load(indexfile)
 orderdata = open(orderfile, 'r').read()
 order = json.loads(orderdata)
 
-user_query = input('Enter a filename to find its nearest neighbors (for example, 130.txt):')
+user_query = input('Enter a filename to find its nearest neighbors (for example, 80.txt):')
 
 position = order.index(user_query)
 
