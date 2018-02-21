@@ -7,6 +7,7 @@ import pickle
 from gensim.models import LdaModel
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
+import pyLDAvis.gensim
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -24,7 +25,7 @@ def visual(dot_labels, features, classes):
                     s=8, color=colors[target_name], label=target_name, alpha=0.8)
     plt.legend(loc='best', scatterpoints=1)
     # plt.title('Conference papers')
-    plt.savefig('topics_documents_pca.png', dpi=300)
+    plt.savefig('topics_documents_pca.pdf', dpi=300)
     plt.close()
 
 
@@ -40,10 +41,11 @@ model = LdaModel.load(modelfile)
 vocab = model.id2word
 
 print(model)
-# print(model.show_topics(1))
+print(model.show_topics())
 
 corpus = open(corpusfile, 'rb')
 corpus = pickle.load(corpus)
+
 
 conferences = open(conferencesfile, 'rb')
 conferences = pickle.load(conferences)
@@ -51,6 +53,7 @@ conferences = pickle.load(conferences)
 vectors = []
 labels = []
 venues = []  # conferences
+vectorized_corpus = []
 
 for i in corpus:
     labels.append(i)
@@ -64,8 +67,14 @@ for i in corpus:
         print(i)
         exit()
     vectorized = vocab.doc2bow(corpus[i])
+    vectorized_corpus.append(vectorized)
     topic_vector = model.get_document_topics(vectorized, minimum_probability=0)
     topic_vector = np.array([el[1] for el in topic_vector])
     vectors.append(topic_vector)
+
+vis = pyLDAvis.gensim.prepare(model, vectorized_corpus, vocab)
+
+pyLDAvis.save_html(vis, 'overall.html')
+
 
 visual(labels, vectors, venues)
