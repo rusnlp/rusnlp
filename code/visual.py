@@ -28,10 +28,6 @@ def visual(dot_labels, features, classes):
     plt.savefig('topics_documents_pca.pdf', dpi=300)
     plt.close()
 
-
-# Plotting finished.
-
-
 modelfile = sys.argv[1]
 corpusfile = sys.argv[2]
 conferencesfile = sys.argv[3]
@@ -72,9 +68,9 @@ for i in corpus:
     topic_vector = np.array([el[1] for el in topic_vector])
     vectors.append(topic_vector)
 
+# Generating PyLDAvis files
 vis = pyLDAvis.gensim.prepare(model, vectorized_corpus, vocab)
-
 pyLDAvis.save_html(vis, 'overall.html')
 
-
+# Generating PCA document plot
 visual(labels, vectors, venues)
