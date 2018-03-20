@@ -18,6 +18,10 @@ KEYWORDS = 'keywords'
 ABSTRACT = 'abstract'
 CONFERENCE = 'conference'
 YEAR = 'year'
+FILEPATH = 'filepath'
+ID = 'id'
+saving_dir = '../prepared-data'
+conferences = ['Dialogue', 'AIST', 'AINL']
 
 
 def remove_bad(string):
@@ -45,63 +49,64 @@ def parse_keywords(keywords):
         keywords = keywords.split(';')
     elif '  ' in keywords:
         keywords = keywords.split('  ')
+    else:
+        keywords = '-'
     return [word.strip().lower() for word in keywords]
 
 
-def add_paper_data(content, conference, year):
+def add_paper_data(filepath, content, conference, year):
     if int(year) >= 2007:
-        parse_dialogue_2007_plus(content, conference, year)
+        return parse_dialogue_2007_plus(filepath, content, conference, year)
     else:
-        parse_dialogue_until_2007(content, conference, year)
+        return parse_dialogue_until_2007(filepath, content, conference, year)
 
 
-def parse_dialogue_until_2007(content, conference, year):
-    if int(year) == 2002:
-        return
+def parse_dialogue_until_2007(filepath, content, conference, year):
     splits = content.replace('  \n', '\n').replace('\t', '').replace('\xa0', '').replace('\n \n', '\n\n').replace('\n\n \n', '\n\n\n').replace('\n \n\n', '\n\n\n').split('\n\n\n')
     data = {}
     authors = []
     for author in splits[1].split('\n\n'):
         d = {}
         d[NAME] = author.split('\n')[0]
-        d[EMAIL] = author.split('\n')[2]
-        d[AFFILIATION] = author.split('\n')[1]
+        try:
+            d[EMAIL] = author.split('\n')[2]
+        except:
+            d[EMAIL] = '-'
+        try:
+            d[AFFILIATION] = author.split('\n')[1]
+        except:
+            d[AFFILIATION] = '-'
         authors.append(d)
     data[AUTHOR] = authors
     d = {}
     d[TITLE] = splits[0]
     d[ABSTRACT] = splits[2]
     d[TEXT] = splits[3:]
-    if 'Keywords:' in content:
-        text = content.replace('-\n', '')
-        kw_index = text.index('Keywords:')
-        try:
+    try:
+        if 'Keywords:' in content:
+            text = content.replace('-\n', '')
+            kw_index = text.index('Keywords:')
             d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
-        except:
-            print(text)
-    elif 'Kлючевые слова:' in content:
-        text = content.replace('-\n', '')
-        kw_index = text.index('Kлючевые слова:')
-        try:
+        elif 'Kлючевые слова:' in content:
+            text = content.replace('-\n', '')
+            kw_index = text.index('Kлючевые слова:')
             d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
-        except:
-            print(text)
-    elif 'Key words:' in content:
-        text = content.replace('-\n', '')
-        kw_index = text.index('Key words:')
-        try:
+        elif 'Key words:' in content:
+            text = content.replace('-\n', '')
+            kw_index = text.index('Key words:')
             d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
-        except:
-            print(text)
-    else:
-         d[KEYWORDS] = '-'
+        else:
+             d[KEYWORDS] = '-'
+    except:
+        d[KEYWORDS] = '-'
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
-    result.append(data)
+    data[FILEPATH] = filepath
+    return data
 
 
-def parse_dialogue_2007_plus(content, conference, year):
+def parse_dialogue_2007_plus(filepath, content, conference, year):
     splits = content.replace('\n \n', '\n\n').replace('\n\n \n', '\n\n\n').split('\n\n\n')
     data = {}
     authors = []
@@ -119,47 +124,41 @@ def parse_dialogue_2007_plus(content, conference, year):
     if 'Keywords:' in content:
         text = content.replace('-\n', '')
         kw_index = text.index('Keywords:')
-        try:
-            d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
-        except:
-            print(text)
+        d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
     elif 'Key words:' in content:
         text = content.replace('-\n', '')
         kw_index = text.index('Key words:')
-        try:
-            d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
-        except:
-            print(text)
+        d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
     elif 'Kлючевые слова:' in content:
         text = content.replace('-\n', '')
         kw_index = text.index('Kлючевые слова:')
-        try:
-            d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
-        except:
-            print(text)
+        d[KEYWORDS] = text[kw_index:text.index('\n\n', kw_index)].replace('\n', ' ').split(': ', 1)[1].strip().lower()
     else:
          d[KEYWORDS] = '-'
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
-    result.append(data)
+    data[FILEPATH] = filepath
+    return data
 
 
 def parse_dialogue_all():
     result = []
     for root, dirs, files in walk(path.join('..', saving_dir, 'conferences', conferences[0]), 'r'):
          for file in files:
-            with open(path.join(root, file), 'r') as input_stream:
+            with open(path.join(root, file), 'r', encoding='utf-8') as input_stream:
                 if encounter_utility_file(file):
                     continue
                 year = root.split('/')[~0]
-                add_paper_data(input_stream.read(), conferences[0], year)
+                result.append(add_paper_data(path.join(root, file), input_stream.read(), conferences[0], year))
 
-    with open('{}.pickle'.format(conferences[0]), 'wb') as f:
-        dump(result, f)
+    # with open('{}.pickle'.format(conferences[0]), 'wb') as f:
+    #     dump(result, f)
+
+    return result
 
 
-def parse_aist(content, conference, year):
+def parse_aist(filepath, content, conference, year):
     splits = content.split('\n\n\n')
     data = {}
     authors = []
@@ -178,25 +177,28 @@ def parse_aist(content, conference, year):
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
-    result.append(data)
+    data[FILEPATH] = filepath
+    return data
 
 
 def parse_aist_all():
     result = []
     for root, dirs, files in walk(path.join('..', saving_dir, 'conferences', conferences[1]), 'r'):
          for file in files:
-            with open(path.join(root, file), 'r') as input_stream:
+            with open(path.join(root, file), 'r', encoding='utf-8') as input_stream:
                 if encounter_utility_file(file):
                     continue
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
-                for paper in papers:
-                    parse_aist(paper, conferences[1], year)
-    with open('{}.pickle'.format(conferences[1]), 'wb') as f:
-        dump(result, f)
+                result = [parse_aist(path.join(root, file), paper, conferences[1], year) for paper in papers]
+
+    # with open('{}.pickle'.format(conferences[1]), 'wb') as f:
+    #     dump(result, f)
+
+    return result
 
 
-def parse_ainl(content, conference, year):
+def parse_ainl(filepath, content, conference, year):
     splits = content.split('\n\n\n')
     data = {}
     authors = []
@@ -214,29 +216,41 @@ def parse_ainl(content, conference, year):
         d[KEYWORDS] = ', '.join(parse_keywords(splits[3])).replace('.','')
     else:
         d[KEYWORDS] = '-'
-    d[TEXT] = splits[3:]
+    d[TEXT] = ' '.join(splits[3:]).encode('utf-8')
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
-    result.append(data)
+    return data
 
 
 def parse_ainl_all():
     result = []
     for root, dirs, files in walk(path.join('..', saving_dir, 'conferences', conferences[2]), 'r'):
          for file in files:
-            with open(path.join(root, file), 'r') as input_stream:
+            with open(path.join(root, file), 'r', encoding='utf-8') as input_stream:
                 if encounter_utility_file(file):
                     continue
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
-                for paper in papers:
-                    parse_ainl(paper, conferences[2], year)
-    with open('{}.pickle'.format(conferences[2]), 'wb') as f:
-         dump(result, f)
+                result = [parse_ainl(path.join(root, file), paper, conferences[2], year) for paper in papers]
+
+    # with open('{}.pickle'.format(conferences[2]), 'wb') as f:
+    #      dump(result, f)
+
+    return result
 
 
 if __name__ == '__main__':
-    parse_dialogue_all()
-    parse_aist_all()
-    parse_ainl_all()
+
+    result = []
+    result += parse_dialogue_all()
+    result += parse_aist_all()
+    result += parse_ainl_all()
+
+    for ind, data in enumerate(result[:-1]):
+        with open(path.join('data', '{}.txt'.format(ind)), 'w', encoding='utf-8') as f:
+            data[ID] = ind
+            f.write(str(data[ID]) + '\n' + ' '.join(data[TEXT][TEXT]))
+
+    with open('all.pickle', 'wb') as f:
+         dump(result, f)
