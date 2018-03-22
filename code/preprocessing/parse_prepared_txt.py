@@ -29,6 +29,9 @@ conferences = ['Dialogue', 'AIST', 'AINL']
 def remove_bad(string):
     return sub('\t|\xa0', '', string.replace('\n', ' ')).strip()
 
+def make_alpha(string):
+    return sub('[^a-zA-Zа-яА-Я ]+', '', string)
+
 
 def encounter_utility_file(filename):
     if any(name in filename for name in ['DS_Store', 'zip']):
@@ -105,8 +108,9 @@ def parse_dialogue_until_2007(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference.strip()
     data[YEAR] = year.strip()
     data[FILEPATH] = filepath
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
     try:
-        data[URL] = urls[splits[0].lower().strip()]
+        data[URL] = urls[filepath.split('Dialogue/')[1]]
     except KeyError:
         data[URL] = '-'
     return data
@@ -145,8 +149,9 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
     try:
-        data[URL] = urls[splits[0].lower().strip()]
+        data[URL] = urls[filepath.split('Dialogue/')[1]]
     except KeyError:
         data[URL] = '-'
     return data
@@ -154,14 +159,17 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
 
 def parse_dialogue_all():
     result = []
-    with open(path.join(urls_dir, 'url_mapping_dialog.tsv'), 'r', encoding='utf-8') as f:
+    with open('../../prepared-data/mapping.pickle', 'rb') as f:
+        mapping = load(f)
+    with open(path.join(urls_dir, 'url_fullpath_mapping_dialog_found_test.tsv'), 'r', encoding='utf-8') as f:
         urls_temp = f.read().split('\n')
     urls = {}
     for url in urls_temp:
         url_splitted = url.split('\t')
         try:
-            urls[url_splitted[1].lower()] = url_splitted[0].strip()
-        except IndexError:
+            mapped_url = mapping['../data/' + url_splitted[1]].split('Dialogue/')[1]
+            urls[mapped_url] = url_splitted[0].strip()
+        except (IndexError, KeyError):
             urls[url.strip().lower()] = '-'
     for root, dirs, files in walk(path.join('..', saving_dir, 'conferences', conferences[0]), 'r'):
          for file in files:
@@ -197,6 +205,7 @@ def parse_aist(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
     try:
         data[URL] = urls[splits[0].lower().strip()]
     except KeyError:
@@ -230,7 +239,7 @@ def parse_aist_all():
     return result
 
 
-def parse_ainl(filepath, content, conference, year):
+def parse_ainl(filepath, content, conference, year, urls):
     splits = content.split('\n\n\n')
     data = {}
     authors = []
@@ -252,12 +261,25 @@ def parse_ainl(filepath, content, conference, year):
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
-    data[URL] = '-'
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
+    try:
+        data[URL] = urls[splits[0].lower().strip()]
+    except KeyError:
+        data[URL] = '-'
     return data
 
 
 def parse_ainl_all():
     result = []
+    with open(path.join(urls_dir, 'url_mapping_ainl.tsv'), 'r', encoding='utf-8') as f:
+        urls_temp = f.read().split('\n')
+    urls = {}
+    for url in urls_temp:
+        url_splitted = url.split('\t')
+        try:
+            urls[url_splitted[1].lower()] = url_splitted[0].strip()
+        except IndexError:
+            urls[url.strip().lower()] = '-'
     for root, dirs, files in walk(path.join('..', saving_dir, 'conferences', conferences[2]), 'r'):
          for file in files:
             with open(path.join(root, file), 'r', encoding='utf-8') as input_stream:
@@ -265,7 +287,7 @@ def parse_ainl_all():
                     continue
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
-                result = [parse_ainl(path.join(root, file), paper, conferences[2], year) for paper in papers]
+                result = [parse_ainl(path.join(root, file), paper, conferences[2], year, urls) for paper in papers]
 
     # with open('{}.pickle'.format(conferences[2]), 'wb') as f:
     #      dump(result, f)
@@ -282,8 +304,7 @@ if __name__ == '__main__':
 
     for ind, data in enumerate(result[:-1]):
         with open(path.join('data', '{}.txt'.format(ind)), 'w', encoding='utf-8') as f:
-            data[ID] = ind
-            f.write(str(data[URL]) + '\n' + ' '.join(data[TEXT][TEXT]))
+            f.write(str(data[ID]) + '\n' + ' '.join(data[TEXT][TEXT]))
 
     with open('all.pickle', 'wb') as f:
          dump(result, f)
