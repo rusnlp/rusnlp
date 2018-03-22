@@ -61,4 +61,4 @@ if __name__ == '__main__':
     with open(path.join('pickles', 'papers.pickle'), 'wb') as f:
         dump(papers, f)
     with open(path.join('pickles', 'mapping.pickle'), 'wb') as f:
-        dump(mapping, f)
+        dump(papers, f)
