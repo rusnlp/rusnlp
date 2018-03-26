@@ -86,7 +86,7 @@ def parse_dialogue_until_2007(filepath, content, conference, year, urls):
     d = {}
     d[TITLE] = splits[0].strip()
     d[ABSTRACT] = splits[2].strip()
-    d[TEXT] = splits[3:]
+    d[TEXT] = ' '.join([str(split) for split in splits[3:]]).encode('utf-8')
     try:
         if 'Keywords:' in content:
             text = content.replace('-\n', '')
@@ -130,7 +130,7 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
     d = {}
     d[TITLE] = splits[0].strip()
     d[ABSTRACT] = splits[2].strip()
-    d[TEXT] = splits[3:]
+    d[TEXT] = ' '.join([str(split) for split in splits[3:]]).encode('utf-8')
     if 'Keywords:' in content:
         text = content.replace('-\n', '')
         kw_index = text.index('Keywords:')
@@ -200,7 +200,7 @@ def parse_aist(filepath, content, conference, year, urls):
     d[TITLE] = splits[0].strip()
     d[ABSTRACT] = splits[2].strip()
     d[KEYWORDS] = ', '.join(parse_keywords(splits[3])).replace('.','').strip()
-    d[TEXT] = splits[4:]
+    d[TEXT] = ' '.join([str(split) for split in splits[4:]]).encode('utf-8')
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
@@ -231,7 +231,7 @@ def parse_aist_all():
                     continue
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
-                result = [parse_aist(path.join(root, file), paper, conferences[1], year, urls) for paper in papers]
+                result += [parse_aist(path.join(root, file), paper, conferences[1], year, urls) for paper in papers]
 
     # with open('{}.pickle'.format(conferences[1]), 'wb') as f:
     #     dump(result, f)
@@ -245,22 +245,23 @@ def parse_ainl(filepath, content, conference, year, urls):
     authors = []
     for author in splits[1].split('\n\n'):
         d = {}
-        d[NAME] = author.split('\n')[0]
-        d[EMAIL] = author.split('\n')[2]
-        d[AFFILIATION] = author.split('\n')[1]
+        d[NAME] = author.split('\n')[0].strip()
+        d[EMAIL] = author.split('\n')[2].strip()
+        d[AFFILIATION] = author.split('\n')[1].strip()
         authors.append(d)
     data[AUTHOR] = authors
     d = {}
-    d[TITLE] = splits[0]
-    d[ABSTRACT] = splits[2]
+    d[TITLE] = splits[0].strip()
+    d[ABSTRACT] = splits[2].strip()
     if str(year) != '2015':
         d[KEYWORDS] = ', '.join(parse_keywords(splits[3])).replace('.','')
     else:
         d[KEYWORDS] = '-'
-    d[TEXT] = ' '.join(splits[3:]).encode('utf-8')
+    d[TEXT] = ' '.join([str(split) for split in splits[3:]]).encode('utf-8')
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
+    data[FILEPATH] = filepath
     data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
     try:
         data[URL] = urls[splits[0].lower().strip()]
@@ -287,7 +288,7 @@ def parse_ainl_all():
                     continue
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
-                result = [parse_ainl(path.join(root, file), paper, conferences[2], year, urls) for paper in papers]
+                result += [parse_ainl(path.join(root, file), paper, conferences[2], year, urls) for paper in papers]
 
     # with open('{}.pickle'.format(conferences[2]), 'wb') as f:
     #      dump(result, f)
@@ -302,9 +303,9 @@ if __name__ == '__main__':
     result += parse_aist_all()
     result += parse_ainl_all()
 
-    for ind, data in enumerate(result[:-1]):
-        with open(path.join('data', '{}.txt'.format(ind)), 'w', encoding='utf-8') as f:
-            f.write(str(data[ID]) + '\n' + ' '.join(data[TEXT][TEXT]))
+    # for ind, data in enumerate(result[:-1]):
+    #     with open(path.join('data', '{}.txt'.format(ind)), 'w', encoding='utf-8') as f:
+    #         f.write(str(data[ID]) + '\n' + ' '.join(data[TEXT][TEXT]))
 
     with open('all.pickle', 'wb') as f:
          dump(result, f)
