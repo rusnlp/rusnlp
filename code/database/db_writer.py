@@ -2,7 +2,7 @@ import sqlite3
 from pandas import DataFrame
 
 
-class WriterDBase():
+class WriterDBase:
     def __init__(self, db):
         self.db = db
 
@@ -15,10 +15,9 @@ class WriterDBase():
     def insert_into_author(self, id_, name, affiliation, email):
         self.db.insert('author', (id_, name, email, affiliation), ["id", "name", "email", "affiliation"])
 
-
-    def insert_into_article(self, id_, title, text, abstract, bibliography, keywords,  url, filepath, common_id):
-        self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath),
-                     ['id', 'title', 'keywords', 'abstract', 'bibliography', 'text', 'url', 'common_id', 'filepath'])
+    def insert_into_article(self, id_, title, text, abstract, bibliography, keywords, url, file_path, common_id):
+        self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, file_path),
+                       ['id', 'title', 'keywords', 'abstract', 'bibliography', 'text', 'url', 'common_id', 'filepath'])
 
     def insert_into_author_alias(self, alias, variant):
         max_id = self.bd.select_max('author_alias')
@@ -37,8 +36,8 @@ class WriterDBase():
         max_id += 1
         self.db.insert('affiliation_alias', (max_id, cluster, alias, author), ["id", "cluster",  "alias", "author_id"])
 
-    def insert_new_article(self, author, article, conference_name, url, filepath, common_id, year):
-        article_id = self.get_article_id(article, url, filepath, common_id)
+    def insert_new_article(self, author, article, conference_name, url, file_path, common_id, year):
+        article_id = self.get_article_id(article, url, file_path, common_id)
         author_id = self.get_author_id(author)
         conference_id = self.get_conference_id(conference_name, year)
         for auth_id in author_id:
@@ -51,11 +50,11 @@ class WriterDBase():
             if not author_id:
                 author_id = self.bd.select_max('author') + 1
                 if type(auth['email'])!=str:
-                    print(str(auth['email']) +" "+ str(type(auth['email'])))
+                    # print(str(auth['email']) + " " + str(type(auth['email']))) TODO: Replace prints with logging
                     raise Exception("2 emails")
                 self.insert_into_author(id_=author_id, name=auth['name'],
-                                    email=auth['email'],
-                                    affiliation=auth['affiliation'])
+                                        email=auth['email'],
+                                        affiliation=auth['affiliation'])
             list_of_authors_id.append(author_id)
         return list_of_authors_id
 
@@ -64,22 +63,23 @@ class WriterDBase():
         rows = self.bd.select(what='id', where='author', condition=where)
         return rows[0][0] if rows != [] else None
 
-    def get_article_id(self, article, url, filepath, common_id):
+    def get_article_id(self, article, url, file_path, common_id):
         new_title = self.reformat_title(article['title'])
         article_id = self.select_id_from_article(common_id)
         if not article_id:
             article_id = self.bd.select_max('article') + 1
             if 'bibliography' not in article.keys():
-                print("no_bibl")
-                article['bibliography']="-"
+                # print("no_bibl") TODO: Replace prints with logging
+                article['bibliography'] = "-"
             else:
-                print('bibliography IS here = ', article['bibliography'])
+                pass
+                # print('bibliography IS here = ', article['bibliography']) TODO: Replace prints with logging
             if 'keywords' not in article.keys():
-                article['keywords']="-"
+                article['keywords'] = "-"
             article_text = article['text']
             self.insert_into_article(id_=article_id, title=new_title, text=article_text,
                                      abstract=article['abstract'], bibliography=article['bibliography'],
-                                     keywords=article['keywords'], url=url, filepath=filepath, common_id=common_id)
+                                     keywords=article['keywords'], url=url, file_path=file_path, common_id=common_id)
         return article_id
 
     def reformat_title(self, title):
@@ -98,17 +98,16 @@ class WriterDBase():
             new_title.append(new_word)
         return ' '.join([new_title[0].capitalize()]+new_title[1:])
 
-
     def select_id_from_article(self, common_id):
         where = """common_id =""" + self.bd.check(common_id)
         rows = self.bd.select(what='id', where='article', condition=where)
-        print(rows)
+        # print(rows) TODO: Replace prints with logging
         return rows[0][0] if rows != [] else None
 
     def get_conference_id(self, conference_name, year):
         conference_id = self.select_id_from_conference(conference_name, year)
         if not conference_id:
-            print(conference_name+ " "+ str(year))
+            # print(conference_name + " " + str(year)) TODO: Replace prints with logging
             raise ValueError('wrong combination of year and conference name')
         return conference_id
 
@@ -122,27 +121,28 @@ class WriterDBase():
         if not catalog_id:
             catalog_id = self.bd.select_max('catalogue') + 1
             self.bd.insert('catalogue', (int(catalog_id), int(auth_id),
-                                  int(article_id), int(conference_id)),
-                          columns=['id', 'author_id', 'article_id', 'conference_id'])
+                                         int(article_id), int(conference_id)),
+                           columns=['id', 'author_id', 'article_id', 'conference_id'])
 
     def select_id_from_catalogue(self, auth_id, article_id, conference_id):
-        where = ''' author_id = ''' + str(auth_id) + ''' AND article_id = ''' + str(article_id) + ''' AND conference_id = ''' + str(conference_id) + ';'
+        where = ''' author_id = ''' + str(auth_id) + ''' AND article_id = ''' + str(article_id) + \
+                ''' AND conference_id = ''' + str(conference_id) + ';'
         rows = self.bd.select(what='id', where='catalogue', condition=where)
         return rows[0][0] if rows != [] else None
 
     def load(self, article):
         counter = 0
         try:
-            filepath = article['filepath']
+            file_path = article['filepath']
         except KeyError:
-            filepath=None
+            file_path=None
         self.insert_new_article(author=article['author'],
-                                    article=article['text'],
-                                    conference_name=article['conference'],
-                                    url=article['url'],
-                                    filepath = filepath,
-                                    common_id = article['id'],
-                                    year=int(article['year']))
+                                article=article['text'],
+                                conference_name=article['conference'],
+                                url=article['url'],
+                                file_path=file_path,
+                                common_id=article['id'],
+                                year=int(article['year']))
         counter += 1
         print(counter)
 
@@ -151,8 +151,8 @@ class WriterDBase():
         for i in range(len(languages.Lang.values)):
             self.bd.update("article", 'language', languages.Lang.values[i], 'common_id', languages.ID.values[i])
 
-    def load_to_author_alias(self, filepath):
-        with open(filepath, 'r', encoding='utf-8') as f:
+    def load_to_author_alias(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
             string = f.read().split('\n')
         aliases = {}
         for name in string:
@@ -162,16 +162,16 @@ class WriterDBase():
                 aliases[variant] = alias
         self.bd.cursor.execute("""SELECT DISTINCT id, name FROM author""")
         old_names = dict([(n[1],n[0]) for n in self.bd.cursor.fetchall()])
-        excps = []
+        exceptions = []
         for name, index in old_names.items():
             try:
-                self.bd.insert_into_author_alias(aliases[name.replace(",","").strip()],index)
+                self.bd.insert_into_author_alias(aliases[name.replace(",", "").strip()],index)
             except:
-                excps.append((name, index))
-        return excps
+                exceptions.append((name, index))
+        return exceptions
 
-    def load_to_affiliation_alias(self, filepath):
-        with open(filepath, 'r', encoding='utf-8') as f:
+    def load_to_affiliation_alias(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
             affiliations = f.readlines()
         results = {}
         for aff_cluster in range(1, len(affiliations)+1):
@@ -183,4 +183,6 @@ class WriterDBase():
             try:
                 self.bd.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
             except sqlite3.IntegrityError as e:
-                print('Foreign key error:\n {} for {} \n'.format(e, results[affiliation[1]], affiliation[1], affiliation[0]))
+                pass
+                # TODO: Replace prints with logging
+                # print('Foreign key error:\n {} for {} \n'.format(e, results[affiliation[1]], affiliation[1], affiliation[0]))
