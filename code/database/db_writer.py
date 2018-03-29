@@ -14,10 +14,10 @@ class WriterDBase():
 
     def insert_into_author(self, id_, name, affiliation, email):
         self.db.insert('author', (id_, name, email, affiliation), ["id", "name", "email", "affiliation"])
-        
+
 
     def insert_into_article(self, id_, title, text, abstract, bibliography, keywords,  url, filepath, common_id):
-        self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath), 
+        self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath),
                      ['id', 'title', 'keywords', 'abstract', 'bibliography', 'text', 'url', 'common_id', 'filepath'])
 
     def insert_into_author_alias(self, alias, variant):
@@ -26,7 +26,7 @@ class WriterDBase():
         variant_alias_id = self.select_id_from_author_alias(variant)
         if not variant_alias_id:
             self.db.insert('author_alias', (max_id, alias, variant), ["id", "alias", "author_id"])
-    
+
     def select_id_from_author_alias(self, variant):
         where = ' author_id = ' + self.db.check(variant)
         rows = self.db.select(what='id', where='author_alias', condition=where)
@@ -53,7 +53,7 @@ class WriterDBase():
                 if type(auth['email'])!=str:
                     print(str(auth['email']) +" "+ str(type(auth['email'])))
                     raise Exception("2 emails")
-                self.insert_into_author(id_=author_id, name=auth['name'], 
+                self.insert_into_author(id_=author_id, name=auth['name'],
                                     email=auth['email'],
                                     affiliation=auth['affiliation'])
             list_of_authors_id.append(author_id)
@@ -81,7 +81,7 @@ class WriterDBase():
                                      abstract=article['abstract'], bibliography=article['bibliography'],
                                      keywords=article['keywords'], url=url, filepath=filepath, common_id=common_id)
         return article_id
-    
+
     def reformat_title(self, title):
         new_title = []
         for word in title.lower().split(' '):
@@ -116,15 +116,15 @@ class WriterDBase():
         where = ''' year = ''' + str(year) + ''' AND conference = "''' + conference_name + '";'
         rows = self.bd.select(what='id', where='conference', condition=where)
         return rows[0][0] if rows != [] else None
-    
+
     def insert_to_catalogue(self, auth_id, article_id, conference_id):
         catalog_id = self.select_id_from_catalogue(auth_id, article_id, conference_id)
         if not catalog_id:
             catalog_id = self.bd.select_max('catalogue') + 1
             self.bd.insert('catalogue', (int(catalog_id), int(auth_id),
-                                  int(article_id), int(conference_id)), 
+                                  int(article_id), int(conference_id)),
                           columns=['id', 'author_id', 'article_id', 'conference_id'])
-    
+
     def select_id_from_catalogue(self, auth_id, article_id, conference_id):
         where = ''' author_id = ''' + str(auth_id) + ''' AND article_id = ''' + str(article_id) + ''' AND conference_id = ''' + str(conference_id) + ';'
         rows = self.bd.select(what='id', where='catalogue', condition=where)
@@ -136,23 +136,21 @@ class WriterDBase():
             filepath = article['filepath']
         except KeyError:
             filepath=None
-        self.insert_new_article(author=article['author'], 
+        self.insert_new_article(author=article['author'],
                                     article=article['text'],
                                     conference_name=article['conference'],
                                     url=article['url'],
                                     filepath = filepath,
                                     common_id = article['id'],
                                     year=int(article['year']))
-            
-            
         counter += 1
         print(counter)
-		
+
     def update_language(self, filepath, delimeter=','):
         languages = DataFrame.from_csv(filepath, sep=delimeter)
         for i in range(len(languages.Lang.values)):
             self.bd.update("article", 'language', languages.Lang.values[i], 'common_id', languages.ID.values[i])
-	
+
     def load_to_author_alias(self, filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             string = f.read().split('\n')
@@ -171,7 +169,7 @@ class WriterDBase():
             except:
                 excps.append((name, index))
         return excps
-    
+
     def load_to_affiliation_alias(self, filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             affiliations = f.readlines()
@@ -183,6 +181,6 @@ class WriterDBase():
         results_aff = self.bd.cursor.fetchall()
         for affiliation in results_aff:
             try:
-                c.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
+                self.bd.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
             except sqlite3.IntegrityError as e:
-                print("foreign key error:\n", e,  "for \n" results[affiliation[1]], affiliation[1], affiliation[0])
+                print('Foreign key error:\n {} for {} \n'.format(e, results[affiliation[1]], affiliation[1], affiliation[0]))
