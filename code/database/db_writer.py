@@ -11,19 +11,71 @@ class WriterDBase:
         self.list_of_chars = ('‘', '+', ')', ':', '2', '(', '/', '—', '…', '-', '„', '.', '1', ',', '<', '“', '«', '6', '–', '[')
 
     def insert_into_conference(self, values):
+        """
+        Insert new conference to the list of conferences.
+
+        :param values: list of strings
+            New papers
+        :return: None
+        """
         max_id = self.db.select_max('conference')
         for i in range(len(values)):
             row = [max_id + 1] + list(values[i])
             self.db.insert('conference', row, columns=['id', 'conference', 'year'])
 
     def insert_into_author(self, id_, name, affiliation, email):
+        """
+        Insert new author to the list of authors.
+
+        :param id_: string
+            Unique identifier of the paper
+        :param name: string
+            Name of the author
+        :param affiliation: string
+            Affiliation of the author
+        :param email:
+            Email of the author
+        :return: None
+        """
         self.db.insert('author', (id_, name, email, affiliation), ["id", "name", "email", "affiliation"])
 
     def insert_into_article(self, id_, title, text, abstract, bibliography, keywords,  url, filepath, common_id):
+        """
+        Insert new paper's metadata to the specified paper.
+
+        :param id_: string
+            Unique identifier of the paper
+        :param title: string
+            Title of the paper
+        :param text:
+            Text of the paper
+        :param abstract:
+            Abstract of tha paper
+        :param bibliography:
+            Bibliography of the paper
+        :param keywords:
+            Keywords of the paper
+        :param url:
+            URL of the paper
+        :param filepath:
+            Path to the paper in RusNLP folder
+        :param common_id:
+            I don't know what this means
+        :return: None
+        """
         self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath), 
                      ['id', 'title', 'keywords', 'abstract', 'bibliography', 'text', 'url', 'common_id', 'filepath'])
     
     def insert_into_author_alias(self, alias, variant):
+        """
+        Associate author with a new alias for her name.
+
+        :param alias: string
+            Unique author identified
+        :param variant: string
+            New variant of author's name
+        :return: None
+        """
         max_id = self.db.select_max('author_alias')
         max_id += 1
         variant_alias_id = self.select_id_from_author_alias(variant)
@@ -31,16 +83,47 @@ class WriterDBase:
             self.db.insert('author_alias', (max_id, alias, variant), ["id", "alias", "author_id"])
     
     def select_id_from_author_alias(self, variant):
+        """
+        Get identifies of papers associated with an alias
+
+        :param variant: string
+            Author's name
+        :return: list of strings
+            Titles of the papers
+        """
         where = ' author_id = {}'.format(self.db.check(variant))
         rows = self.db.select(what='id', where='author_alias', condition=where)
-        return rows[0][0] if rows != [] else None
+        if rows:
+            return rows[0][0]
 
     def insert_into_affiliation_alias(self, cluster, alias, author):
+        """
+        Associate affiliation with a new alias for its name.
+
+        :param cluster: string
+            Unique affiliation identified
+        :param alias: string
+            New variant of author's name
+        :param author: string
+            I don't know why its here
+        :return: None
+        """
         max_id = self.db.select_max('affiliation_alias')
         max_id += 1
         self.db.insert('affiliation_alias', (max_id, cluster, alias, author), ["id", "cluster",  "alias", "author_id"])
 
     def insert_new_article(self, author, article, conference_name, url, file_path, common_id, year):
+        """
+
+        :param author:
+        :param article:
+        :param conference_name:
+        :param url:
+        :param file_path:
+        :param common_id:
+        :param year:
+        :return:
+        """
         article_id = self.get_article_id(article, url, file_path, common_id)
         author_id = self.get_author_id(author)
         conference_id = self.get_conference_id(conference_name, year)
@@ -48,6 +131,11 @@ class WriterDBase:
             self.insert_to_catalogue(auth_id, article_id, conference_id)
 
     def get_author_id(self, author):
+        """
+
+        :param author:
+        :return:
+        """
         list_of_authors_id = []
         for auth in author:
             author_id = self.select_id_from_author(auth['name'])
@@ -64,11 +152,24 @@ class WriterDBase:
         return list_of_authors_id
 
     def select_id_from_author(self, name):
+        """
+
+        :param name:
+        :return:
+        """
         where = ' name = {}'.format(self.db.check(name))
         rows = self.db.select(what='id', where='author', condition=where)
         return rows[0][0] if rows != [] else None
 
     def get_article_id(self, article, url, file_path, common_id):
+        """
+
+        :param article:
+        :param url:
+        :param file_path:
+        :param common_id:
+        :return:
+        """
         new_title = self.reformat_title(article['title'])
         article_id = self.select_id_from_article(common_id)
         if not article_id:
@@ -90,6 +191,11 @@ class WriterDBase:
         return article_id
 
     def reformat_title(self, title):
+        """
+
+        :param title:
+        :return:
+        """
         new_title = []
         for word in title.lower().split(' '):
             if word not in self.stop_words_ru and word not in self.stop_words_en:
@@ -106,6 +212,11 @@ class WriterDBase:
         return ' '.join([new_title[0].capitalize()] + new_title[1:])
 
     def select_id_from_article(self, common_id):
+        """
+
+        :param common_id:
+        :return:
+        """
         where = """common_id = {}""".format(self.db.check(common_id))
         rows = self.db.select(what='id', where='article', condition=where)
         # TODO: Replace prints with logging
@@ -113,6 +224,12 @@ class WriterDBase:
         return rows[0][0] if rows != [] else None
 
     def get_conference_id(self, conference_name, year):
+        """
+
+        :param conference_name:
+        :param year:
+        :return:
+        """
         conference_id = self.select_id_from_conference(conference_name, year)
         if not conference_id:
             # TODO: Replace prints with logging
@@ -121,11 +238,24 @@ class WriterDBase:
         return conference_id
 
     def select_id_from_conference(self, conference_name, year):
+        """
+
+        :param conference_name:
+        :param year:
+        :return:
+        """
         where = ''' year = ''' + str(year) + ''' AND conference = "''' + conference_name + '";'
         rows = self.db.select(what='id', where='conference', condition=where)
         return rows[0][0] if rows != [] else None
     
     def insert_to_catalogue(self, auth_id, article_id, conference_id):
+        """
+
+        :param auth_id:
+        :param article_id:
+        :param conference_id:
+        :return:
+        """
         catalog_id = self.select_id_from_catalogue(auth_id, article_id, conference_id)
         if not catalog_id:
             catalog_id = self.db.select_max('catalogue') + 1
@@ -134,12 +264,24 @@ class WriterDBase:
                            columns=['id', 'author_id', 'article_id', 'conference_id'])
     
     def select_id_from_catalogue(self, auth_id, article_id, conference_id):
+        """
+
+        :param auth_id:
+        :param article_id:
+        :param conference_id:
+        :return:
+        """
         where = '''author_id = {} AND article_id = {} AND conference_id = {};'''.format(str(auth_id), str(article_id), str(conference_id))
         rows = self.db.select(what='id', where='catalogue', condition=where)
         if rows:
             return rows[0][0]
 
     def load(self, article):
+        """
+
+        :param article:
+        :return:
+        """
         counter = 0
         try:
             file_path = article['filepath']
@@ -156,11 +298,22 @@ class WriterDBase:
         # print(counter)
 
     def update_language(self, file_path, delimeter=','):
+        """
+
+        :param file_path:
+        :param delimeter:
+        :return:
+        """
         languages = DataFrame.from_csv(file_path, sep=delimeter)
         for i in range(len(languages.Lang.values)):
             self.db.update("article", 'language', languages.Lang.values[i], 'common_id', languages.ID.values[i])
 
     def load_to_author_alias(self, file_path):
+        """
+
+        :param file_path:
+        :return:
+        """
         with open(file_path, 'r', encoding='utf-8') as f:
             string = f.read().split('\n')
         aliases = {}
@@ -180,6 +333,11 @@ class WriterDBase:
         return exceptions
     
     def load_to_affiliation_alias(self, file_path):
+        """
+
+        :param file_path:
+        :return:
+        """
         with open(file_path, 'r', encoding='utf-8') as f:
             affiliations = f.readlines()
         results = {}

@@ -21,6 +21,12 @@ class DBaseRusNLP:
         self.conn.close()
 
     def create_table(self, name, operations_list):
+        """
+
+        :param name:
+        :param operations_list:
+        :return:
+        """
         columns_dict = operations_list[0]
         query = "CREATE TABLE IF NOT EXISTS " + name + " ("
         columns = ', '.join([key + " " + val for key, val in columns_dict.items()])
@@ -32,6 +38,15 @@ class DBaseRusNLP:
         self.conn.commit()
 
     def update(self, table, column, value, what, condition):
+        """
+
+        :param table:
+        :param column:
+        :param value:
+        :param what:
+        :param condition:
+        :return:
+        """
         query = '''UPDATE {}'''.format(table)
         set_col = ''' SET ''' + column + '''= '''+ self.check(value)
         where = ''' WHERE ''' + what + ''' = ''' + self.check(condition)
@@ -44,6 +59,15 @@ class DBaseRusNLP:
             # print(query + set_col + where)
     
     def alter(self, table, operation, column, name, type_column):
+        """
+
+        :param table:
+        :param operation:
+        :param column:
+        :param name:
+        :param type_column:
+        :return:
+        """
         query = """ALTER TABLE """ + table + """ """ + operation + """ """
         col_query = column + """ """ + name + """ """ + type_column
         # TODO: Replace prints with logging
@@ -52,21 +76,47 @@ class DBaseRusNLP:
         self.conn.commit()
     
     def alter_add_column(self, table, name, type_col):
+        """
+
+        :param table:
+        :param name:
+        :param type_col:
+        :return:
+        """
         self.alter(table, 'ADD', 'COLUMN', name, type_col)
         # TODO: Replace prints with logging
         # print('column ' + name + ' added')
 
     def delete(self, table=None, column=None, condition=None):
+        """
+
+        :param table:
+        :param column:
+        :param condition:
+        :return:
+        """
         query = "DELETE * FROM " + table
         where = "WHERE {} = {}".format(column, self.check(condition))
         self.cursor.execute(query + where)
         self.conn.commit()
 
     def drop(self, table):
+        """
+
+        :param table:
+        :return:
+        """
         self.cursor.execute("DROP TABLE {}".format(table))
         self.conn.commit()
 
     def select(self, what, where, condition=None):
+        """
+
+        :param what:
+        :param where:
+        :param condition:
+        :return:
+        """
         query = "SELECT {} FROM {}".format(what, where)
         if condition:
             query += " WHERE {}".format(condition)
@@ -76,17 +126,34 @@ class DBaseRusNLP:
         return self.cursor.fetchall()
 
     def select_max(self, table):
+        """
+
+        :param table:
+        :return:
+        """
         query = """SELECT MAX(id) FROM """ + table + ";"
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
         return rows[0][0] if rows[0][0] else 0
     
     def select_columns_name(self, table_name):
+        """
+
+        :param table_name:
+        :return:
+        """
         query = "SELECT * FROM " + table_name
         self.cursor.execute(query)
         return [member[0] for member in self.cursor.description]
 
     def insert(self, table, value, columns):
+        """
+
+        :param table:
+        :param value:
+        :param columns:
+        :return:
+        """
         query = '''INSERT INTO ''' + table
         query += ''' (''' + ''', '''.join(columns) + ''') '''
         values = ''' VALUES(''' + ''', '''.join([self.check(i) for i in value]) + '''); '''
@@ -99,6 +166,11 @@ class DBaseRusNLP:
 
     @staticmethod
     def check(value):
+        """
+
+        :param value:
+        :return:
+        """
         if type(value) == int:
             return str(value)
         elif type(value) == str:
@@ -113,6 +185,10 @@ class DBaseRusNLP:
             raise TypeError("Unknown type")
 
     def get_db_info(self):
+        """
+        
+        :return:
+        """
         self.cursor.execute("SELECT * FROM sqlite_master WHERE type='table'")
         return self.cursor.fetchall()
 
