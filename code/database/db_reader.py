@@ -1,10 +1,5 @@
-import pickle
-import sys
 import numpy as np
-import re
-import json
 from pandas import DataFrame
-from nltk.corpus import stopwords
 
 
 class ReaderDBase():
@@ -13,13 +8,9 @@ class ReaderDBase():
 		self.counted_corpus_size = 7515811
 		self.db_staticstics = self.update_statistics()
 	
-	# ********************************************************************
-	
 	def get_statistics():
 		return self.bd.get_statistics()
-	
-	# ********************************************************************
-    
+
     def select_articles_of_author(self, name):
         what = "DISTINCT article.title"
         where = "catalogue JOIN author JOIN article JOIN author_alias ON author.id=author_alias.author_id AND catalogue.author_id=author.id AND catalogue.article_id=article.id"
@@ -43,7 +34,7 @@ class ReaderDBase():
         condition = "author.affiliation = '"+affiliation+"'"
         result = self.bd.select(what, where, condition)
         return result
-    
+
     def select_author_by_affiliation(self, affiliation):
         what = "DISTINCT author.id, author.name"
         where = "author"
@@ -70,16 +61,12 @@ class ReaderDBase():
         authors = [j[0] for j in self.select_author_by_id(article_id)]
         return title+[authors]
     
-    # ********************************************************************
-    
     def select_all_from(self, where):
         return self.bd.select("*", where)	
 	    
     def select_all_from_column(self, column, condition=None):
         where = "catalogue JOIN conference JOIN article JOIN author JOIN author_alias ON author.id=author_alias.author_id AND catalogue.conference_id=conference.id AND catalogue.article_id=article.id AND author.id=catalogue.author_id"
         return self.bd.select('DISTINCT '+column, where, condition)
-
-    # ********************************************************************
 		
     def get_statictics(self):
 		return self.df_statistics

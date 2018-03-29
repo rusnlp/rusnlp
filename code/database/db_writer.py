@@ -1,45 +1,25 @@
-import pickle
-import sys
 import sqlite3
-import numpy as np
-import re
-import json
 from pandas import DataFrame
-from nltk.corpus import stopwords
 
 
 class WriterDBase():
     def __init__(self, db):
         self.db = db
-    # --------------------------------------------------------------------
-    # INSERT INTO CONFERENCE
-    # --------------------------------------------------------------------
-    
+
     def insert_into_conference(self, values):
         max_id = self.bd.select_max('conference')
         for i in range(len(values)):
             row = [max_id + 1] + list(values[i])
             self.db.insert('conference', row, columns=['id', 'conference', 'year'])
-    # --------------------------------------------------------------------
-    # INSERT INTO AUTHOR
-    # --------------------------------------------------------------------
+
     def insert_into_author(self, id_, name, affiliation, email):
         self.db.insert('author', (id_, name, email, affiliation), ["id", "name", "email", "affiliation"])
         
-    
-
-    # --------------------------------------------------------------------
-    # --------------------------------------------------------------------
 
     def insert_into_article(self, id_, title, text, abstract, bibliography, keywords,  url, filepath, common_id):
         self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath), 
                      ['id', 'title', 'keywords', 'abstract', 'bibliography', 'text', 'url', 'common_id', 'filepath'])
-        
-        
-    # --------------------------------------------------------------------
-    #    INSERT NEW AUTHOR ALIAS
-    # --------------------------------------------------------------------        
-    
+
     def insert_into_author_alias(self, alias, variant):
         max_id = self.bd.select_max('author_alias')
         max_id += 1
@@ -51,20 +31,11 @@ class WriterDBase():
         where = ' author_id = ' + self.db.check(variant)
         rows = self.db.select(what='id', where='author_alias', condition=where)
         return rows[0][0] if rows != [] else None
-    
-    # --------------------------------------------------------------------
-    #    INSERT NEW AFFILIATION ALIAS
-    # --------------------------------------------------------------------        
-    
+
     def insert_into_affiliation_alias(self, cluster, alias, author):
         max_id = self.db.select_max('affiliation_alias')
         max_id += 1
         self.db.insert('affiliation_alias', (max_id, cluster, alias, author), ["id", "cluster",  "alias", "author_id"])
-       
-
-    # --------------------------------------------------------------------
-    #    INSERT NEW ARTICLE
-    # --------------------------------------------------------------------
 
     def insert_new_article(self, author, article, conference_name, url, filepath, common_id, year):
         article_id = self.get_article_id(article, url, filepath, common_id)
@@ -72,12 +43,8 @@ class WriterDBase():
         conference_id = self.get_conference_id(conference_name, year)
         for auth_id in author_id:
             self.insert_to_catalogue(auth_id, article_id, conference_id)
-            
-    # --------------------------------------------------------------------
-	# CHECK IN AUTHOR
-    # --------------------------------------------------------------------
 
-    def get_author_id(self, author):
+    def get_author_id(self,author):
         list_of_authors_id = []
         for auth in author:
             author_id = self.select_id_from_author(auth['name'])
@@ -92,16 +59,10 @@ class WriterDBase():
             list_of_authors_id.append(author_id)
         return list_of_authors_id
 
-    # --------------------------------------------------------------------
-
     def select_id_from_author(self, name):
         where = ' name = ' + self.check(name)
         rows = self.bd.select(what='id', where='author', condition=where)
         return rows[0][0] if rows != [] else None
-
-    # --------------------------------------------------------------------
-	# CHECK IN ARTICLE
-    # --------------------------------------------------------------------
 
     def get_article_id(self, article, url, filepath, common_id):
         new_title = self.reformat_title(article['title'])
@@ -121,8 +82,6 @@ class WriterDBase():
                                      keywords=article['keywords'], url=url, filepath=filepath, common_id=common_id)
         return article_id
     
-    # --------------------------------------------------------------------
-    
     def reformat_title(self, title):
         new_title = []
         for word in title.lower().split(' '):
@@ -139,17 +98,12 @@ class WriterDBase():
             new_title.append(new_word)
         return ' '.join([new_title[0].capitalize()]+new_title[1:])
 
-    # --------------------------------------------------------------------
 
     def select_id_from_article(self, common_id):
         where = """common_id =""" + self.bd.check(common_id)
         rows = self.bd.select(what='id', where='article', condition=where)
         print(rows)
         return rows[0][0] if rows != [] else None
-
-    # --------------------------------------------------------------------
-	# CHECK IN CONFERENCE
-    # --------------------------------------------------------------------
 
     def get_conference_id(self, conference_name, year):
         conference_id = self.select_id_from_conference(conference_name, year)
@@ -163,11 +117,6 @@ class WriterDBase():
         rows = self.bd.select(what='id', where='conference', condition=where)
         return rows[0][0] if rows != [] else None
     
-    
-    # --------------------------------------------------------------------
-	# CHECK IN CATAlOGUE
-    # --------------------------------------------------------------------
-    
     def insert_to_catalogue(self, auth_id, article_id, conference_id):
         catalog_id = self.select_id_from_catalogue(auth_id, article_id, conference_id)
         if not catalog_id:
@@ -180,10 +129,7 @@ class WriterDBase():
         where = ''' author_id = ''' + str(auth_id) + ''' AND article_id = ''' + str(article_id) + ''' AND conference_id = ''' + str(conference_id) + ';'
         rows = self.bd.select(what='id', where='catalogue', condition=where)
         return rows[0][0] if rows != [] else None
-    # --------------------------------------------------------------------
-    # COMMON ARTICLES LOADER
-    # --------------------------------------------------------------------
-    
+
     def load(self, article):
         counter = 0
         try:

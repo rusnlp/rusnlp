@@ -1,6 +1,5 @@
 import sqlite3
 import json
-import codecs
 from nltk.corpus import stopwords
 from db_reader import ReaderDBase
 from db_writer import WriterDBase
@@ -26,8 +25,6 @@ class DBaseRusNLP():
     def close(self):
         self.conn.close()
 
-    # ********************************************************************
-
     def create_table(self, name, operations_list):
         columns_dict = operations_list[0]
         query = "CREATE TABLE IF NOT EXISTS " + name + " ("
@@ -38,8 +35,6 @@ class DBaseRusNLP():
         self.cursor.execute(query + columns + constraints+last)
         self.conn.commit()
 
-    # ********************************************************************
-
     def update(self, table, column, value, what, condition):
         query = '''UPDATE '''+table
         set_col = ''' SET ''' + column + '''= '''+ self.check(value)
@@ -49,8 +44,6 @@ class DBaseRusNLP():
             self.conn.commit()
         except Exception as e:
             print(query + set_col + where)
-
-    # ********************************************************************
     
     def alter(self, table, operation, column, name, type_column):
         query = """ALTER TABLE """ + table + """ """ + operation + """ """
@@ -62,8 +55,7 @@ class DBaseRusNLP():
     def alter_add_column(self, table, name, type_col):
         self.alter(table, 'ADD','COLUMN', name, type_col)
         print('column '+name+' added')
-    
-    # ********************************************************************
+
     def delete(self, table=None, column=None, condition=None):
         query = "DELETE * FROM "+table
         where = " WHERE "+column+" = "+self.check(condition)
@@ -73,8 +65,6 @@ class DBaseRusNLP():
     def drop(self, table):
         self.cursor.execute("DROP TABLE "+table)
         self.conn.commit()
-
-    # ********************************************************************
 
     def select(self, what, where, condition=None):
         query = "SELECT " + what + " FROM " + where
@@ -94,8 +84,6 @@ class DBaseRusNLP():
         query = "SELECT * FROM " + table_name
         self.cursor.execute(query)
         return [member[0] for member in self.cursor.description]
-
-    # ********************************************************************
 
     def insert(self, table, value, columns):
         query = '''INSERT INTO ''' + table
@@ -120,7 +108,6 @@ class DBaseRusNLP():
             print(value)
             raise TypeError("Unknown type")
 
-    #*******************************************************
     def get_db_info(self):
         self.cursor.execute("SELECT * FROM sqlite_master WHERE type='table'")
         return self.cursor.fetchall()
@@ -132,7 +119,6 @@ def main():
     bd_write_helper = WriterDBase(c)
     print(bd_read_helper.get_statistics())
     #print(bd_read_helper.select_author_and_title_by_id("%.+%"))
-
 
 	
 if __name__ == 'main':
