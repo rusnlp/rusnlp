@@ -86,7 +86,7 @@ def parse_dialogue_until_2007(filepath, content, conference, year, urls):
     d = {}
     d[TITLE] = splits[0].strip()
     d[ABSTRACT] = splits[2].strip()
-    d[TEXT] = ' '.join([str(split) for split in splits[3:]]).encode('utf-8')
+    d[TEXT] = ''.join([str(split) for split in splits[3:]])
     try:
         if 'Keywords:' in content:
             text = content.replace('-\n', '')
@@ -108,7 +108,7 @@ def parse_dialogue_until_2007(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference.strip()
     data[YEAR] = year.strip()
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
     try:
         data[URL] = urls[filepath.split('Dialogue/')[1]]
     except KeyError:
@@ -130,7 +130,7 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
     d = {}
     d[TITLE] = splits[0].strip()
     d[ABSTRACT] = splits[2].strip()
-    d[TEXT] = ' '.join([str(split) for split in splits[3:]]).encode('utf-8')
+    d[TEXT] = ''.join([str(split) for split in splits[3:]])
     if 'Keywords:' in content:
         text = content.replace('-\n', '')
         kw_index = text.index('Keywords:')
@@ -149,7 +149,7 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
     try:
         data[URL] = urls[filepath.split('Dialogue/')[1]]
     except KeyError:
@@ -200,12 +200,12 @@ def parse_aist(filepath, content, conference, year, urls):
     d[TITLE] = splits[0].strip()
     d[ABSTRACT] = splits[2].strip()
     d[KEYWORDS] = ', '.join(parse_keywords(splits[3])).replace('.','').strip()
-    d[TEXT] = ' '.join([str(split) for split in splits[4:]]).encode('utf-8')
+    d[TEXT] = ''.join([str(split) for split in splits[4:]])
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
     try:
         data[URL] = urls[splits[0].lower().strip()]
     except KeyError:
@@ -257,12 +257,12 @@ def parse_ainl(filepath, content, conference, year, urls):
         d[KEYWORDS] = ', '.join(parse_keywords(splits[3])).replace('.','')
     else:
         d[KEYWORDS] = '-'
-    d[TEXT] = ' '.join([str(split) for split in splits[3:]]).encode('utf-8')
+    d[TEXT] = ''.join([str(split) for split in splits[3:]])
     data[TEXT] = d
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()
+    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
     try:
         data[URL] = urls[splits[0].lower().strip()]
     except KeyError:
