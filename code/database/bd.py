@@ -33,7 +33,7 @@ class DBaseRusNLP:
         last = ")"
         constraints = ", "+", ".join(operations_list[1:]) if len(operations_list) > 1 else ""
         # TODO: Replace prints with logging
-        # print(query + columns + last+constraints)
+        print(query + columns + last+constraints)
         self.cursor.execute(query + columns + constraints+last)
         self.conn.commit()
 
@@ -56,7 +56,7 @@ class DBaseRusNLP:
         except Exception as e:
             pass
             # TODO: Replace prints with logging
-            # print(query + set_col + where)
+            print(query + set_col + where)
     
     def alter(self, table, operation, column, name, type_column):
         """
@@ -71,12 +71,13 @@ class DBaseRusNLP:
         query = """ALTER TABLE """ + table + """ """ + operation + """ """
         col_query = column + """ """ + name + """ """ + type_column
         # TODO: Replace prints with logging
-        # print(query+col_query)
+        print(query+col_query)
         self.cursor.execute(query + col_query)
         self.conn.commit()
     
     def alter_add_column(self, table, name, type_col):
         """
+        Add column to the right
 
         :param table:
         :param name:
@@ -85,14 +86,18 @@ class DBaseRusNLP:
         """
         self.alter(table, 'ADD', 'COLUMN', name, type_col)
         # TODO: Replace prints with logging
-        # print('column ' + name + ' added')
+        print('column ' + name + ' added')
 
     def delete(self, table=None, column=None, condition=None):
         """
+        Delete a single value from the table
 
-        :param table:
-        :param column:
-        :param condition:
+        :param table: string
+            The name of the table
+        :param column: string
+            The name of the column
+        :param condition: list of strings
+            The optional condition
         :return:
         """
         query = "DELETE * FROM " + table
@@ -102,45 +107,59 @@ class DBaseRusNLP:
 
     def drop(self, table):
         """
+        Remove table
 
-        :param table:
-        :return:
+        :param table: string
+            The name of the table
+        :return: None
         """
         self.cursor.execute("DROP TABLE {}".format(table))
         self.conn.commit()
 
     def select(self, what, where, condition=None):
         """
+        Get rows by query
 
-        :param what:
-        :param where:
-        :param condition:
+        :param what: list of strings
+            Columns from which the values should be selected
+        :param where: string
+            The name of the specified table
+        :param condition: list of strings
+            The optional condition according to which the rows would be selected
         :return:
         """
         query = "SELECT {} FROM {}".format(what, where)
         if condition:
             query += " WHERE {}".format(condition)
         # TODO: Replace prints with logging
-        # print(query)
+        print(query)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
     def select_max(self, table):
         """
+        Get maximum value in the row
 
-        :param table:
-        :return:
+        :param table: string
+            The name of the specified table
+        :return: int
+            The maximum value
         """
         query = """SELECT MAX(id) FROM """ + table + ";"
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
-        return rows[0][0] if rows[0][0] else 0
+        if rows[0][0]:
+            return rows[0][0]
+        return 0
     
     def select_columns_name(self, table_name):
         """
+        Get names of the columns in the table
 
-        :param table_name:
-        :return:
+        :param table_name: string
+            The name of the specified table
+        :return: list of strings
+            Names of the columns
         """
         query = "SELECT * FROM " + table_name
         self.cursor.execute(query)
@@ -148,28 +167,35 @@ class DBaseRusNLP:
 
     def insert(self, table, value, columns):
         """
+        Inserts a value to the table
 
-        :param table:
-        :param value:
-        :param columns:
-        :return:
+        :param table: list of strings
+            The table
+        :param value: string
+            The specified value
+        :param columns: list of strings
+            Columns to which the value is inserted
+        :return: None
         """
         query = '''INSERT INTO ''' + table
         query += ''' (''' + ''', '''.join(columns) + ''') '''
         values = ''' VALUES(''' + ''', '''.join([self.check(i) for i in value]) + '''); '''
         # TODO: Replace prints with logging
-        # print(query+values)
+        print(query+values)
         self.cursor.execute(query + values)
         self.conn.commit()
         # TODO: Replace prints with logging
-        # print('loaded to ' + str(table))
+        print('loaded to ' + str(table))
 
     @staticmethod
     def check(value):
         """
+        Cast value to string
 
-        :param value:
-        :return:
+        :param value: any type
+            The checked value
+        :return: string
+            Casts string, if possible
         """
         if type(value) == int:
             return str(value)
@@ -181,13 +207,15 @@ class DBaseRusNLP:
             return '''NULL'''
         else:
             # TODO: Replace prints with logging
-            # print(type(value), type)
+            print(type(value), type)
             raise TypeError("Unknown type")
 
     def get_db_info(self):
         """
-        
-        :return:
+        Get all information about the database
+
+        :return: list of string
+            All information about database
         """
         self.cursor.execute("SELECT * FROM sqlite_master WHERE type='table'")
         return self.cursor.fetchall()
