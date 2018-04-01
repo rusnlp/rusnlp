@@ -6,9 +6,11 @@ from db_writer import WriterDBase
 
 class DBaseRusNLP:
     def __init__(self, db_path, config_file):
+        self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.cursor.execute('PRAGMA encoding = "UTF-8"')
+        self.cursor.execute('PRAGMA auto_vacuum = 1')
         self.tables = json.load(open(config_file))
         for name, data in self.tables.items():
             self.create_table(name, data)

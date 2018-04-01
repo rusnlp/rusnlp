@@ -1,6 +1,7 @@
 import sqlite3
 from pandas import DataFrame
 from nltk.corpus import stopwords
+import shutil
 
 
 class WriterDBase:
@@ -353,3 +354,32 @@ class WriterDBase:
                 pass
                 # TODO: Replace prints with logging
                 # print("foreign key error:\n", e,  "for \n", results[affiliation[1]], affiliation[1], affiliation[0])
+        
+    def delete_column(self, table, column):
+        """
+        Delete column from table by copying table
+        
+        :param table: string
+            Table from wheredelete column
+        :param column: string
+            Column to delete
+        :return: None
+        """
+        split_name, dim = self.db.db_path.split(".db")
+        middle_name = table+"2"
+        shutil.copyfile(self.db.db_path, split_name+"_old.db")
+        article_table_info = self.db.tables[table]
+        del article_table_info[0][column]
+        self.db.create_table(middle_name, article_table_info)
+        self.db.cursor.execute("INSERT INTO {} SELECT {} FROM {}"
+                               .format(middle_name, 
+                                       ", ".join(list(article_table_info[0].keys())), 
+                                       table))
+        self.db.cursor.execute("DROP TABLE {}".format(table))
+        self.db.conn.isolation_level = None
+        self.db.cursor.execute('VACUUM')
+        self.db.conn.isolation_level = ''
+        self.db.conn.commit()
+        self.db.cursor.execute("ALTER TABLE {} RENAME TO {}".format(middle_name,
+                               table))
+        self.db.conn.commit()
