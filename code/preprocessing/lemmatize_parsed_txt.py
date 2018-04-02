@@ -35,10 +35,10 @@ def make_alpha(files):
     for a, i in files_alpha.items():
         if len(i) > 0:
             try:
-                with open(path.join('..', 'parsed', 'texts-en-alpha', a), 'w') as f:
+                with open(path.join('..', '..', 'parsed', 'texts-en-alpha', a), 'w') as f:
                     f.write(i)
             except OSError:
-                mkdir(path.join('..', 'parsed', 'texts-en-alpha'))
+                mkdir(path.join('..', '..', 'parsed', 'texts-en-alpha'))
 
 
 def make_stemmed(files):
@@ -48,15 +48,15 @@ def make_stemmed(files):
     for a, i in files_stemmed.items():
         if len(i) > 0:
             try:
-                with open(path.join('..', 'parsed', 'texts-en-stemmed', a), 'w') as f:
+                with open(path.join('..', '..', 'parsed', 'texts-en-stemmed', a), 'w') as f:
                     f.write(i)
             except OSError:
-                mkdir(path.join('..', 'parsed', 'texts-en-stemmed'))
+                mkdir(path.join('..', '..', 'parsed', 'texts-en-stemmed'))
 
 
 def make_lemmatized_with_udpipe(files):
     files_lemmatized = {}
-    model_path = path.join('..', '..', 'udpipe', 'english-ud-2.0.udpipe')
+    model_path = path.join('..', '..', '..', 'udpipe', 'english-ud-2.0.udpipe')
     model = Model.load(model_path)
     pipeline = Pipeline(model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
     for name, file in file.items():
@@ -64,18 +64,18 @@ def make_lemmatized_with_udpipe(files):
     for a, i in files_lemmatized.items():
         if len(i) > 0:
             try:
-                with open(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe', a), 'w') as f:
+                with open(path.join('..', '..', 'parsed', 'texts-en-lemmatized-udpipe', a), 'w') as f:
                     f.write(i)
             except OSError:
-                mkdir(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe'))
+                mkdir(path.join('..', '..', 'parsed', 'texts-en-lemmatized-udpipe'))
 
 
 if __name__ == '__main__':
     eng_files = {}
     eng_files_cleared = {}
 
-    langs = read_csv(path.join('..', 'parsed', 'texts', 'languages.csv'), sep='\t')
-    for a, b, files in walk(path.join('..', 'parsed', 'texts')):
+    langs = read_csv(path.join('..', '..', 'parsed', 'texts', 'languages.csv'), sep='\t')
+    for a, b, files in walk(path.join('..', '..','parsed', 'texts')):
         for file in files:
             if file.split('.')[1] != 'txt':
                 continue
@@ -116,10 +116,10 @@ if __name__ == '__main__':
         for a, i in eng_files_cleared.items():
             if len(i) > 0:
                 try:
-                    with open(path.join('..', 'parsed', 'texts-en', a), 'w') as f:
+                    with open(path.join('..','..',  'parsed', 'texts-en', a), 'w') as f:
                         f.write(i)
                 except OSError:
-                    mkdir(path.join('..', 'parsed', 'texts-en'))
+                    mkdir(path.join('..', '..', 'parsed', 'texts-en'))
 
         make_alpha(eng_files_cleared)
         make_stemmed(eng_files_cleared)
