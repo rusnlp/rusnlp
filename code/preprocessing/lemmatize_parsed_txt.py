@@ -21,8 +21,8 @@ ref_marker_1 = 'References'
 ref_marker_2 = 'REFERENCES'
 
 
-def get_lang(num):
-    return langs['Lang'][int(num)-1]
+def get_lang(paper_id):
+    return langs.loc[langs['ID'] == paper_id]['Lang'][0]
 
 
 def make_alpha(files):
