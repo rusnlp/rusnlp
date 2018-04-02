@@ -3,7 +3,8 @@ from collections import defaultdict
 from itertools import takewhile
 from re import compile, sub
 from pickle import dump, load
-
+from hashlib import sha1
+from transliterate import translit
 
 TITLE = 'title'
 AUTHOR = 'author'
@@ -108,7 +109,10 @@ def parse_dialogue_until_2007(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference.strip()
     data[YEAR] = year.strip()
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
+    safe_title = translit(make_alpha(d[TITLE]).replace(' ', '_').lower(), 'ru', reversed=True)
+    hasher = sha1()
+    hasher.update(safe_title.encode())
+    data[ID] = '{}_{}_{}'.format(conference, year, hasher.hexdigest()).lower()
     try:
         data[URL] = urls[filepath.split('Dialogue/')[1]]
     except KeyError:
@@ -149,7 +153,10 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
+    safe_title = translit(make_alpha(d[TITLE]).replace(' ', '_').lower(), 'ru', reversed=True)
+    hasher = sha1()
+    hasher.update(safe_title.encode())
+    data[ID] = '{}_{}_{}'.format(conference, year, hasher.hexdigest()).lower()
     try:
         data[URL] = urls[filepath.split('Dialogue/')[1]]
     except KeyError:
@@ -205,7 +212,10 @@ def parse_aist(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
+    safe_title = translit(make_alpha(d[TITLE]).replace(' ', '_').lower(), 'ru', reversed=True)
+    hasher = sha1()
+    hasher.update(safe_title.encode())
+    data[ID] = '{}_{}_{}'.format(conference, year, hasher.hexdigest()).lower()
     try:
         data[URL] = urls[splits[0].lower().strip()]
     except KeyError:
@@ -262,7 +272,10 @@ def parse_ainl(filepath, content, conference, year, urls):
     data[CONFERENCE] = conference
     data[YEAR] = year
     data[FILEPATH] = filepath
-    data[ID] = '{}_{}_{}'.format(conference, year, make_alpha(d[TITLE]).replace(' ', '_')).lower()[:50]
+    safe_title = translit(make_alpha(d[TITLE]).replace(' ', '_').lower(), 'ru', reversed=True)
+    hasher = sha1()
+    hasher.update(safe_title.encode())
+    data[ID] = '{}_{}_{}'.format(conference, year, hasher.hexdigest()).lower()
     try:
         data[URL] = urls[splits[0].lower().strip()]
     except KeyError:
@@ -303,9 +316,9 @@ if __name__ == '__main__':
     result += parse_aist_all()
     result += parse_ainl_all()
 
-    # for ind, data in enumerate(result[:-1]):
-    #     with open(path.join('data', '{}.txt'.format(ind)), 'w', encoding='utf-8') as f:
-    #         f.write(str(data[ID]) + '\n' + ' '.join(data[TEXT][TEXT]))
+    for ind, data in enumerate(result[:-1]):
+         with open(path.join('data', '{}.txt'.format(str(data[ID]))), 'w', encoding='utf-8') as f:
+             f.write(data[TEXT][TEXT])
 
     with open('all.pickle', 'wb') as f:
          dump(result, f)
