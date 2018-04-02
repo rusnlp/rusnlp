@@ -37,8 +37,8 @@ def make_alpha(files):
             try:
                 with open(path.join('..', 'parsed', 'texts-en-alpha', a), 'w') as f:
                     f.write(i)
-                except OSError:
-                    mkdir(path.join('..', 'parsed', 'texts-en-alpha'))
+            except OSError:
+                mkdir(path.join('..', 'parsed', 'texts-en-alpha'))
 
 
 def make_stemmed(files):
@@ -47,8 +47,9 @@ def make_stemmed(files):
         files_stemmed[name] = sub('\,+', ',', sub('\.+', '.', sub(' +\.', '.', sub(' +\,', ',', sub(' +',' ', ' '.join([ps.stem(word) for word in word_tokenize(file) if word not in stop]))))))
     for a, i in files_stemmed.items():
         if len(i) > 0:
-            with open(path.join('..', 'parsed', 'texts-en-stemmed', a), 'w') as f:
-                f.write(i)
+            try:
+                with open(path.join('..', 'parsed', 'texts-en-stemmed', a), 'w') as f:
+                    f.write(i)
             except OSError:
                 mkdir(path.join('..', 'parsed', 'texts-en-stemmed'))
 
@@ -62,8 +63,9 @@ def make_lemmatized_with_udpipe(files):
         files_lemmatized[name] = pipeline.process(' '.join(new_words), error)
     for a, i in files_lemmatized.items():
         if len(i) > 0:
-            with open(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe', a), 'w') as f:
-                f.write(i)
+            try:
+                with open(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe', a), 'w') as f:
+                    f.write(i)
             except OSError:
                 mkdir(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe'))
 
@@ -113,8 +115,9 @@ if __name__ == '__main__':
 
         for a, i in eng_files_cleared.items():
             if len(i) > 0:
-                with open(path.join('..', 'parsed', 'texts-en', a), 'w') as f:
-                    f.write(i)
+                try:
+                    with open(path.join('..', 'parsed', 'texts-en', a), 'w') as f:
+                        f.write(i)
                 except OSError:
                     mkdir(path.join('..', 'parsed', 'texts-en'))
 
