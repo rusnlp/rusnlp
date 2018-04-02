@@ -1,5 +1,5 @@
 from pandas import read_csv
-from os import walk, path
+from os import walk, path, mkdir
 from re import sub
 from pickle import dump, load
 from nltk.stem import PorterStemmer
@@ -34,8 +34,11 @@ def make_alpha(files):
 
     for a, i in files_alpha.items():
         if len(i) > 0:
-            with open(path.join('..', 'prepared-data', 'texts-en-alpha', a), 'w') as f:
-                f.write(i)
+            try:
+                with open(path.join('..', 'parsed', 'texts-en-alpha', a), 'w') as f:
+                    f.write(i)
+                except OSError:
+                    mkdir(path.join('..', 'parsed', 'texts-en-alpha'))
 
 
 def make_stemmed(files):
@@ -44,8 +47,10 @@ def make_stemmed(files):
         files_stemmed[name] = sub('\,+', ',', sub('\.+', '.', sub(' +\.', '.', sub(' +\,', ',', sub(' +',' ', ' '.join([ps.stem(word) for word in word_tokenize(file) if word not in stop]))))))
     for a, i in files_stemmed.items():
         if len(i) > 0:
-            with open(path.join('..', 'prepared-data', 'texts-en-stemmed', a), 'w') as f:
+            with open(path.join('..', 'parsed', 'texts-en-stemmed', a), 'w') as f:
                 f.write(i)
+            except OSError:
+                mkdir(path.join('..', 'parsed', 'texts-en-stemmed'))
 
 
 def make_lemmatized_with_udpipe(files):
@@ -57,16 +62,18 @@ def make_lemmatized_with_udpipe(files):
         files_lemmatized[name] = pipeline.process(' '.join(new_words), error)
     for a, i in files_lemmatized.items():
         if len(i) > 0:
-            with open(path.join('..', 'prepared-data', 'texts-en-lemmatized-udpipe', a), 'w') as f:
+            with open(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe', a), 'w') as f:
                 f.write(i)
+            except OSError:
+                mkdir(path.join('..', 'parsed', 'texts-en-lemmatized-udpipe'))
 
 
 if __name__ == '__main__':
     eng_files = {}
     eng_files_cleared = {}
 
-    langs = read_csv(path.join('..', 'prepared-data', 'texts', 'detected_languages.tsv'), sep='\t')
-    for a, b, files in walk(path.join('..', 'prepared-data', 'texts')):
+    langs = read_csv(path.join('..', 'parsed', 'texts', 'languages.csv'), sep='\t')
+    for a, b, files in walk(path.join('..', 'parsed', 'texts')):
         for file in files:
             if file.split('.')[1] != 'txt':
                 continue
@@ -106,8 +113,10 @@ if __name__ == '__main__':
 
         for a, i in eng_files_cleared.items():
             if len(i) > 0:
-                with open(path.join('..', 'prepared-data', 'texts-en', a), 'w') as f:
+                with open(path.join('..', 'parsed', 'texts-en', a), 'w') as f:
                     f.write(i)
+                except OSError:
+                    mkdir(path.join('..', 'parsed', 'texts-en'))
 
         make_alpha(eng_files_cleared)
         make_stemmed(eng_files_cleared)
