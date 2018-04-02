@@ -22,8 +22,8 @@ YEAR = 'year'
 FILEPATH = 'filepath'
 URL = 'url'
 ID = 'id'
-saving_dir = '../prepared-data'
-urls_dir = '../../data/URLs'
+saving_dir = path.join('..', 'prepared-data')
+urls_dir = path.join('..', '..', 'data', 'URLs')
 conferences = ['Dialogue', 'AIST', 'AINL']
 
 
@@ -166,7 +166,7 @@ def parse_dialogue_2007_plus(filepath, content, conference, year, urls):
 
 def parse_dialogue_all():
     result = []
-    with open('../../prepared-data/mapping.pickle', 'rb') as f:
+    with open(path.join('..', '..', 'prepared-data', 'mapping.pickle'), 'rb') as f:
         mapping = load(f)
     with open(path.join(urls_dir, 'url_fullpath_mapping_dialog_found_test.tsv'), 'r', encoding='utf-8') as f:
         urls_temp = f.read().split('\n')
@@ -185,10 +185,6 @@ def parse_dialogue_all():
                     continue
                 year = root.split('/')[~0]
                 result.append(add_paper_data(path.join(root, file), input_stream.read(), conferences[0], year, urls))
-
-    # with open('{}.pickle'.format(conferences[0]), 'wb') as f:
-    #     dump(result, f)
-
     return result
 
 
@@ -242,10 +238,6 @@ def parse_aist_all():
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
                 result += [parse_aist(path.join(root, file), paper, conferences[1], year, urls) for paper in papers]
-
-    # with open('{}.pickle'.format(conferences[1]), 'wb') as f:
-    #     dump(result, f)
-
     return result
 
 
@@ -302,23 +294,16 @@ def parse_ainl_all():
                 year = root.split('/')[~0]
                 papers = input_stream.read().split('==')
                 result += [parse_ainl(path.join(root, file), paper, conferences[2], year, urls) for paper in papers]
-
-    # with open('{}.pickle'.format(conferences[2]), 'wb') as f:
-    #      dump(result, f)
-
     return result
 
 
 if __name__ == '__main__':
-
     result = []
     result += parse_dialogue_all()
     result += parse_aist_all()
     result += parse_ainl_all()
-
-    for ind, data in enumerate(result[:-1]):
-         with open(path.join('data', '{}.txt'.format(str(data[ID]))), 'w', encoding='utf-8') as f:
+    for ind, data in enumerate(result):
+         with open(path.join('..', '..', 'prepared-data', 'texts', '{}.txt'.format(str(data[ID]))), 'w', encoding='utf-8') as f:
              f.write(data[TEXT][TEXT])
-
-    with open('all.pickle', 'wb') as f:
+    with open(path.join('..', '..', 'prepared-data', 'pickles', 'all.pickle'), 'wb') as f:
          dump(result, f)
