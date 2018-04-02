@@ -303,7 +303,7 @@ if __name__ == '__main__':
     result += parse_aist_all()
     result += parse_ainl_all()
     for ind, data in enumerate(result):
-         with open(path.join('..', '..', 'prepared-data', 'texts', '{}.txt'.format(str(data[ID]))), 'w', encoding='utf-8') as f:
+         with open(path.join('..', '..', 'parsed', 'texts', '{}.txt'.format(str(data[ID]))), 'w', encoding='utf-8') as f:
              f.write(data[TEXT][TEXT])
-    with open(path.join('..', '..', 'prepared-data', 'pickles', 'all.pickle'), 'wb') as f:
+    with open(path.join('..', '..', 'parsed', 'pickles', 'all.pickle'), 'wb') as f:
          dump(result, f)
