@@ -20,10 +20,8 @@ intro_marker_2 = 'INTRODUCTION'
 ref_marker_1 = 'References'
 ref_marker_2 = 'REFERENCES'
 
-
 def get_lang(paper_id):
-    return langs.loc[langs['ID'] == paper_id]['Lang'][0]
-
+    return langs.loc[langs['ID'] == paper_id, 'Lang'].values[0]
 
 def make_alpha(files):
     files_alpha = {}
@@ -56,11 +54,11 @@ def make_stemmed(files):
 
 def make_lemmatized_with_udpipe(files):
     files_lemmatized = {}
-    model_path = path.join('..', '..', '..', 'udpipe', 'english-ud-2.0.udpipe')
+    model_path = path.join('..', '..', '..', 'udpipe', 'src', 'english-2.0.udpipe')
     model = Model.load(model_path)
     pipeline = Pipeline(model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
-    for name, file in file.items():
-        files_lemmatized[name] = pipeline.process(' '.join(new_words), error)
+    for name, file in files.items():
+        files_lemmatized[name] = pipeline.process(file)
     for a, i in files_lemmatized.items():
         if len(i) > 0:
             try:
@@ -74,12 +72,12 @@ if __name__ == '__main__':
     eng_files = {}
     eng_files_cleared = {}
 
-    langs = read_csv(path.join('..', '..', 'parsed', 'texts', 'languages.csv'), sep='\t')
+    langs = read_csv(path.join('..', '..', 'parsed', 'texts', 'languages.csv'))
     for a, b, files in walk(path.join('..', '..','parsed', 'texts')):
         for file in files:
-            if file.split('.')[1] != 'txt':
+            if 'txt' not in file:
                 continue
-            if get_lang(file.split('.')[0]) == 'en':
+            if get_lang(file.split('.')[0], langs) == 'en':
                 with open(a + '/' + file, 'r') as f:
                     eng_files[file] = f.read()
 
@@ -122,5 +120,5 @@ if __name__ == '__main__':
                     mkdir(path.join('..', '..', 'parsed', 'texts-en'))
 
         make_alpha(eng_files_cleared)
-        make_stemmed(eng_files_cleared)
+        # make_stemmed(eng_files_cleared)
         make_lemmatized_with_udpipe(eng_files_cleared)
