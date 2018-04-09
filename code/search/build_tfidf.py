@@ -23,7 +23,7 @@ def extract_lemmas(lines):
 if __name__ == '__main__':
     textdirectory = sys.argv[1]
 
-    files = [f for f in os.listdir(textdirectory) if f.endswith('.txt')]
+    files = [f for f in os.listdir(textdirectory) if f.endswith('.conll')]
 
     order = json.dumps(files)
     orderfile = open('docorder.json', 'w')
