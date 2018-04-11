@@ -328,7 +328,7 @@ class WriterDBase:
         exceptions = []
         for name, index in old_names.items():
             try:
-                self.db.insert_into_author_alias(aliases[name.replace(",", "").strip()],index)
+                self.insert_into_author_alias(aliases[name.replace(",", "").strip()],index)
             except:
                 exceptions.append((name, index))
         return exceptions
@@ -349,7 +349,7 @@ class WriterDBase:
         results_aff = self.db.cursor.fetchall()
         for affiliation in results_aff:
             try:
-                self.db.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
+                self.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
             except sqlite3.IntegrityError as e:
                 pass
                 # TODO: Replace prints with logging
