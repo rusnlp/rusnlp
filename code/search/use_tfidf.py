@@ -23,10 +23,10 @@ sim_index = similarities.MatrixSimilarity.load(indexfile)
 orderdata = open(orderfile, 'r').read()
 order = json.loads(orderdata)
 
-user_query = input('Enter a filename to find its nearest neighbors '
-                   '(for example, dialogue_2017_3eac013c2e6d4618fe7308a71e2ef06257ee69db.conll):')
+user_query = input('Enter a paper ID to find its nearest neighbors '
+                   '(for example, dialogue_2017_3eac013c2e6d4618fe7308a71e2ef06257ee69db):')
 
-position = order.index(user_query)
+position = order.index(user_query+'.conll')
 
 counter = 0
 for sim in sim_index:
@@ -36,5 +36,16 @@ for sim in sim_index:
     counter += 1
 
 sims = sorted(enumerate(similarities), key=lambda item: -item[1])
-for sim in sims[:10]:
-    print(order[sim[0]], sim[1])
+print('Rank\tTitle\tAuthors\tID\tSimilarity')
+rank = 1
+for sim in sims[:11]:
+    doc = order[sim[0]].split('.')[0]
+    similarity = sim[1]
+    authors = reader.select_author_by_id(doc)
+    authors = ','.join([w[0] for w in authors])
+    title = reader.select_title_by_id(doc)[0][0]
+    output = '\t'.join([str(rank), title, authors, doc, str(similarity)])
+    print(output)
+    rank+=1
+    if doc == user_query:
+        print('==========================')
