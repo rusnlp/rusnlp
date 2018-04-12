@@ -35,7 +35,7 @@ class DBaseRusNLP:
         last = ")"
         constraints = ", "+", ".join(operations_list[1:]) if len(operations_list) > 1 else ""
         # TODO: Replace prints with logging
-        print(query + columns + last+constraints)
+        # print(query + columns + last+constraints)
         self.cursor.execute(query + columns + constraints+last)
         self.conn.commit()
 
@@ -134,7 +134,7 @@ class DBaseRusNLP:
         if condition:
             query += " WHERE {}".format(condition)
         # TODO: Replace prints with logging
-        print(query)
+        # print(query)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 

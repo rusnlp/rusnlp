@@ -122,15 +122,15 @@ class ReaderDBase:
         """
         title_result = self.select_title_by_id(article_id)
         if title_result:
-            title = list(title_result[0])
+            title = ' '.join(list(title_result[0]))
         else:
             title = "No id in db"
         result_author = self.select_author_by_id(article_id)
         if result_author:
-            authors = str([j[0] for j in result_author])
+            authors = ', '.join([j[0] for j in result_author])
         else:
             authors = ""
-        return title + authors
+        return 'Title: "{}" Authors: {}'.format(title, authors)
     
     def select_all_from(self, where):
         """

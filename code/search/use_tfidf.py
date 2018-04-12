@@ -11,7 +11,7 @@ from db_reader import ReaderDBase
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_no_texts.db'),
+bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_withouttexts.db'),
                    path.join('..', '..', '..', 'database', 'database_metadata.json'))
 reader = ReaderDBase(bd_m)
 

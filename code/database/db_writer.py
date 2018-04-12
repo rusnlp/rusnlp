@@ -64,9 +64,9 @@ class WriterDBase:
             I don't know what this means
         :return: None
         """
-        self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath), 
+        self.db.insert('article', (id_, title, keywords, abstract, bibliography, text, url, common_id, filepath),
                      ['id', 'title', 'keywords', 'abstract', 'bibliography', 'text', 'url', 'common_id', 'filepath'])
-    
+
     def insert_into_author_alias(self, alias, variant):
         """
         Associate author with a new alias for her name.
@@ -82,7 +82,7 @@ class WriterDBase:
         variant_alias_id = self.select_id_from_author_alias(variant)
         if not variant_alias_id:
             self.db.insert('author_alias', (max_id, alias, variant), ["id", "alias", "author_id"])
-    
+
     def select_id_from_author_alias(self, variant):
         """
         Get identifies of papers associated with an alias
@@ -248,7 +248,7 @@ class WriterDBase:
         where = ''' year = ''' + str(year) + ''' AND conference = "''' + conference_name + '";'
         rows = self.db.select(what='id', where='conference', condition=where)
         return rows[0][0] if rows != [] else None
-    
+
     def insert_to_catalogue(self, auth_id, article_id, conference_id):
         """
 
@@ -263,7 +263,7 @@ class WriterDBase:
             self.db.insert('catalogue', (int(catalog_id), int(auth_id), int(article_id),
                                          int(conference_id)),
                            columns=['id', 'author_id', 'article_id', 'conference_id'])
-    
+
     def select_id_from_catalogue(self, auth_id, article_id, conference_id):
         """
 
@@ -332,7 +332,7 @@ class WriterDBase:
             except:
                 exceptions.append((name, index))
         return exceptions
-    
+
     def load_to_affiliation_alias(self, file_path):
         """
 
@@ -350,15 +350,15 @@ class WriterDBase:
         for affiliation in results_aff:
             try:
                 self.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
-            except sqlite3.IntegrityError as e:
+            except (sqlite3.IntegrityError, KeyError):
                 pass
                 # TODO: Replace prints with logging
                 # print("foreign key error:\n", e,  "for \n", results[affiliation[1]], affiliation[1], affiliation[0])
-        
+
     def delete_column(self, table, column):
         """
         Delete column from table by copying table
-        
+
         :param table: string
             Table from wheredelete column
         :param column: string
@@ -372,8 +372,8 @@ class WriterDBase:
         del article_table_info[0][column]
         self.db.create_table(middle_name, article_table_info)
         self.db.cursor.execute("INSERT INTO {} SELECT {} FROM {}"
-                               .format(middle_name, 
-                                       ", ".join(list(article_table_info[0].keys())), 
+                               .format(middle_name,
+                                       ", ".join(list(article_table_info[0].keys())),
                                        table))
         self.db.cursor.execute("DROP TABLE {}".format(table))
         self.db.conn.isolation_level = None
