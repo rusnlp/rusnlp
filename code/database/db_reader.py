@@ -67,7 +67,7 @@ class ReaderDBase:
         what = "DISTINCT article.title"
         where = "catalogue JOIN author JOIN article ON article.id=article_id AND author.id=author_id"
         condition = "author.affiliation = '{}'".format(affiliation)
-        return self._bd.select(what, where, condition)
+        return [res[0] for res in self._bd.select(what, where, condition)]
     
     def select_author_by_affiliation(self, affiliation):
         """
@@ -81,7 +81,7 @@ class ReaderDBase:
         what = "DISTINCT author.id, author.name"
         where = "author"
         condition = "author.affiliation = '{}'".format(affiliation)
-        return self._bd.select(what, where, condition)
+        return [res[0] for res in self._bd.select(what, where, condition)]
     
     def select_title_by_id(self, article_id):
         """
@@ -95,7 +95,7 @@ class ReaderDBase:
         what = '''DISTINCT title'''
         where = '''article '''
         condition = '''common_id="{}"'''.format(str(article_id))
-        return self._bd.select(what, where, condition)
+        return self._bd.select(what, where, condition)[0][0]
     
     def select_author_by_id(self, article_id):
         """
@@ -109,7 +109,7 @@ class ReaderDBase:
         what = '''DISTINCT name'''
         where = '''author JOIN catalogue JOIN article ON author.id=author_id AND article_id=article.id'''
         condition = '''common_id="{}"'''.format(str(article_id))
-        return self._bd.select(what, where, condition)
+        return [res[0] for res in self._bd.select(what, where, condition)]
         
     def select_author_and_title_by_id(self, article_id):
         """
