@@ -24,7 +24,7 @@ reader = ReaderDBase(bd_m)
 #                    '(for example, dialogue_2017_3eac013c2e6d4618fe7308a71e2ef06257ee69db):')
 
 print('Rank\tTitle\tAuthors\tID\tSimilarity')
-testfiles = [f.split('.')[0] for f in listdir(testdir)]
+testfiles = [f.split('.')[0] for f in listdir(testdir) if path.isfile(path.join(testdir, f))]
 
 for user_query in testfiles:
     sims = model.docvecs.most_similar(user_query)
