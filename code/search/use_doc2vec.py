@@ -33,7 +33,7 @@ for user_query in testfiles:
     authors = reader.select_author_by_id(user_query)
     authors = ','.join([w for w in authors])
     rank = 0
-    print(str(rank) + '\t' + title + '\t' + authors + '\t' + user_query + '1.0')
+    print(str(rank) + '\t' + title + '\t' + authors + '\t' + user_query + '\t' + '1.0')
     print('==========================')
     for sim in sims:
         rank += 1
