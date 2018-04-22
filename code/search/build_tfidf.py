@@ -45,5 +45,5 @@ if __name__ == '__main__':
 
     model = TfidfModel(corpus, id2word=dictionary)
     model.save('tfidf.model')
-    index = similarities.MatrixSimilarity(model[corpus])
-    index.save('tfidf.index')
+    sim_index = similarities.MatrixSimilarity(model[corpus])
+    sim_index.save('tfidf.index')

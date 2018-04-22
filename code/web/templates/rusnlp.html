@@ -1,0 +1,97 @@
+{% extends "rusnlp_base.html" %}
+
+{%- block title %}
+     <title>RusNLP</title>
+
+{%- endblock title %}
+
+{% block content %}
+    <div class="row" style="text-align:center;">
+        <h1>RusNLP: cемантический поиск по публикациям на российских конференциях</h1>
+          <p class="lead">компьютерная лингвистика и natural language processing</p>
+	{% if search %}
+        <div id="queryform">
+            <form id="inputform" action="#" method=post>
+              <div class="form-group">
+        <fieldset style="width:auto; text-align:center;">
+                <label>Конференция:</label>
+                 <select name="conf_query" multiple class="form-control" style="text-align:center;margin-right:auto;margin-left:auto;max-width:400px;">
+        	    <option value="Dialogue"
+                    {% if conf_query  %}
+                    {% if 'Dialogue' in conf_query %}
+                     selected
+                    {% endif %}
+                    {% endif %}
+                        style="text-align:center;">Диалог</option>
+        	    <option value="AIST"
+                           {% if conf_query  %}
+                    {% if 'AIST' in conf_query %}
+                     selected
+                    {% endif %}
+                    {% endif %}
+                        style="text-align:center;">AIST</option>
+                <option value="AINL"
+                                    {% if conf_query  %}
+                    {% if 'AINL' in conf_query %}
+                     selected
+                    {% endif %}
+                    {% endif %}
+                        style="text-align:center;">AINL</option>
+                 </select>
+        	</fieldset>
+
+      
+      <p style="margin-top:15px;">Диапазон дат:</p>
+        {% if year_query %}
+        <i>От:</i>
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2005" max="2020" size=4>
+        <i>До:</i>
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2005" max="2020" size=4>
+        {% else %}
+        <i>От:</i>
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="2015" min="2005" max="2020" size=4>
+        <i>До:</i>
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2016" min="2005" max="2020" size=4>
+        {% endif %}
+      
+      <p style="margin-top:15px;">ФИО автора (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
+        {% if author_query %}
+        <input type="text" class="tt-query" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10>
+        {% else %}
+        <input type="text" class="tt-query" id="author_query" name="author_query" placeholder="*Иванов?" maxlength=50 size=10>
+        {% endif %}
+
+    <p style="margin-top:15px;">Заголовок статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
+    {% if query %}
+       	   <input type="text" class="tt-query" id="query" name="query" value="{{ query }}" maxlength=500 size=80>
+        {% elif cyberleninka and not query %}
+                <input type="text" class="tt-query" id="query" name="query" maxlength=500 size=80>
+        {% else %}
+               <input type="text" class="tt-query" id="query" name="query" placeholder="WebVectors*" maxlength=500>
+    {% endif %}
+
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;">Искать</button>
+            </form>
+        </div>
+    {% endif %}
+
+
+    {% if error %}
+        <p> <strong>{{ error }}</strong></p>
+    {% endif %}
+     {% if result %}
+    <h3>Результаты поиска:</h3>
+    <div>
+        <h4>Кликните по статье, чтобы увидеть похожие публикации</h4>
+        <table class="sortable table table-hover">
+        <tr style="border-bottom:1px solid black;"><th style="text-align: left;">Заголовок</th> <th style="text-align:center;">Автор</th> <th  style="text-align:center;">Конференция</th> <th>Год</th></tr>
+	{% for res in result if not "No results" in res and not 'is unknown' in res  %}
+    	    <tr style="border-bottom:1px solid black;">
+    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a> (<a target="_blank" href="http://example.com/{{ res[0] }}">URL</a>)</td>  <td style="text-align:center;">{{ res[2] | join(', ') }}</td> <td>{{ res[4] }}</td> <td>{{ res[3] }}</td></tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endif %}
+{% endblock %}
