@@ -47,10 +47,10 @@ class ReaderDBase:
             Names of articles from the all year proceedings of the selected conference (or selected conference
             of a certain year)
         """
-        what = "DISTINCT article.title"
+        what = "DISTINCT article.common_id"
         where = "catalogue JOIN conference JOIN article ON catalogue.conference_id=conference.id" \
                 " AND catalogue.article_id=article.id"
-        condition = "conference.conference='{}'".format(conf_name)
+        condition = "conference.conference='{}'".format(conf_name.upper())
         if year:
             condition += "AND conference.year={}".format(str(year))
         return [res[0] for res in self._bd.select(what, where, condition)]
@@ -154,10 +154,10 @@ class ReaderDBase:
         :return: list of strings
             All rows of a specified column.
         """
-        where = "catalogue INNER JOIN conference INNER JOIN article INNER JOIN author INNER JOIN author_alias ON" \
+        where = "catalogue INNER JOIN conference INNER JOIN article INNER JOIN author INNER JOIN author_alias  INNER JOIN affiliation_alias ON" \
                 " author.id=author_alias.author_id AND catalogue.conference_id=conference.id AND " \
-                "catalogue.article_id=article.id AND author.id=catalogue.author_id"
-        return self._bd.select('DISTINCT '+ column, where, condition)
+                "catalogue.article_id=article.id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
+        return [i[0] for i in self._bd.select('DISTINCT '+ column, where, condition)]
 
     def update_statistics(self):
         """
