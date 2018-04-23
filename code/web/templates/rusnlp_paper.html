@@ -1,7 +1,7 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-	<title>RusNLP</title>
+	<title>RusNLP: {{metadata['title']}} </title>
 
 {%- endblock title %}
 
@@ -32,7 +32,7 @@
          {% else %}
          	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" placeholder="10">
          {% endif %}
-         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: red;">Искать</button>
+         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;">Искать</button>
       	</div>
       	
       	
@@ -40,26 +40,26 @@
    </div>
 		<div class="row">
 		{% for model in result if model != 'meta' and not 'is unknown' in result[model][0] %}
-			<div class="col-md-10">
+			<div class="col-md-12">
 				<table class="sortable table table-hover">
 					<tr style="border-bottom:1px solid black;">
-						<th style="text-align:left;">Заголовок</th>
+						<th style="text-align:center;">Заголовок</th>
 						<th>Год</th> 
 						<th style="text-align:center;">Автор</th>
 						<th>Близость</th>
 					</tr>
 				{% for res in result[model] if not "No results" in res and not 'is unknown' in res  %}
 					<tr style="border-bottom:1px solid black;">
-						<td style="text-align:left;">
+						<td>
 							<a style="font-size:larger;" href="{{ url }}publ/{{ res[0] }}">
 								{{ res[1] }}
 							</a> 
-							(<a target="_blank" href="{{ res[5] }}">URL</a>)
+							(<a target="_blank" href="{{ res[5] }}" style="color:green;">URL</a>)
 						</td> 
 						<td>
 							{{ res[3] }}
 						</td> 
-						<td style="text-align:center;">
+						<td>
 							{{ res[2] | join(', ') }}
 						</td>
 						<td style="text-align:right;">
