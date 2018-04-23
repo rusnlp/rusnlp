@@ -1,15 +1,15 @@
-{% extends "dn_base.html" %}
+{% extends "rusnlp_base.html" %}
 
 {%- block title %}
-	<title>Dissernet SemSearch</title>
+	<title>RusNLP</title>
 
 {%- endblock title %}
 
 {% block content %}
 	<div class="row" style="text-align: center;">
 		{% if not result %}
-		<h1>Семантический поиск Диссернета</h1>
-		<p class="lead">по миллиону научных публикаций</p>
+		<h1>RusNLP: cемантический поиск по публикациям на российских конференциях</h1>
+		<p class="lead">компьютерная лингвистика и natural language processing</p>
 		{% endif %}
 	</div>
 	<div class="row" style="text-align: center;">
@@ -21,24 +21,18 @@
 	{% if result %}
 		
 		<h3>«{{ metadata['title'] | capitalize }}»</h3>
-		<p><i>{{ metadata['author'] }}; {{metadata['journal']}}; {{metadata['year']}}, <a target="_blank" href="https://cyberleninka.ru/article/n/{{ metadata['filename']}}">публикация на Киберленинке</a></i></p>
+		<p><i>{{ metadata['author'] | join(', ') }}; {{metadata['conference']}}; {{metadata['year']}}, <a target="_blank" href="{{ metadata['url']}}">Оригинал статьи</a></i></p>
       <h3>Семантически близкие публикации:</h3>
         <div id="queryform">
    	<form id="inputform" action="#" method=post>
       	<div class="form-group">
-         <i>Порог близости:</i>
-         {% if threshold  %}
-         	<input type="number" class="tt-tiny" step="0.001" id="threshold" name="threshold" min="0.1" max="1.0" value="{{ threshold }}">
-         {% else %}
-         	<input type="number" class="tt-tiny" step="0.001" id="threshold" name="threshold" min="0.1" max="1.0" placeholder="Не установлен">
-         {% endif %}
-         <i>Число результатов:</i>
+                  <i>Число результатов:</i>
          {% if topn  %}
          	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" value="{{ topn }}">
          {% else %}
          	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" placeholder="10">
          {% endif %}
-         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: red;">Фильтровать</button>
+         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: red;">Искать</button>
       	</div>
       	
       	
@@ -47,43 +41,31 @@
 		<div class="row">
 		{% for model in result if model != 'meta' and not 'is unknown' in result[model][0] %}
 			<div class="col-md-10">
-				<h4>Модель "{{ models[model] }}"</h4>
 				<table class="sortable table table-hover">
 					<tr style="border-bottom:1px solid black;">
-						<th></th>
-						<th style="text-align:left;">Заголовок</th> 
+						<th style="text-align:left;">Заголовок</th>
 						<th>Год</th> 
 						<th style="text-align:center;">Автор</th>
 						<th>Близость</th>
 					</tr>
 				{% for res in result[model] if not "No results" in res and not 'is unknown' in res  %}
-				{% if res[-1] > threshold %}
 					<tr style="border-bottom:1px solid black;">
-						<td>
-						{% if res[2] != metadata['author'] and res[3] < metadata['year'] and res[-1] > 0.9  %}
-							<p style="color:red;"><strong>!</strong></p>
-						{% else %}
-							<p style="color:green;"><strong></strong></p>
-						{% endif %}
-        
-						</td>
 						<td style="text-align:left;">
 							<a style="font-size:larger;" href="{{ url }}publ/{{ res[0] }}">
 								{{ res[1] }}
 							</a> 
-							(<a target="_blank" href="https://cyberleninka.ru/article/n/{{ res[0] }}">cbrln</a>)
+							(<a target="_blank" href="{{ res[5] }}">URL</a>)
 						</td> 
 						<td>
 							{{ res[3] }}
 						</td> 
 						<td style="text-align:center;">
-							{{ res[2] }}
+							{{ res[2] | join(', ') }}
 						</td>
 						<td style="text-align:right;">
 							{{ "{0:.4f}".format(res[-1]) }}
 						</td>
 					</tr>
-				{% endif %}
 				{% endfor %}
 				</table>        
 			</div>			

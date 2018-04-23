@@ -10,9 +10,10 @@ import logging
 import socket
 import sys
 from os import path
+import gzip
 from _thread import *
-from gensim import similarities
 from gensim.models import TfidfModel
+from gensim.matutils import cossim
 from bd import DBaseRusNLP
 from db_reader import ReaderDBase
 
@@ -47,13 +48,14 @@ def clientthread(conn, addr):
 # Vector functions
 def find_nearest(q, number):
     results = {}
-    if q not in model:
-        results[model] = "unknown to the model"
- #   else:
-  #      results[model] = [(i[0], metadata[i[0]]['title'], metadata[i[0]]['author'], metadata[i[0]]['year'],
-  #                         metadata[i[0]]['journal'], i[1]) for i in model.most_similar(positive=q, topn=number) if
-   #                       i[0] in metadata]
-    return None
+    q_vector = text_vectors[q]
+    similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q}
+    neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
+
+    results['neighbors'] = [
+        (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
+         reader.select_conference_by_id(i), reader.select_url_by_id(i), similarities[i]) for i in neighbors]
+    return results
 
 
 def f_conf(q):
@@ -83,7 +85,6 @@ def f_author(q):
         for q_author in authorsindex:
             if fnmatch.fnmatch(q_author.lower(), q.lower()):
                 results = results.union(set(reader.select_articles_of_author(q_author)))
-    results = set([titlesindex[title] for title in results if title in titlesindex])
     return results
 
 
@@ -101,8 +102,8 @@ def f_title(q):
 def search(sets):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
-    results = \
-        [(i, reader.select_title_by_id(i), reader.select_author_by_id(i), 'year', 'conference') for i in valid]
+    results = [(i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
+                reader.select_conference_by_id(i), reader.select_url_by_id(i)) for i in valid]
     return results
 
 
@@ -124,15 +125,17 @@ def finder(userquery):
 def queryparser(query):
     (operation, searchstring, number) = query
     if operation == 1:
-        articletitle = searchstring
-        if articletitle in titlesindex:
-            fname = titlesindex[articletitle]
-        else:
+        article_id = searchstring
+        if article_id not in id_index:
             output = {'meta': 'Publication not found'}
             return output
-        output = operations[operation](fname, number)
-        output['meta'] = {}
-        output['meta']['filename'] = fname
+        output = operations[operation](article_id, number)
+        output['meta'] = {'title': reader.select_title_by_id(article_id),
+                          'author': reader.select_author_by_id(article_id),
+                          'year': reader.select_year_by_id(article_id),
+                          'conference': reader.select_conference_by_id(article_id),
+                          'url': reader.select_url_by_id(article_id)}
+        output['meta']['filename'] = article_id
         return output
     else:
         output = operations[operation](searchstring)
@@ -165,12 +168,12 @@ if __name__ == "__main__":
         res = line.strip().split('\t')
         (mod_identifier, mod_description, mod_path) = res
         model = TfidfModel.load(path.join(mod_path, 'tfidf.model'))
-        orderdata = open(path.join(mod_path, 'docorder.json'), 'r').read()
-        mod_order = json.loads(orderdata)
-        sim_index = similarities.MatrixSimilarity.load(path.join(mod_path, 'tfidf.index'))
+        dictionary = model.id2word
+        text_vectors = gzip.open(path.join(mod_path, 'tfidf_corpus.json.gz'), 'r').read()
+        text_vectors = json.loads(text_vectors.decode('utf-8'))
         print("Model", model, "from file", path.join(mod_path, 'tfidf.model'), "loaded successfully.", file=sys.stderr)
 
-    id_index = set([doc.split('.')[0] for doc in mod_order])
+    id_index = text_vectors.keys()
     authorsindex = set(reader.select_all_from_column("author_alias.alias"))
     titlesindex = {reader.select_title_by_id(ident): ident for ident in id_index}
 

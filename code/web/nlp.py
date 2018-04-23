@@ -78,8 +78,7 @@ def homepage():
             if year[0] > year[1]:
                 return render_template('rusnlp.html', error="Проверьте даты!", url=url)
         title = request.form['query'].strip()
-        # query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title}
-        query = {'f_author': author, "f_conf": conference, "f_title": title}
+        query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title}
         message = [2, query, 10]
         results = json.loads(serverquery(message))
         if len(results) == 0:
@@ -95,34 +94,26 @@ def homepage():
 def paper(fname):
     query = fname.strip()
     topn = 10
-    threshold = 0.95
     if request.method == 'POST':
-        try:
-            threshold = float(request.form['threshold'])
-        except ValueError:
-            pass
         try:
             topn = int(request.form['topn'])
         except ValueError:
             pass
-
         if not fname:
             print('Error!', file=sys.stderr)
             return render_template('rusnlp_paper.html', error="Something wrong with your query!", url=url)
 
-    message = [1, query, topn, True]
-    message = json.dumps(message, ensure_ascii=False)
-    message = message.encode('utf-8')
+    message = [1, query, topn]
     results = json.loads(serverquery(message))
     metadata = results['meta']
 
-    if 'not found' in metadata or 'unknown to the model' in results['cyberleninka_content']:
+    if 'not found' in metadata or 'unknown to the model' in results:
         return render_template('rusnlp_paper.html',
                                query=query,
                                error='Статья с таким идентификатором не найдена в модели',
                                search=True,
                                url=url,
-                               threshold=threshold, topn=topn)
+                               topn=topn)
 
     else:
         return render_template('rusnlp_paper.html',
@@ -131,7 +122,7 @@ def paper(fname):
                                metadata=metadata,
                                search=True,
                                url=url,
-                               threshold=threshold, topn=topn)
+                               topn=topn)
 
 
 @nlpsearch.route('/api/<title>/<num>', methods=['GET'])

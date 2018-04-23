@@ -16,7 +16,8 @@ def extract_lemmas(lines):
         res = line.split('\t')
         lemma = res[2].strip().lower()
         pos = res[3].strip()
-        lemmas.append(lemma + '_' + pos)
+        if pos != 'PUNCT':
+            lemmas.append(lemma + '_' + pos)
     return lemmas
 
 

@@ -6,6 +6,7 @@ import json
 import logging
 from gensim import similarities
 
+
 sys.path.insert(0, '../database/')
 from bd import DBaseRusNLP
 from db_reader import ReaderDBase
@@ -15,7 +16,6 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_withouttexts.db'),
                    path.join('..', '..', '..', 'database', 'database_metadata.json'))
 reader = ReaderDBase(bd_m)
-
 
 orderfile = sys.argv[1]
 indexfile = sys.argv[2]
