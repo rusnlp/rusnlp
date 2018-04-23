@@ -28,7 +28,7 @@ class ReaderDBase:
         :return list of strings
             Names of articles of the author
         """
-        what = "DISTINCT article.title"
+        what = "DISTINCT article.common_id"
         where = "catalogue JOIN author JOIN article JOIN author_alias ON author.id=author_alias.author_id" \
                 " AND catalogue.author_id=author.id AND catalogue.article_id=article.id"
         condition = "author_alias.alias ={}".format(self._bd.check(name))
@@ -47,10 +47,11 @@ class ReaderDBase:
             Names of articles from the all year proceedings of the selected conference (or selected conference
             of a certain year)
         """
+        conf_name = conf_name.upper() if conf_name.upper()=="AIST" or conf_name.upper()=="AINL" else "Dialogue"
         what = "DISTINCT article.common_id"
         where = "catalogue JOIN conference JOIN article ON catalogue.conference_id=conference.id" \
                 " AND catalogue.article_id=article.id"
-        condition = "conference.conference='{}'".format(conf_name.upper())
+        condition = "conference.conference='{}'".format(conf_name)
         if year:
             condition += "AND conference.year={}".format(str(year))
         return [res[0] for res in self._bd.select(what, where, condition)]
@@ -64,11 +65,17 @@ class ReaderDBase:
         :return: list of strings
             Names of articles where the mentioned affiliation figures
         """
-        what = "DISTINCT article.title"
+        what = "DISTINCT article.common_id"
         where = "catalogue JOIN author JOIN article ON article.id=article_id AND author.id=author_id"
         condition = "author.affiliation = '{}'".format(affiliation)
         return [res[0] for res in self._bd.select(what, where, condition)]
     
+    def select_articles_from_years(self, begin, end):
+        what = "DISTINCT article.common_id"
+        where = "catalogue JOIN conference JOIN article ON article.id=article_id AND conference.id=conference_id"
+        condition = "year BETWEEN {} and {}".format(begin, end)
+        return [res[0] for res in self._bd.select(what, where, condition)]
+
     def select_author_by_affiliation(self, affiliation):
         """
         Get authors by the affiliation.
@@ -106,8 +113,8 @@ class ReaderDBase:
         :return: string
             Return a list of authors of the paper associated with the specified identifier
         """
-        what = '''DISTINCT name'''
-        where = '''author JOIN catalogue JOIN article ON author.id=author_id AND article_id=article.id'''
+        what = '''DISTINCT alias'''
+        where = '''author JOIN catalogue JOIN article JOIN author_alias ON author.id=catalogue.author_id AND article_id=article.id AND author.id=author_alias.author_id'''
         condition = '''common_id="{}"'''.format(str(article_id))
         return [res[0] for res in self._bd.select(what, where, condition)]
         
@@ -131,7 +138,28 @@ class ReaderDBase:
         else:
             authors = ""
         return 'Title: "{}" Authors: {}'.format(title, authors)
-    
+
+    def select_url_by_id(self, article_id):
+        what = '''DISTINCT url'''
+        where = '''article'''
+        condition = '''common_id="{}"'''.format(str(article_id))
+        return self._bd.select(what, where, condition)[0][0]
+
+    def select_year_by_id(self, article_id):
+        return self.select_by_id("year", article_id)
+
+    def select_conference_by_id(self, article_id):
+        return self.select_by_id("conference", article_id)
+
+    def select_by_id(self, what, article_id):
+        what = '''DISTINCT conference.{}'''.format(what)
+        where = '''article INNER JOIN catalogue INNER JOIN conference ON article.id=article_id AND conference_id=conference.id'''
+        condition = '''common_id="{}"'''.format(str(article_id))
+        return self._bd.select(what, where, condition)[0][0]
+
+    def select_affiliation_by_id(self, article_id):
+        return self.select_all_from_column('''affiliation_alias.alias''', '''common_id="{}"'''.format(str(article_id)))
+
     def select_all_from(self, where):
         """
         Get all data from the database.
@@ -166,9 +194,9 @@ class ReaderDBase:
         :return: None
         """
         df = DataFrame(index=np.arange(0, 6), columns=['parameter', 'count'])
-        df.loc[0]=('Overall amount of papers', self._bd.select_max('article'))
-        df.loc[1]=('Amount of unique authors', self._bd.select_max('author_alias'))
-        df.loc[2]=('Amount of unique affiliations', self._bd.select_max('affiliation_alias'))
+        df.loc[0]=('Overall amount of papers', self.select_count('article'))
+        df.loc[1]=('Amount of unique authors', self.select_count('author_alias'))
+        df.loc[2]=('Amount of unique affiliations', self.select_count('affiliation_alias'))
         df.loc[3]=('Amount of Russian papers', self.count_articles_with_lang('ru'))
         df.loc[4]=('Amount of English papers', self.count_articles_with_lang('en'))
         df.loc[5]=('Corpus size in tokens',  7515811)
@@ -187,6 +215,20 @@ class ReaderDBase:
         where = '''article'''
         condition = '''language="''' + language + '''"'''
         result = self._bd.select(what, where, condition)
+        return result[0][0]
+
+    def select_count(self, where):
+        """
+        Get amount of articles on the specified language.
+
+        :param language: string
+            Language of an article (two options: 'ru' and 'en')
+        :return: int
+            Amount of the articles with the specified language
+        """
+        what = '''COUNT(id) '''
+        where = '''{}'''.format(where)
+        result = self._bd.select(what, where)
         return result[0][0]
     
     def count_corpus_size(self):

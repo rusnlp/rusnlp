@@ -383,3 +383,29 @@ class WriterDBase:
         self.db.cursor.execute("ALTER TABLE {} RENAME TO {}".format(middle_name,
                                table))
         self.db.conn.commit()
+	
+    def delete_rows_from_article_by_common_id(self, values_to_delete):
+        for i in values_to_delete:
+            self.db.cursor.execute('SELECT id FROM article WHERE common_id="{}"'.format(i))
+            id_ = self.db.cursor.fetchall()
+            if len(id_)==1:
+                self.db.cursor.execute('SELECT author_id FROM catalogue WHERE article_id="{}"'.format(id_[0][0]))
+                authors = [i[0] for i in self.db.cursor.fetchall()]
+                for author in authors:
+                    self.db.cursor.execute("SELECT COUNT(id) FROM author_alias WHERE author_id="+str(author))
+                    count = self.db.cursor.fetchall()[0][0]
+                    if count == 1:
+                        self.db.cursor.execute("DELETE FROM author_alias WHERE author_id={}".format(author))
+                        self.db.cursor.execute("DELETE FROM author WHERE id={}".format(author))
+                    self.db.cursor.execute("SELECT COUNT(id) FROM affiliation_alias WHERE author_id="+str(author))
+                    count_a = self.db.cursor.fetchall()[0][0]
+                    if count == 1:
+                        self.db.cursor.execute("DELETE FROM affiliation_alias WHERE author_id={}".format(author))
+                    self.db.cursor.execute("DELETE FROM catalogue WHERE article_id={}".format(id_[0][0]))
+                    self.db.cursor.execute("DELETE FROM article WHERE id={}".format(id_[0][0]))
+                self.db.conn.isolation_level = None
+                self.db.cursor.execute('VACUUM')
+                self.db.conn.isolation_level = ''
+                self.db.conn.commit()
+        else:
+            print("no article "+i)
