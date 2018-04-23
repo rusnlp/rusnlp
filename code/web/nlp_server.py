@@ -13,8 +13,6 @@ from os import path
 from _thread import *
 from gensim import similarities
 from gensim.models import TfidfModel
-
-sys.path.insert(0, '../database/')
 from bd import DBaseRusNLP
 from db_reader import ReaderDBase
 
@@ -156,8 +154,8 @@ if __name__ == "__main__":
     databasefile = config.get('Files and directories', 'database')
     metadatafile = config.get('Files and directories', 'database_meta')
 
-    bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_withouttexts.db'),
-                       path.join('..', '..', '..', 'database', 'database_metadata.json'))
+    bd_m = DBaseRusNLP(path.join('data', 'rus_nlp_withouttexts.db'),
+                       path.join('data', 'database_metadata.json'))
     reader = ReaderDBase(bd_m)
 
     # Loading model

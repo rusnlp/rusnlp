@@ -66,7 +66,6 @@ nlpsearch = Blueprint('nlpsearch', __name__, template_folder='templates')
 def homepage():
     if request.method == 'POST':
         conference = request.form.getlist('conf_query')
-        print(conference)
         year_min = request.form['year_query_min']
         if year_min:
             year_min = int(year_min)
