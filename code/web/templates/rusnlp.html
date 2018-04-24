@@ -60,12 +60,16 @@
         {% else %}
         <input type="text" class="tt-query" id="author_query" name="author_query" placeholder="Kibrik*" maxlength=50 size=10>
         {% endif %}
+        <p style="margin-top:15px;">Ключевые слова через пробел:</p>
+    {% if keywords %}
+       	   <input type="text" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500 size=80>
+        {% else %}
+               <input type="text" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
+    {% endif %}
 
     <p style="margin-top:15px;">Заголовок статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
     {% if query %}
        	   <input type="text" class="tt-query" id="query" name="query" value="{{ query }}" maxlength=500 size=80>
-        {% elif cyberleninka and not query %}
-                <input type="text" class="tt-query" id="query" name="query" maxlength=500 size=80>
         {% else %}
                <input type="text" class="tt-query" id="query" name="query" placeholder="WebVectors*" maxlength=500>
     {% endif %}

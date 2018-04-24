@@ -46,12 +46,13 @@ def clientthread(conn, addr):
 
 
 # Vector functions
-def find_nearest(q, number):
+def find_nearest(q_vector, q, number, restrict=None):
     results = {}
-    q_vector = text_vectors[q]
-    similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q}
+    if restrict:
+        similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict}
+    else:
+        similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q}
     neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
-
     results['neighbors'] = [
         (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
          reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i),
@@ -100,27 +101,31 @@ def f_title(q):
     return results
 
 
-def search(sets):
+def search(sets, number, keywords=None):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
-    results = [(i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
-                reader.select_conference_by_id(i), reader.select_url_by_id(i),
-                reader.select_affiliation_by_id(i)) for i in valid]
+    if keywords:
+        q_vector = model[dictionary.doc2bow(keywords)]
+        results = find_nearest(q_vector, keywords, number, restrict=valid)
+    else:
+        results = [(i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
+                    reader.select_conference_by_id(i), reader.select_url_by_id(i),
+                    reader.select_affiliation_by_id(i)) for i in valid]
     return results
 
 
-def finder(userquery):
+def finder(userquery, number):
     answers = []
     if len(userquery) == 0:
         return None
     else:
         for field in userquery:
-            if userquery[field] == '' or field == 'threshold':
+            if userquery[field] == '' or field == 'threshold' or field == 'keywords':
                 continue
             oper = eval(field)
             answer = oper(userquery[field])
             answers.append(answer)
-    results = search(answers)
+    results = search(answers, number, keywords=userquery['keywords'])
     return results
 
 
@@ -131,7 +136,8 @@ def queryparser(query):
         if article_id not in id_index:
             output = {'meta': 'Publication not found'}
             return output
-        output = operations[operation](article_id, number)
+        q_vector = text_vectors[article_id]
+        output = operations[operation](q_vector, article_id, number)
         output['meta'] = {'title': reader.select_title_by_id(article_id),
                           'author': reader.select_author_by_id(article_id),
                           'year': reader.select_year_by_id(article_id),
@@ -141,7 +147,7 @@ def queryparser(query):
         output['meta']['filename'] = article_id
         return output
     else:
-        output = operations[operation](searchstring)
+        output = operations[operation](searchstring, number)
         return output
 
 

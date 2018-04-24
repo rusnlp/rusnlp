@@ -72,6 +72,7 @@ def homepage(conference, year):
         else:
             conference = [conference]
         if request.method == 'POST':
+            keywords = request.form['keywords'].strip().split()
             author = request.form['author_query'].strip()
             title = request.form['query'].strip()
             year_min = request.form['year_query_min']
@@ -81,6 +82,7 @@ def homepage(conference, year):
             if year_max:
                 year_max = int(year_max)
         else:
+            keywords = ''
             author = ''
             title = ''
             year_min = year
@@ -91,15 +93,15 @@ def homepage(conference, year):
                 return render_template('rusnlp.html', error="Проверьте даты!", url=url)
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
-        query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title}
+        query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title, 'keywords': keywords}
         message = [2, query, 10]
         results = json.loads(serverquery(message))
         if len(results) == 0:
             return render_template('rusnlp.html', conf_query=conference, year_query=year, author_query=author,
                                    error='Поиск не дал результатов.', search=True, url=url,
-                                   query=title)
+                                   query=title, keywords=keywords)
         return render_template('rusnlp.html', result=results, conf_query=conference, author_query=author,
-                               year_query=year, search=True, url=url, query=title)
+                               year_query=year, search=True, url=url, query=title, keywords=keywords)
     return render_template('rusnlp.html', search=True, url=url)
 
 
