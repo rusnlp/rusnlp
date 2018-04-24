@@ -93,15 +93,20 @@ def homepage(conference, year):
                 return render_template('rusnlp.html', error="Проверьте даты!", url=url)
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
-        query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title, 'keywords': keywords}
+        if keywords:
+            tagged_keywords = [word.lower()+'_PROPN' if word.istitle() else word.lower()+'_NOUN' for word
+                    in keywords]
+        query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title,
+                'keywords': tagged_keywords}
         message = [2, query, 10]
         results = json.loads(serverquery(message))
         if len(results) == 0:
             return render_template('rusnlp.html', conf_query=conference, year_query=year, author_query=author,
                                    error='Поиск не дал результатов.', search=True, url=url,
-                                   query=title, keywords=keywords)
+                                   query=title, keywords=' '.join(keywords))
         return render_template('rusnlp.html', result=results, conf_query=conference, author_query=author,
-                               year_query=year, search=True, url=url, query=title, keywords=keywords)
+                               year_query=year, search=True, url=url, query=title,
+                               keywords=' '.join(keywords))
     return render_template('rusnlp.html', search=True, url=url)
 
 

@@ -47,13 +47,14 @@ def clientthread(conn, addr):
 
 # Vector functions
 def find_nearest(q_vector, q, number, restrict=None):
-    results = {}
     if restrict:
-        similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict}
+        similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict if cossim(q_vector,
+            text_vectors[d]) > 0.01}
     else:
-        similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q}
+        similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q
+                and cossim(q_vector, text_vectors[d]) > 0.01}
     neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
-    results['neighbors'] = [
+    results = [
         (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
          reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i),
          similarities[i]) for i in neighbors]
@@ -137,7 +138,8 @@ def queryparser(query):
             output = {'meta': 'Publication not found'}
             return output
         q_vector = text_vectors[article_id]
-        output = operations[operation](q_vector, article_id, number)
+        output = {}
+        output['neighbors'] = operations[operation](q_vector, article_id, number)
         output['meta'] = {'title': reader.select_title_by_id(article_id),
                           'author': reader.select_author_by_id(article_id),
                           'year': reader.select_year_by_id(article_id),
