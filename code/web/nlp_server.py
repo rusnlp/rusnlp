@@ -44,6 +44,7 @@ def clientthread(conn, addr):
     # came out of loop
     conn.close()
 
+
 # Vector functions
 def find_nearest(q, number):
     results = {}
@@ -53,7 +54,8 @@ def find_nearest(q, number):
 
     results['neighbors'] = [
         (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
-         reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i), similarities[i]) for i in neighbors]
+         reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i),
+         similarities[i]) for i in neighbors]
     return results
 
 
