@@ -58,7 +58,7 @@
         {% if author_query %}
         <input type="text" class="tt-query" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10>
         {% else %}
-        <input type="text" class="tt-query" id="author_query" name="author_query" placeholder="*Иванов?" maxlength=50 size=10>
+        <input type="text" class="tt-query" id="author_query" name="author_query" placeholder="Kibrik*" maxlength=50 size=10>
         {% endif %}
 
     <p style="margin-top:15px;">Заголовок статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
@@ -79,17 +79,23 @@
 
 
     {% if error %}
-        <p> <strong>{{ error }}</strong></p>
+        <h2> <strong>{{ error }}</strong></h2>
     {% endif %}
      {% if result %}
-    <h3>Результаты поиска:</h3>
+    <h3>Вот что мы нашли для вас</h3>
     <div>
-        <h4>Кликните по статье, чтобы увидеть похожие публикации</h4>
+        <h4>Кликните по заголовку статьи, чтобы увидеть похожие публикации</h4>
         <table class="sortable table table-hover">
         <tr style="border-bottom:1px solid black;"><th style="text-align: left;">Заголовок</th> <th style="text-align:center;">Автор</th> <th style="text-align:center;">Аффилиация</th> <th  style="text-align:center;">Конференция</th> <th>Год</th></tr>
 	{% for res in result if not "No results" in res and not 'is unknown' in res  %}
     	    <tr style="border-bottom:1px solid black;">
-    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a> (<a target="_blank" href="{{ res[5] }}" style="color: green;">URL</a>)</td>  <td style="text-align:center;">{{ res[2] | join(', ') }}</td> <td style="text-align:center;">{{ res[6] | join('; ') }}</td> <td>{{ res[4] }}</td> <td>{{ res[3] }}</td></tr>
+    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы найти похожие публикации" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a>
+    	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
+    	    <td style="text-align:center;">{{ res[2] | join(', ') }}</td>
+    	    <td style="text-align:center;">{{ res[6] | join('; ') }}</td>
+    	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a></td>
+    	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a></td>
+    	    </tr>
         {% endfor %}
         </table>
     </div>

@@ -56,10 +56,10 @@
 				{% for res in result[model] if not "No results" in res and not 'is unknown' in res  %}
 					<tr style="border-bottom:1px solid black;">
 						<td>
-							<a style="font-size:larger;" href="{{ url }}publ/{{ res[0] }}">
+							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы найти похожие публикации" href="{{ url }}publ/{{ res[0] }}">
 								{{ res[1] }}
 							</a> 
-							(<a target="_blank" href="{{ res[5] }}" style="color:green;">URL</a>)
+							(<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color:green;">URL</a>)
 						</td> 
 						<td>
 							{{ res[2] | join(', ') }}
@@ -68,10 +68,10 @@
 							{{ res[6] | join('; ') }}
 						</td>
 						<td>
-							{{ res[4] }}
+							<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a>
 						</td> 
 						<td>
-							{{ res[3] }}
+							<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a>
 						</td> 
 						<td style="text-align:right;">
 							{{ "{0:.4f}".format(res[-1]) }}

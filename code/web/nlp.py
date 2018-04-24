@@ -62,22 +62,35 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 nlpsearch = Blueprint('nlpsearch', __name__, template_folder='templates')
 
 
-@nlpsearch.route('/', methods=['GET', 'POST'])
-def homepage():
-    if request.method == 'POST':
-        conference = request.form.getlist('conf_query')
-        year_min = request.form['year_query_min']
-        if year_min:
-            year_min = int(year_min)
-        year_max = request.form['year_query_max']
-        if year_max:
-            year_max = int(year_max)
+@nlpsearch.route('/', defaults={'conference': '', 'year': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/conf/<conference>', defaults={'year': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/year/<year>', defaults={'conference': ''}, methods=['GET', 'POST'])
+def homepage(conference, year):
+    if conference or year or request.method == 'POST':
+        if not conference:
+            conference = request.form.getlist('conf_query')
+        else:
+            conference = [conference]
+        if request.method == 'POST':
+            author = request.form['author_query'].strip()
+            title = request.form['query'].strip()
+            year_min = request.form['year_query_min']
+            if year_min:
+                year_min = int(year_min)
+            year_max = request.form['year_query_max']
+            if year_max:
+                year_max = int(year_max)
+        else:
+            author = ''
+            title = ''
+            year_min = year
+            year_max = year
         year = (year_min, year_max)
-        author = request.form['author_query'].strip()
         if year[0] and year[1]:
             if year[0] > year[1]:
                 return render_template('rusnlp.html', error="Проверьте даты!", url=url)
-        title = request.form['query'].strip()
+        if len(conference) == 0:
+            conference = ["Dialogue", "AIST", "AINL"]
         query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title}
         message = [2, query, 10]
         results = json.loads(serverquery(message))
