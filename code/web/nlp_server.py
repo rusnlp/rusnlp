@@ -44,7 +44,6 @@ def clientthread(conn, addr):
     # came out of loop
     conn.close()
 
-
 # Vector functions
 def find_nearest(q, number):
     results = {}
@@ -54,7 +53,7 @@ def find_nearest(q, number):
 
     results['neighbors'] = [
         (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
-         reader.select_conference_by_id(i), reader.select_url_by_id(i), similarities[i]) for i in neighbors]
+         reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i), similarities[i]) for i in neighbors]
     return results
 
 
@@ -103,7 +102,8 @@ def search(sets):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
     results = [(i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
-                reader.select_conference_by_id(i), reader.select_url_by_id(i)) for i in valid]
+                reader.select_conference_by_id(i), reader.select_url_by_id(i),
+                reader.select_affiliation_by_id(i)) for i in valid]
     return results
 
 
@@ -134,6 +134,7 @@ def queryparser(query):
                           'author': reader.select_author_by_id(article_id),
                           'year': reader.select_year_by_id(article_id),
                           'conference': reader.select_conference_by_id(article_id),
+                          'affiliation': reader.select_affiliation_by_id(article_id),
                           'url': reader.select_url_by_id(article_id)}
         output['meta']['filename'] = article_id
         return output

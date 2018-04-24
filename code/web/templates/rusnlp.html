@@ -86,10 +86,10 @@
     <div>
         <h4>Кликните по статье, чтобы увидеть похожие публикации</h4>
         <table class="sortable table table-hover">
-        <tr style="border-bottom:1px solid black;"><th style="text-align: left;">Заголовок</th> <th style="text-align:center;">Автор</th> <th  style="text-align:center;">Конференция</th> <th>Год</th></tr>
+        <tr style="border-bottom:1px solid black;"><th style="text-align: left;">Заголовок</th> <th style="text-align:center;">Автор</th> <th style="text-align:center;">Аффилиация</th> <th  style="text-align:center;">Конференция</th> <th>Год</th></tr>
 	{% for res in result if not "No results" in res and not 'is unknown' in res  %}
     	    <tr style="border-bottom:1px solid black;">
-    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a> (<a target="_blank" href="{{ res[5] }}" style="color: green;">URL</a>)</td>  <td style="text-align:center;">{{ res[2] | join(', ') }}</td> <td>{{ res[4] }}</td> <td>{{ res[3] }}</td></tr>
+    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a> (<a target="_blank" href="{{ res[5] }}" style="color: green;">URL</a>)</td>  <td style="text-align:center;">{{ res[2] | join(', ') }}</td> <td style="text-align:center;">{{ res[6] | join('; ') }}</td> <td>{{ res[4] }}</td> <td>{{ res[3] }}</td></tr>
         {% endfor %}
         </table>
     </div>

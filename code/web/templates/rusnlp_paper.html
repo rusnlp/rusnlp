@@ -21,7 +21,10 @@
 	{% if result %}
 		
 		<h3>«{{ metadata['title'] | capitalize }}»</h3>
-		<p><i>{{ metadata['author'] | join(', ') }}; {{metadata['conference']}}; {{metadata['year']}}, <a target="_blank" href="{{ metadata['url']}}">Оригинал статьи</a></i></p>
+		<p><i>{{ metadata['author'] | join(', ') }};</i></p>
+		<p><i>{{ metadata['affiliation'] | join('; ') }};</i></p>
+		<p><i>{{metadata['conference']}}; {{metadata['year']}};</i></p>
+		<p><i><a target="_blank" href="{{ metadata['url']}}">Оригинал статьи</a></i></p>
       <h3>Семантически близкие публикации:</h3>
         <div id="queryform">
    	<form id="inputform" action="#" method=post>
@@ -44,8 +47,10 @@
 				<table class="sortable table table-hover">
 					<tr style="border-bottom:1px solid black;">
 						<th style="text-align:center;">Заголовок</th>
-						<th>Год</th> 
 						<th style="text-align:center;">Автор</th>
+						<th style="text-align:center;">Аффилиация</th>
+						<th>Конференция</th> 
+						<th>Год</th>
 						<th>Близость</th>
 					</tr>
 				{% for res in result[model] if not "No results" in res and not 'is unknown' in res  %}
@@ -57,11 +62,17 @@
 							(<a target="_blank" href="{{ res[5] }}" style="color:green;">URL</a>)
 						</td> 
 						<td>
-							{{ res[3] }}
-						</td> 
-						<td>
 							{{ res[2] | join(', ') }}
 						</td>
+						<td>
+							{{ res[6] | join('; ') }}
+						</td>
+						<td>
+							{{ res[4] }}
+						</td> 
+						<td>
+							{{ res[3] }}
+						</td> 
 						<td style="text-align:right;">
 							{{ "{0:.4f}".format(res[-1]) }}
 						</td>
