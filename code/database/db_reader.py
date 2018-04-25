@@ -160,7 +160,7 @@ class ReaderDBase:
     def select_affiliation_by_id(self, article_id):
         return self.select_all_from_column('''affiliation_alias.alias''', '''common_id="{}"'''.format(str(article_id)))
 
-    def select_all_from(self, where):
+    def select_all_from(self, what, where):
         """
         Get all data from the database.
 
@@ -169,7 +169,7 @@ class ReaderDBase:
         :return: list of strings
             All rows of the database.
         """
-        return self._bd.select("*", where)	
+        return self._bd.select(what, where)	
 
     def select_all_from_column(self, column, condition=None):
         """
@@ -186,6 +186,16 @@ class ReaderDBase:
                 " author.id=author_alias.author_id AND catalogue.conference_id=conference.id AND " \
                 "catalogue.article_id=article.id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
         return [i[0] for i in self._bd.select('DISTINCT '+ column, where, condition)]
+
+    def select_all_common_ids(self):
+        return [i[0] for i in self.select_all_from("DISTINCT common_id", "article")]
+
+
+    def select_all_authors(self):
+        return [i[0] for i in self.select_all_from("DISTINCT alias", "author_alias")]
+
+    def select_all_affiliations(self):
+        return [i[0] for i in self.select_all_from("DISTINCT alias", "affiliation_alias")]
 
     def update_statistics(self):
         """
@@ -226,7 +236,7 @@ class ReaderDBase:
         :return: int
             Amount of the articles with the specified language
         """
-        what = '''COUNT(id) '''
+        what = '''COUNT(DISTINCT id) '''
         where = '''{}'''.format(where)
         result = self._bd.select(what, where)
         return result[0][0]
