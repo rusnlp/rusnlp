@@ -62,19 +62,17 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 nlpsearch = Blueprint('nlpsearch', __name__, template_folder='templates')
 
 
-@nlpsearch.route('/', defaults={'conference': '', 'year': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/conf/<conference>', defaults={'year': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/year/<year>', defaults={'conference': ''}, methods=['GET', 'POST'])
-def homepage(conference, year):
-    if conference or year or request.method == 'POST':
-        if not conference:
-            conference = request.form.getlist('conf_query')
-        else:
-            conference = [conference]
+@nlpsearch.route('/', defaults={'conference': '', 'year': '', 'author': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/conf/<conference>', defaults={'year': '', 'author': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/year/<year>', defaults={'conference': '', 'author':''}, methods=['GET', 'POST'])
+@nlpsearch.route('/author/<author>', defaults={'conference': '', 'year': ''}, methods=['GET', 'POST'])
+def homepage(conference, year, author):
+    if conference or year or author or request.method == 'POST':
         if request.method == 'POST':
             keywords = request.form['keywords'].strip().split()
             author = request.form['author_query'].strip()
             title = request.form['query'].strip()
+            conference = request.form.getlist('conf_query')
             year_min = request.form['year_query_min']
             if year_min:
                 year_min = int(year_min)
@@ -83,8 +81,9 @@ def homepage(conference, year):
                 year_max = int(year_max)
         else:
             keywords = ''
-            author = ''
             title = ''
+            if conference:
+                conference = [conference]
             year_min = year
             year_max = year
         year = (year_min, year_max)
@@ -96,6 +95,8 @@ def homepage(conference, year):
         if keywords:
             tagged_keywords = [word.lower()+'_PROPN' if word.istitle() else word.lower()+'_NOUN' for word
                     in keywords]
+        else:
+            tagged_keywords = keywords
         query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title,
                 'keywords': tagged_keywords}
         message = [2, query, 10]
@@ -144,9 +145,18 @@ def paper(fname):
                                url=url,
                                topn=topn)
 
+@nlpsearch.route('/topical/')
+def topical_page():
+    return render_template('topical.html', url=url)
+
+
+@nlpsearch.route('/about/')
+def about_page():
+    return render_template('about.html', url=url)
+
 
 @nlpsearch.route('/api/<title>/<num>', methods=['GET'])
-def dissernet_api(title, num):
+def nlp_api(title, num):
     mime = 'application/json'
     query = title.strip().lower().replace('__', ' ')
     number = int(num)

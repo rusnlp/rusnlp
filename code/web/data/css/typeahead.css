@@ -2,7 +2,7 @@
 .tt-query,
 .tt-input,
 .tt-hint {
-  width: 100%;
+  width: 400px;
   max-width: 800px;
   height: 40px;
   padding: 2px 12px;

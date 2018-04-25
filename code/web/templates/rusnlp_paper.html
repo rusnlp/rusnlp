@@ -21,9 +21,13 @@
 	{% if result %}
 		
 		<h3>«{{ metadata['title'] }}»</h3>
-		<p><i>{{ metadata['author'] | join(', ') }};</i></p>
-		<p><i>{{ metadata['affiliation'] | join('; ') }};</i></p>
-		<p><i>{{metadata['conference']}}; {{metadata['year']}};</i></p>
+		<p><i>
+		{% for author in metadata['author'] %}
+            <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author }}</a>;
+            {% endfor %}</i></p>
+		<p><i>{{ metadata['affiliation'] }};</i></p>
+		<p><i><a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>;
+		<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
 		<p><i><a target="_blank" href="{{ metadata['url']}}">Оригинал статьи</a></i></p>
       <h3>Семантически близкие публикации:</h3>
         <div id="queryform">
@@ -62,10 +66,17 @@
 							(<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color:green;">URL</a>)
 						</td> 
 						<td>
-							{{ res[2] | join(', ') }}
+						{% for author in res[2] %}
+        					<a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank"
+        					href="{{ url }}author/{{ author }}">{{ author }}</a>
+        					<br/>
+				                {% endfor %}
+
+						
+						
 						</td>
 						<td>
-							{{ res[6] | join('; ') }}
+							{{ res[6] }}
 						</td>
 						<td>
 							<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a>

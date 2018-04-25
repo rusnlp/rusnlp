@@ -185,7 +185,7 @@ if __name__ == "__main__":
         print("Model", model, "from file", path.join(mod_path, 'tfidf.model'), "loaded successfully.", file=sys.stderr)
 
     id_index = text_vectors.keys()
-    authorsindex = set(reader.select_all_from_column("author_alias.alias"))
+    authorsindex = set(reader.select_all_authors())
     titlesindex = {reader.select_title_by_id(ident): ident for ident in id_index}
 
     # Bind socket to local host and port

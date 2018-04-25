@@ -1,18 +1,25 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-     <title>RusNLP</title>
+     <title>RusNLP: поиск</title>
 
 {%- endblock title %}
 
 {% block content %}
     <div class="row" style="text-align:center;">
-        <h1>RusNLP: cемантический поиск по публикациям на российских конференциях</h1>
+        <h1>RusNLP: cемантический поиск по научным статьям</h1>
           <p class="lead">компьютерная лингвистика и natural language processing</p>
 	{% if search %}
         <div id="queryform">
             <form id="inputform" action="#" method=post>
               <div class="form-group">
+              	<p style="margin-top:15px;">Ключевые слова через пробел (пишите имена собственные, например, названия языков, с большой буквы):</p>
+    {% if keywords %}
+       	   <input type="text" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500 size=80>
+        {% else %}
+               <input type="text" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
+    {% endif %}
+
         <fieldset style="width:auto; text-align:center;">
                 <p style="margin-top:15px;">Выберите одну или несколько конференций:</p>
                  <select name="conf_query" multiple class="form-control" style="text-align:center;margin-right:auto;margin-left:auto;max-width:400px;">
@@ -40,32 +47,26 @@
                  </select>
         	</fieldset>
 
-      
+  
       <p style="margin-top:15px;">Диапазон дат:</p>
         {% if year_query %}
         <i>От:</i>
-        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2005" max="2020" size=4>
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2000" max="2020" size=4>
         <i>До:</i>
-        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2005" max="2020" size=4>
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2000" max="2020" size=4>
         {% else %}
         <i>От:</i>
-        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="2012" min="2005" max="2020" size=4>
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="2002" min="2000" max="2020" size=4>
         <i>До:</i>
-        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2018" min="2005" max="2020" size=4>
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2018" min="2000" max="2020" size=4>
         {% endif %}
-      
-      <p style="margin-top:15px;">ФИО автора (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
+ 
+      <p style="margin-top:15px;">Автор статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
         {% if author_query %}
-        <input type="text" class="tt-query" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10>
+        <input type="text" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10>
         {% else %}
-        <input type="text" class="tt-query" id="author_query" name="author_query" placeholder="Kibrik*" maxlength=50 size=10>
+        <input type="text" class="typeahead" id="author_query" name="author_query" placeholder="Kibrik*" maxlength=50 size=10>
         {% endif %}
-        <p style="margin-top:15px;">Ключевые слова через пробел:</p>
-    {% if keywords %}
-       	   <input type="text" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500 size=80>
-        {% else %}
-               <input type="text" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
-    {% endif %}
 
     <p style="margin-top:15px;">Заголовок статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
     {% if query %}
@@ -105,8 +106,13 @@
     	    <tr style="border-bottom:1px solid black;">
     	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы найти похожие публикации" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a>
     	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
-    	    <td style="text-align:center;">{{ res[2] | join(', ') }}</td>
-    	    <td style="text-align:center;">{{ res[6] | join('; ') }}</td>
+    	    <td style="text-align:center;">
+    	    {% for author in res[2] %}
+    	    <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author }}</a>
+    	    <br/>
+    	    {% endfor %}
+    	    </td>
+    	    <td style="text-align:center;">{{ res[6] }}</td>
     	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a></td>
     	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a></td>
     	    {% if keywords %}
