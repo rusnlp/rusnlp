@@ -158,7 +158,13 @@ class ReaderDBase:
         return self._bd.select(what, where, condition)[0][0]
 
     def select_affiliation_by_id(self, article_id):
-        return self.select_all_from_column('''affiliation_alias.alias''', '''common_id="{}"'''.format(str(article_id)))
+        where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
+        cluster = list(set([i[0] for i in self._bd.select("cluster", where, '''common_id="{}"'''.format(article_id))]))
+        if len(cluster) == 1:
+            return self.select_affiliation_by_cluster(cluster[0])
+        else:
+            where = "catalogue JOIN author JOIN article ON article.id=article_id AND author.id=author_id" 
+            return sorted([i[0] for i in self._bd.select('''affiliation''', where, '''common_id="{}"'''.format(article_id))], key=lambda x:len(x))[0]
 
     def select_all_from(self, what, where):
         """
@@ -195,7 +201,15 @@ class ReaderDBase:
         return [i[0] for i in self.select_all_from("DISTINCT alias", "author_alias")]
 
     def select_all_affiliations(self):
-        return [i[0] for i in self.select_all_from("DISTINCT alias", "affiliation_alias")]
+        clusters = [i[0] for i in self.select_all_from("DISTINCT cluster", "affiliation_alias")]
+        cluster_names = []
+        for cluster in clusters:
+            cluster_names.append(self.select_affiliation_by_cluster(cluster))
+        return cluster_names
+
+    def select_affiliation_by_cluster(self, cluster_id):
+        all_names = [i[0] for i in self._bd.select("alias", "affiliation_alias", "cluster={}".format(cluster_id))]
+        return sorted(all_names, key=lambda x:len(x))[0]
 
     def update_statistics(self):
         """
@@ -205,8 +219,8 @@ class ReaderDBase:
         """
         df = DataFrame(index=np.arange(0, 6), columns=['parameter', 'count'])
         df.loc[0]=('Overall amount of papers', self.select_count('article'))
-        df.loc[1]=('Amount of unique authors', self.select_count('author_alias'))
-        df.loc[2]=('Amount of unique affiliations', self.select_count('affiliation_alias'))
+        df.loc[1]=('Amount of unique authors', len(self.select_all_authors()))
+        df.loc[2]=('Amount of unique affiliations', len(self.select_all_affiliations()))
         df.loc[3]=('Amount of Russian papers', self.count_articles_with_lang('ru'))
         df.loc[4]=('Amount of English papers', self.count_articles_with_lang('en'))
         df.loc[5]=('Corpus size in tokens',  7515811)
