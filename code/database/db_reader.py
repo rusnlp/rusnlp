@@ -157,6 +157,12 @@ class ReaderDBase:
         condition = '''common_id="{}"'''.format(str(article_id))
         return self._bd.select(what, where, condition)[0][0]
 
+    def select_abstract_by_id(self, article_id):
+        what = '''abstract'''
+        where = '''article'''
+        condition = '''common_id = "{}"'''.format(article_id)
+        return self._bd.select(what, where, condition)[0][0]
+
     def select_affiliation_by_id(self, article_id):
         where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
         cluster = list(set([i[0] for i in self._bd.select("cluster", where, '''common_id="{}"'''.format(article_id))]))
