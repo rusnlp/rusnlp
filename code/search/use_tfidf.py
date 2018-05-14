@@ -17,6 +17,7 @@ bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_withouttexts
                    path.join('..', '..', '..', 'database', 'database_metadata.json'))
 reader = ReaderDBase(bd_m)
 
+
 orderfile = sys.argv[1]
 indexfile = sys.argv[2]
 testdir = sys.argv[3]
