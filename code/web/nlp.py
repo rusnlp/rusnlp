@@ -64,7 +64,7 @@ nlpsearch = Blueprint('nlpsearch', __name__, template_folder='templates')
 
 @nlpsearch.route('/', defaults={'conference': '', 'year': '', 'author': ''}, methods=['GET', 'POST'])
 @nlpsearch.route('/conf/<conference>', defaults={'year': '', 'author': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/year/<year>', defaults={'conference': '', 'author':''}, methods=['GET', 'POST'])
+@nlpsearch.route('/year/<year>', defaults={'conference': '', 'author': ''}, methods=['GET', 'POST'])
 @nlpsearch.route('/author/<author>', defaults={'conference': '', 'year': ''}, methods=['GET', 'POST'])
 def homepage(conference, year, author):
     if conference or year or author or request.method == 'POST':
@@ -93,20 +93,20 @@ def homepage(conference, year, author):
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
         if keywords:
-            tagged_keywords = [word.lower()+'_PROPN' if word.istitle() else word.lower()+'_NOUN' for word
-                    in keywords]
+            tagged_keywords = \
+                [word.lower() + '_PROPN' if word.istitle() else word.lower() + '_NOUN' for word in keywords]
         else:
             tagged_keywords = keywords
-        query = {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title,
-                'keywords': tagged_keywords}
+        query = \
+            {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title, 'keywords': tagged_keywords}
         message = [2, query, 10]
         results = json.loads(serverquery(message))
         if len(results) == 0:
             return render_template('rusnlp.html', conf_query=conference, year_query=year, author_query=author,
                                    error='Поиск не дал результатов.', search=True, url=url,
                                    query=title, keywords=' '.join(keywords))
-        return render_template('rusnlp.html', result=results, conf_query=conference, author_query=author,
-                               year_query=year, search=True, url=url, query=title,
+        return render_template('rusnlp.html', result=results['neighbors'], conf_query=conference, author_query=author,
+                               year_query=year, search=True, url=url, query=title, topics=results['topics'],
                                keywords=' '.join(keywords))
     return render_template('rusnlp.html', search=True, url=url)
 
@@ -127,6 +127,7 @@ def paper(fname):
     message = [1, query, topn]
     results = json.loads(serverquery(message))
     metadata = results['meta']
+    topics = results['topics']
 
     if 'not found' in metadata or 'unknown to the model' in results:
         return render_template('rusnlp_paper.html',
@@ -138,12 +139,13 @@ def paper(fname):
 
     else:
         return render_template('rusnlp_paper.html',
-                               result=results,
+                               result=results['neighbors'],
                                query=query,
                                metadata=metadata,
                                search=True,
                                url=url,
-                               topn=topn)
+                               topn=topn, topics=topics)
+
 
 @nlpsearch.route('/topical/')
 def topical_page():

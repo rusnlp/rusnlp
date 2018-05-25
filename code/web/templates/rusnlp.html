@@ -97,6 +97,7 @@
         <th style="text-align:center;">Аффилиация</th> 
         <th  style="text-align:center;">Конференция</th> 
         <th>Год</th>
+        <th style="text-align:center;">Темы</th>
         {% if keywords %}
         <th>Близость к запросу </th>
         {% endif %}
@@ -115,7 +116,16 @@
     	    <td style="text-align:center;">{{ res[6] }}</td>
     	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a></td>
     	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a></td>
-    	    {% if keywords %}
+                <td>
+                          {% if res[0] in topics %}
+                            {% for topic in topics[res[0]] %}
+                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните чтобы узнать больше об этой теме" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
+                             {% endfor %}
+                            {% else %}
+                            -
+                            {% endif%}
+                        </td>
+                {% if keywords %}
     	    <td style="text-align:right;">{{ "{0:.3f}".format(res[-1]) }}
     	    {% endif%}
     	    </tr>

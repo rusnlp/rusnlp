@@ -159,12 +159,19 @@ def queryparser(query):
                            'year': reader.select_year_by_id(article_id),
                            'conference': reader.select_conference_by_id(article_id),
                            'affiliation': reader.select_affiliation_by_id(article_id),
-                           'url': reader.select_url_by_id(article_id)}}
+                           'url': reader.select_url_by_id(article_id)},
+                  'topics': {}
+                  }
         output['meta']['filename'] = article_id
-        return output
     else:
-        output = operations[operation](searchstring, number)
-        return output
+        output = {'topics': {}, 'neighbors': operations[operation](searchstring, number)}
+    for n in output['neighbors']:
+        text_vector = text_vectors[n[0]]
+        candidates = [(topic, nlpub_terms[topic]['url']) for topic in nlpub_terms if
+                      cossim(text_vector, nlpub_terms[topic]['terms']) > 0.03]
+        if candidates:
+            output['topics'][n[0]] = candidates
+    return output
 
 
 if __name__ == "__main__":
@@ -187,13 +194,6 @@ if __name__ == "__main__":
                        path.join('data', 'database_metadata.json'))
     reader = ReaderDBase(bd_m)
 
-    nlpub_terms = {}
-    with open(nlpubfile, 'r') as csvfile:
-        csvreader = csv.DictReader(csvfile, delimiter='\t')
-        for row in csvreader:
-            nlpub_terms[row['description']] = row['terms'].strip().split()
-
-    print(nlpub_terms)
     # Loading model
     for line in open(root + config.get('Files and directories', 'models'), 'r').readlines():
         if line.startswith("#"):
@@ -205,6 +205,14 @@ if __name__ == "__main__":
         text_vectors = gzip.open(path.join(mod_path, 'tfidf_corpus.json.gz'), 'r').read()
         text_vectors = json.loads(text_vectors.decode('utf-8'))
         print("Model", model, "from file", path.join(mod_path, 'tfidf.model'), "loaded successfully.", file=sys.stderr)
+
+    nlpub_terms = {}
+    with open(nlpubfile, 'r') as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter='\t')
+        for row in csvreader:
+            nlpub_terms[row['description']] = {}
+            nlpub_terms[row['description']]['terms'] = model[dictionary.doc2bow(row['terms'].strip().split())]
+            nlpub_terms[row['description']]['url'] = row['url'].strip()
 
     id_index = text_vectors.keys()
     authorsindex = set(reader.select_all_authors())

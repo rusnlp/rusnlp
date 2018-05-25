@@ -46,8 +46,7 @@
    	</form>
    </div>
 		<div class="row">
-		{% for model in result if model != 'meta' and not 'is unknown' in result[model][0] %}
-			<div class="col-md-12">
+				<div class="col-md-12">
 				<table class="sortable table table-hover">
 					<tr style="border-bottom:1px solid black;">
 						<th style="text-align:center;">Заголовок</th>
@@ -55,9 +54,10 @@
 						<th style="text-align:center;">Аффилиация</th>
 						<th>Конференция</th> 
 						<th>Год</th>
+						<th style="text-align:center;">Темы</th>
 						<th>Близость</th>
 					</tr>
-				{% for res in result[model] if not "No results" in res and not 'is unknown' in res  %}
+				{% for res in result if not "No results" in res and not 'is unknown' in res  %}
 					<tr style="border-bottom:1px solid black;">
 						<td>
 							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы найти похожие публикации" href="{{ url }}publ/{{ res[0] }}">
@@ -83,7 +83,16 @@
 						</td> 
 						<td>
 							<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a>
-						</td> 
+						</td>
+                        <td>
+                          {% if res[0] in topics %}
+                            {% for topic in topics[res[0]] %}
+                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните чтобы узнать больше об этой теме" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
+                             {% endfor %}
+                            {% else %}
+                            -
+                            {% endif%}
+                        </td>
 						<td style="text-align:right;">
 							{{ "{0:.4f}".format(res[-1]) }}
 						</td>
@@ -91,14 +100,9 @@
 				{% endfor %}
 				</table>        
 			</div>			
-		{% endfor %}
+
         
-		{% for model in result if model != 'all' and 'is unknown' in result[model][0] %}
-		<div class="col-md-8">
-			<h4><strong>{{ models[model] }}</strong></h4>
-			<i>{{ result[model][0] }}</i>
-		</div>
-		{% endfor %}        
+
 
 	{% endif %}
 	</div>
