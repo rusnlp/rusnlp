@@ -1,0 +1,24 @@
+description	terms
+Графематический анализ	tokenization
+Морфологический анализ	morphology tagging
+Синтаксический анализ	syntax parsing
+Проверка правописания	spell checking
+Проверка грамматики	grammar checking
+Расстановка переносов	syllabification
+Построение конкордансов	concordance
+Извлечение ключевых слов	keyword extraction
+Автоматическое реферирование	summarization
+Тематическая классификация	topic classification
+Тематическое моделирование	topic modeling
+Извлечение именованных сущностей	named entity recognition
+Извлечение отношений	relation extraction
+Анализ тональности	sentiment analysis
+Информационный поиск	information retrieval
+Машинный перевод	machine translation
+Обнаружение дубликатов deduplication	duplicate detection
+Cегментация текста	text segmentation
+Обработка речи	speech processing
+Конечные преобразователи	finite transducer
+Языковые модели	language models modeling
+Тезаурусы	thesaurus thesauri
+Корпусы	corpora corpus

@@ -11,48 +11,63 @@ import socket
 import sys
 from os import path
 import gzip
-from _thread import *
+import threading
 from gensim.models import TfidfModel
 from gensim.matutils import cossim
 from bd import DBaseRusNLP
 from db_reader import ReaderDBase
+import csv
+
+
+class SrvThread(threading.Thread):
+    def __init__(self, connect, address):
+        threading.Thread.__init__(self)
+        self.connect = connect
+        self.address = address
+
+    def run(self):
+        threadLimiter.acquire()
+        try:
+            clientthread(self.connect, self.address)
+        finally:
+            threadLimiter.release()
 
 
 # Function for handling connections. This will be used to create threads
-def clientthread(conn, addr):
+def clientthread(connection, address):
     # Sending message to connected client
-    conn.send(bytes(b'RusNLP model server'))
+    connection.send(bytes(b'RusNLP model server'))
 
     # infinite loop so that function do not terminate and thread do not end.
     while True:
         # Receiving from client
-        data = conn.recv(1024)
+        data = connection.recv(4096)
         if not data:
             break
         data = data.decode("utf-8")
         query = json.loads(data)
 
         now = datetime.datetime.now()
-        print(now.strftime("%Y-%m-%d %H:%M"), '\t', addr[0] + ':' + str(addr[1]), '\t', data, file=sys.stderr)
+        print(now.strftime("%Y-%m-%d %H:%M"), '\t', address[0] + ':' + str(address[1]), '\t', data, file=sys.stderr)
 
         output = queryparser(query)
 
         reply = json.dumps(output, ensure_ascii=False) + '&&&'
-        conn.sendall(reply.encode('utf-8'))
+        connection.sendall(reply.encode('utf-8'))
         break
 
     # came out of loop
-    conn.close()
+    connection.close()
 
 
 # Vector functions
 def find_nearest(q_vector, q, number, restrict=None):
     if restrict:
         similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict if cossim(q_vector,
-            text_vectors[d]) > 0.01}
+                                                                                         text_vectors[d]) > 0.01}
     else:
         similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q
-                and cossim(q_vector, text_vectors[d]) > 0.01}
+                        and cossim(q_vector, text_vectors[d]) > 0.01}
     neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
     results = [
         (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
@@ -138,14 +153,13 @@ def queryparser(query):
             output = {'meta': 'Publication not found'}
             return output
         q_vector = text_vectors[article_id]
-        output = {}
-        output['neighbors'] = operations[operation](q_vector, article_id, number)
-        output['meta'] = {'title': reader.select_title_by_id(article_id),
-                          'author': reader.select_author_by_id(article_id),
-                          'year': reader.select_year_by_id(article_id),
-                          'conference': reader.select_conference_by_id(article_id),
-                          'affiliation': reader.select_affiliation_by_id(article_id),
-                          'url': reader.select_url_by_id(article_id)}
+        output = {'neighbors': operations[operation](q_vector, article_id, number),
+                  'meta': {'title': reader.select_title_by_id(article_id),
+                           'author': reader.select_author_by_id(article_id),
+                           'year': reader.select_year_by_id(article_id),
+                           'conference': reader.select_conference_by_id(article_id),
+                           'affiliation': reader.select_affiliation_by_id(article_id),
+                           'url': reader.select_url_by_id(article_id)}}
         output['meta']['filename'] = article_id
         return output
     else:
@@ -167,11 +181,19 @@ if __name__ == "__main__":
 
     databasefile = config.get('Files and directories', 'database')
     metadatafile = config.get('Files and directories', 'database_meta')
+    nlpubfile = config.get('Files and directories', 'nlpub_file')
 
     bd_m = DBaseRusNLP(path.join('data', 'rus_nlp_withouttexts.db'),
                        path.join('data', 'database_metadata.json'))
     reader = ReaderDBase(bd_m)
 
+    nlpub_terms = {}
+    with open(nlpubfile, 'r') as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter='\t')
+        for row in csvreader:
+            nlpub_terms[row['description']] = row['terms'].strip().split()
+
+    print(nlpub_terms)
     # Loading model
     for line in open(root + config.get('Files and directories', 'models'), 'r').readlines():
         if line.startswith("#"):
@@ -188,10 +210,13 @@ if __name__ == "__main__":
     authorsindex = set(reader.select_all_authors())
     titlesindex = {reader.select_title_by_id(ident): ident for ident in id_index}
 
+    maxthreads = 4  # Maximum number of threads
+    threadLimiter = threading.BoundedSemaphore(maxthreads)
+
     # Bind socket to local host and port
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print('Socket created', file=sys.stderr)
+    print('Socket created with max number of active threads set to', maxthreads, file=sys.stderr)
 
     try:
         s.bind((HOST, PORT))
@@ -207,9 +232,10 @@ if __name__ == "__main__":
 
     # now keep talking with the client
     while True:
-        # wait to accept a connection - blocking call
-        connection, address = s.accept()
+        # wait to accept a connection
+        conn, addr = s.accept()
 
         # start new thread takes 1st argument as a function name to be run,
         # second is the tuple of arguments to the function.
-        start_new_thread(clientthread, (connection, address))
+        thread = SrvThread(conn, addr)
+        thread.start()
