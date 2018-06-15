@@ -24,8 +24,8 @@
 		<p><i>
 		{% for author in metadata['author'] %}
             <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author }}</a>;
-            {% endfor %}</i></p>
-		<p><i>{{ metadata['affiliation'] }};</i></p>
+            {% endfor %}</i>
+		<i>{{ metadata['affiliation'] }};</i></p>
 		<p><i><a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>;
 		<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
 		<p><i><a target="_blank" href="{{ metadata['url']}}">Оригинал статьи</a></i></p>

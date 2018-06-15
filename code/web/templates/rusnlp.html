@@ -13,7 +13,7 @@
         <div id="queryform">
             <form id="inputform" action="#" method=post>
               <div class="form-group">
-              	<p style="margin-top:15px;">Ключевые слова через пробел (пишите имена собственные, например, названия языков, с большой буквы):</p>
+		      <p style="margin-top:15px;"><strong>Ключевые слова через пробел (пишите имена собственные, например, названия языков, с большой буквы):</strong></p>
     {% if keywords %}
        	   <input type="text" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500 size=80>
         {% else %}
@@ -61,18 +61,18 @@
         <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2018" min="2000" max="2020" size=4>
         {% endif %}
  
-      <p style="margin-top:15px;">Автор статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
+      <p style="margin-top:15px;">Автор статьи, латиницей (можно использовать метасимволы <i>*</i> и <i>?</i>):</p>
         {% if author_query %}
         <input type="text" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10>
         {% else %}
         <input type="text" class="typeahead" id="author_query" name="author_query" placeholder="Kibrik*" maxlength=50 size=10>
         {% endif %}
 
-    <p style="margin-top:15px;">Заголовок статьи (допустимы метасимволы <i>*</i> и <i>?</i>):</p>
+    <p style="margin-top:15px;">Заголовок статьи (можно использовать метасимволы <i>*</i> и <i>?</i>):</p>
     {% if query %}
        	   <input type="text" class="tt-query" id="query" name="query" value="{{ query }}" maxlength=500 size=80>
         {% else %}
-               <input type="text" class="tt-query" id="query" name="query" placeholder="WebVectors*" maxlength=500>
+               <input type="text" class="tt-query" id="query" name="query" placeholder="*embedding*" maxlength=500>
     {% endif %}
 
       </div>
