@@ -1,5 +1,5 @@
 import configparser
-from flask import Flask, url_for, send_from_directory
+from flask import Flask, url_for, send_from_directory, redirect
 
 from nlp import *
 
@@ -9,10 +9,12 @@ url = config.get('Other', 'url')
 
 app_rusnlp = Flask(__name__, static_url_path='/data/')
 
-
 @app_rusnlp.route('/data/<path:query>/')
-def send_js(query):
-    return send_from_directory('data/', query)
+def send(query):
+    if 'rus_nlp.db.gz' in query:
+        return redirect('http://rusvectores.org/static/rusnlp/rus_nlp.db.gz')
+    else:
+        return send_from_directory('data/', query)
 
 
 app_rusnlp.register_blueprint(nlpsearch)
