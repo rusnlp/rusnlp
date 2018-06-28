@@ -72,7 +72,7 @@ def find_nearest(q_vector, q, number, restrict=None):
     results = [
         (i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
          reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i),
-         similarities[i]) for i in neighbors]
+         reader.select_abstract_by_id(i)[:300]+'...', similarities[i]) for i in neighbors]
     return results
 
 
@@ -126,7 +126,7 @@ def search(sets, number, keywords=None):
     else:
         results = [(i, reader.select_title_by_id(i), reader.select_author_by_id(i), reader.select_year_by_id(i),
                     reader.select_conference_by_id(i), reader.select_url_by_id(i),
-                    reader.select_affiliation_by_id(i)) for i in valid]
+                    reader.select_affiliation_by_id(i), reader.select_abstract_by_id(i)[:300]+'...') for i in valid]
     return results
 
 
@@ -159,6 +159,7 @@ def queryparser(query):
                            'year': reader.select_year_by_id(article_id),
                            'conference': reader.select_conference_by_id(article_id),
                            'affiliation': reader.select_affiliation_by_id(article_id),
+                           'abstract': reader.select_abstract_by_id(article_id)[:300]+'...',
                            'url': reader.select_url_by_id(article_id)},
                   'topics': {}
                   }

@@ -105,7 +105,7 @@
         </tr>
 	{% for res in result if not "No results" in res and not 'is unknown' in res  %}
     	    <tr style="border-bottom:1px solid black;">
-    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы найти похожие публикации" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a>
+    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a>
     	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
     	    <td style="text-align:center;">
     	    {% for author in res[2] %}

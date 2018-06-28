@@ -1,7 +1,7 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-	<title>RusNLP: {{metadata['title']}} </title>
+	<title>Похожие статьи: {{metadata['title']}} </title>
 
 {%- endblock title %}
 
@@ -13,23 +13,21 @@
 		{% endif %}
 	</div>
 	<div class="row" style="text-align: center;">
-	<h2>Похожие статьи</h2>	
 	{% if error %}
 		<p>{{ error }}</p>
 	{% endif %}
 	
 	{% if result %}
 		
-		<h3>«{{ metadata['title'] }}»</h3>
+		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}">{{ metadata['title'] }}</a>»</h2>
 		<p><i>
 		{% for author in metadata['author'] %}
             <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author }}</a>;
             {% endfor %}</i>
 		<i>{{ metadata['affiliation'] }};</i></p>
-		<p><i><a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>;
+		<p><i><a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
 		<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
-		<p><i><a target="_blank" href="{{ metadata['url']}}">Оригинал статьи</a></i></p>
-      <h3>Семантически близкие публикации:</h3>
+      <h3>Похожие публикации:</h3>
         <div id="queryform">
    	<form id="inputform" action="#" method=post>
       	<div class="form-group">
@@ -54,13 +52,13 @@
 						<th style="text-align:center;">Аффилиация</th>
 						<th>Конференция</th> 
 						<th>Год</th>
-						<th style="text-align:center;">Темы</th>
+						<th style="text-align:center;">Задачи</th>
 						<th>Близость</th>
 					</tr>
 				{% for res in result if not "No results" in res and not 'is unknown' in res  %}
 					<tr style="border-bottom:1px solid black;">
 						<td>
-							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы найти похожие публикации" href="{{ url }}publ/{{ res[0] }}">
+							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}publ/{{ res[0] }}">
 								{{ res[1] }}
 							</a> 
 							(<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color:green;">URL</a>)
