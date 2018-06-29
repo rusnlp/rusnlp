@@ -127,7 +127,6 @@ def paper(fname):
     message = [1, query, topn]
     results = json.loads(serverquery(message))
     metadata = results['meta']
-    topics = results['topics']
 
     if 'not found' in metadata or 'unknown to the model' in results:
         return render_template('rusnlp_paper.html',
@@ -136,8 +135,8 @@ def paper(fname):
                                search=True,
                                url=url,
                                topn=topn)
-
     else:
+        topics = results['topics']
         return render_template('rusnlp_paper.html',
                                result=results['neighbors'],
                                query=query,

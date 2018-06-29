@@ -1,7 +1,9 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
+	{% if not error %}
 	<title>Похожие статьи: {{metadata['title']}} </title>
+	{% endif %}
 
 {%- endblock title %}
 
@@ -14,7 +16,7 @@
 	</div>
 	<div class="row" style="text-align: center;">
 	{% if error %}
-		<p>{{ error }}</p>
+		<h2>{{ error }}</h2>
 	{% endif %}
 	
 	{% if result %}

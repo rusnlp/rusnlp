@@ -2,11 +2,11 @@
 .tt-query,
 .tt-input,
 .tt-hint {
-  width: 400px;
+  width: auto;
   max-width: 800px;
   height: 40px;
   padding: 2px 12px;
-  font-size: 20px;
+  font-size: 30px;
   line-height: 30px;
   border: 2px solid #ccc;
   -webkit-border-radius: 8px;
@@ -14,13 +14,28 @@
           border-radius: 8px;
   outline: none;
 }
+
+.tt-left {
+  width: auto;
+  height: 30px;
+  padding: 2px 2px;
+  font-size: 15px;
+  text-align: left;
+  line-height: 20px;
+  border: 2px solid #ccc;
+  -webkit-border-radius: 8px;
+     -moz-border-radius: 8px;
+          border-radius: 8px;
+  outline: none;
+}
+
 
 .tt-tiny {
   width: 100px;
   height: 30px;
   padding: 2px 2px;
-  font-size: 20px;
-  line-height: 30px;
+  font-size: 15px;
+  line-height: 20px;
   border: 2px solid #ccc;
   -webkit-border-radius: 8px;
      -moz-border-radius: 8px;
@@ -28,7 +43,11 @@
   outline: none;
 }
 
-
+@media only screen and (max-width: 1000px) {
+    #lefttab {
+	display: none;
+    }
+}
 
 
 .typeahead {
