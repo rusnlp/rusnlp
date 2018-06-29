@@ -7,6 +7,7 @@ import shutil
 class WriterDBase:
     def __init__(self, db):
         self.db = db
+        self.db.cursor.execute('PRAGMA auto_vacuum = 1')
         self.stop_words_ru = set(stopwords.words('russian'))
         self.stop_words_en = set(stopwords.words('english'))
         self.list_of_chars = ('‘', '+', ')', ':', '2', '(', '/', '—', '…', '-', '„', '.', '1', ',', '<', '“', '«', '6', '–', '[')

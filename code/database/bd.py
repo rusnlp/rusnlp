@@ -10,7 +10,6 @@ class DBaseRusNLP:
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute('PRAGMA encoding = "UTF-8"')
-        self.cursor.execute('PRAGMA auto_vacuum = 1')
         self.tables = json.load(open(config_file))
         for name, data in self.tables.items():
             self.create_table(name, data)
