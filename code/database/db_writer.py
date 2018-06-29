@@ -350,7 +350,8 @@ class WriterDBase:
         results_aff = self.db.cursor.fetchall()
         for affiliation in results_aff:
             try:
-                self.insert_into_affiliation_alias(results[affiliation[1]], affiliation[1], affiliation[0])
+                normalized_ = affiliation[1].replace("\n", "")
+                self.insert_into_affiliation_alias(results[normalized_], affiliation[1], affiliation[0])
             except (sqlite3.IntegrityError, KeyError):
                 pass
                 # TODO: Replace prints with logging
