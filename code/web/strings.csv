@@ -8,7 +8,7 @@ topic7,Выберите одну или несколько конференци�
 topic8,Диапазон дат:,Year range:
 topic9,От:,From:
 topic10,До:,To:
-topic11,Автор статьи, латиницей (можно использовать метасимволы * и ?):,Paper author, Latin script (you may use metasymbols like * and ?)
+topic11,Автор статьи, латиницей (можно использовать метасимволы * и ?):,Paper author (you may use metasymbols like * and ?)
 topic12,Заголовок статьи (можно использовать метасимволы * и ?):,Paper title (you may use metasymbols like * and ?)
 topic13,Искать,Search
 topicresult1,Вот что мы нашли для вас,What we found for you
@@ -24,8 +24,6 @@ topicalstucture2,PyLDA-визуализации,PyLDA visualisation
 topicalstucture3,Глобальная структура,Global stucture
 topicalstucture4,Конференции,Conferences
 topicalstucture5,Годы,Years
-topicalstucture7,Тематическая структура,Topical structure
-topicalstucture8,О проекте,About
 topicabout1,О сервисе,About the service
 topicabout2,"<strong>RusNLP</strong> - это поисковик по англоязычным статьям, опубликованным на российских конференциях по компьютерной лингвистике":,"<strong>RusNLP</strong> is a search engine for English-language papers presented in Russian NLP conferences:"
 topicabout3,Диалог,Dialogue
@@ -40,5 +38,3 @@ topicabout11,В алфавитном порядке:,In alphabetic order:
 topicabout12,Амир Бакаров (НИУ ВШЭ),Amir Bakarov (NRU HSE)
 topicabout13,Андрей Кутузов (Университет Осло),Andrey Kutuzov(University of Oslo)
 topicabout14,Ирина Никишина (НИУ ВШЭ),Irina Nikishina (NRU HSE)
-topicabout15,Тематическая структура,Topical structure
-topicabout16,О проекте,About project
