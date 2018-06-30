@@ -17,10 +17,9 @@
 
 .tt-left {
   width: auto;
-  height: 30px;
+  height: 40px;
   padding: 2px 2px;
   font-size: 15px;
-  text-align: left;
   line-height: 20px;
   border: 2px solid #ccc;
   -webkit-border-radius: 8px;
@@ -42,13 +41,6 @@
           border-radius: 8px;
   outline: none;
 }
-
-@media only screen and (max-width: 1000px) {
-    #lefttab {
-	display: none;
-    }
-}
-
 
 .typeahead {
   background-color: #fff;

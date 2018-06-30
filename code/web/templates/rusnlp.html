@@ -6,38 +6,50 @@
 {%- endblock title %}
 
 {% block content %}
-
     <div class="row" style="text-align:center;">
         <h1>RusNLP: поиск по научным статьям в области natural language processing</h1>
-          <p class="lead">российские конференции, англоязычные статьи</p>
+          <p class="lead">Российские конференции, англоязычные статьи</p>
 	{% if search %}
         <div id="queryform">
             <form id="inputform" action="#" method=post>
-            <div class="form-group" id="lefttab" style="text-align:left;margin-left:5px;position:absolute;left:0%;">
-        <fieldset style="text-align:left;">
+            
+
+              <div class="form-group center-block" style="text-align:center">
+	      <p style="margin-top:15px;font-size:30px;"><strong>Ключевые слова через пробел:</strong></p>
+    {% if keywords %}
+       	   <input type="text" title="Пишите имена собственные, например, названия языков, с большой буквы" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
+        {% else %}
+               <input type="text" title="Пишите имена собственные, например, названия языков, с большой буквы" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
+    {% endif %}
+	       </div>
+    
+    <details>
+    <summary><a class="lead" style="cursor:pointer;">Показать дополнительные фильтры >>></a></summary>
+            <div class="form-group" id="advtab">
+        <fieldset style="width:auto;text-align:center;">
                 Конференции:
-                 <select name="conf_query" multiple class="form-control" style="text-align:left;width:auto;max-width:400px;">
+                 <select name="conf_query" multiple class="form-control" style="text-align:center;max-width:400px;margin-right:auto;margin-left:auto;">
         	    <option value="Dialogue"
                     {% if conf_query  %}
                     {% if 'Dialogue' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:left;">Диалог</option>
+                        style="text-align:center;">Диалог</option>
         	    <option value="AIST"
                            {% if conf_query  %}
                     {% if 'AIST' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:left;">AIST</option>
+                        style="text-align:center;">AIST</option>
                 <option value="AINL"
                                     {% if conf_query  %}
                     {% if 'AINL' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:left;">AINL</option>
+                        style="text-align:center;">AINL</option>
                  </select>
         	</fieldset>
 
@@ -52,41 +64,28 @@
         {% endif %}
     	</p>
  
-        <p style="margin-top:10px;">
+        <p style="margin-top:10px;width:auto;">
         Автор:
         {% if author_query %}
-        <input type="text" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10 style="font-size:15px;">
+        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10 style="font-size:15px;" >
         {% else %}
-        <input type="text" class="typeahead" id="author_query" name="author_query" placeholder="Начните набирать фамилию латиницей..." maxlength=50 style="font-size:20px;">
+        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" placeholder="Начните набирать фамилию латиницей..." maxlength=50 style="font-size:15px;">
         {% endif %}
         </p>
 
-    <p style="margin-top:10px;">
+    <p style="margin-top:10px;width:auto;">
     Заголовок:
     {% if query %}
-       	   <input type="text" class="tt-left" id="query" name="query" value="{{ query }}" maxlength=500 size=80>
+       	   <input type="text" title="Можно использовать метасимволы * и ?" class="tt-left" id="query" name="query" value="{{ query }}" maxlength=500 size=80 style="font-size:15px;">
         {% else %}
-               <input type="text" class="tt-left" id="query" name="query" placeholder="*embedding*" maxlength=500>
+               <input type="text" title="Можно использовать метасимволы * и ?" class="tt-left" id="query" name="query" placeholder="*embedding*" maxlength=500 style="font-size:15px;">
     {% endif %}
     </p>
 
       </div>
+      </details>
 
-            
-            
-            
-              <div class="form-group center-block" style="text-align:center">
-	      <p style="margin-top:15px;font-size:40px;"><strong>Ключевые слова через пробел</strong></p>
-	      <p>(пишите имена собственные, например, названия языков, с большой буквы):</p>
-    {% if keywords %}
-       	   <input type="text" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
-        {% else %}
-               <input type="text" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
-    {% endif %}
-	       </div>
-	
-
-      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;font-size: 40px;">Искать</button>
+      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;font-size: 40px;padding-top: 0px;margin-top:20px;">Искать</button>
             </form>
         </div>
     {% endif %}
