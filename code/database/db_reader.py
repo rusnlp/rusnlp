@@ -170,7 +170,17 @@ class ReaderDBase:
             return self.select_affiliation_by_cluster(cluster[0])
         else:
             where = "catalogue JOIN author JOIN article ON article.id=article_id AND author.id=author_id" 
-            return sorted([i[0] for i in self._bd.select('''affiliation''', where, '''common_id="{}"'''.format(article_id))], key=lambda x:len(x))[0]
+            return self._bd.select('''affiliation''', where, '''common_id="{}"'''.format(article_id))
+
+    def select_aff_clusters_by_id(self, common_id):
+        where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
+        cluster = set([i[0] for i in self._bd.select("cluster", where, '''common_id="{}"'''.format(common_id))])
+        return cluster
+    
+    def select_articles_by_cluster(self, cluster_id):
+        where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
+        condition = "cluster={}".format(cluster_id)
+        return set([i[0] for i in self._bd.select("common_id", where, condition)])
 
     def select_all_from(self, what, where):
         """
