@@ -343,9 +343,9 @@ class WriterDBase:
         with open(file_path, 'r', encoding='utf-8') as f:
             affiliations = f.readlines()
         results = {}
-        for aff_cluster in range(1, len(affiliations)+1):
-            for aff in affiliations[aff_cluster-1].split("\t"):
-                results[aff] = aff_cluster
+        for aff_cluster in range(len(affiliations)):
+            for aff in affiliations[aff_cluster].split("\t"):
+                results[aff.replace("\n", '')] = aff_cluster+1
         self.db.cursor.execute("""SELECT id, affiliation FROM author""")
         results_aff = self.db.cursor.fetchall()
         for affiliation in results_aff:
@@ -354,6 +354,7 @@ class WriterDBase:
                 self.insert_into_affiliation_alias(results[normalized_], affiliation[1], affiliation[0])
             except (sqlite3.IntegrityError, KeyError):
                 pass
+                #print(affiliation[1].replace("\n", "").strip())
                 # TODO: Replace prints with logging
                 # print("foreign key error:\n", e,  "for \n", results[affiliation[1]], affiliation[1], affiliation[0])
 
