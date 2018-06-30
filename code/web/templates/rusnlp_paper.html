@@ -24,7 +24,7 @@
 		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}">{{ metadata['title'] }}</a>»</h2>
 		<p><i>
 		{% for author in metadata['author'] %}
-            <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author }}</a>;
+            <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author_map[author|string] }}</a>;
             {% endfor %}</i>
 		<i>{{ metadata['affiliation'] }};</i></p>
 		<p><i><a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
@@ -68,7 +68,7 @@
 						<td>
 						{% for author in res[2] %}
         					<a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank"
-        					href="{{ url }}author/{{ author }}">{{ author }}</a>
+        					href="{{ url }}author/{{ author }}">{{ author_map[author|string] }}</a>
         					<br/>
 				                {% endfor %}
 

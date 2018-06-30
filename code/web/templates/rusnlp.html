@@ -67,9 +67,9 @@
         <p style="margin-top:10px;width:auto;">
         Автор:
         {% if author_query %}
-        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=50 size=10 style="font-size:15px;" >
+        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=100 style="font-size:15px;" >
         {% else %}
-        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" placeholder="Начните набирать фамилию латиницей..." maxlength=50 style="font-size:15px;">
+        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" placeholder="Начните набирать фамилию латиницей..." maxlength=100 style="font-size:15px;">
         {% endif %}
         </p>
 
@@ -118,7 +118,7 @@
     	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
     	    <td style="text-align:center;">
     	    {% for author in res[2] %}
-    	    <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author }}</a>
+    	    <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author_map[author|string] }}</a>
     	    <br/>
     	    {% endfor %}
     	    </td>

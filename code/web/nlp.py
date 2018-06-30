@@ -105,9 +105,18 @@ def homepage(conference, year, author):
             return render_template('rusnlp.html', conf_query=conference, year_query=year, author_query=author,
                                    error='Поиск не дал результатов.', search=True, url=url,
                                    query=title, keywords=' '.join(keywords))
+        author_ids = set()
+        for res in results['neighbors']:
+            r_authors = res[2]
+            author_ids |= set(r_authors)
+        query = {'field': 'author', 'ids': list(author_ids)}
+        message = [3, query, 10]
+        author_map = json.loads(serverquery(message))['neighbors']
+        if author.strip().isdigit():
+            author = author_map[author]
         return render_template('rusnlp.html', result=results['neighbors'], conf_query=conference, author_query=author,
                                year_query=year, search=True, url=url, query=title, topics=results['topics'],
-                               keywords=' '.join(keywords))
+                               keywords=' '.join(keywords), author_map=author_map)
     return render_template('rusnlp.html', search=True, url=url)
 
 
@@ -130,19 +139,27 @@ def paper(fname):
 
     if 'not found' in metadata or 'unknown to the model' in results:
         return render_template('rusnlp_paper.html',
-                               query=query,
                                error='Статья с таким идентификатором не найдена в модели',
                                search=True,
                                url=url,
                                topn=topn)
+
     else:
+        author_ids = set()
+        author_ids |= set(metadata['author'])
+        for res in results['neighbors']:
+            r_authors = res[2]
+            author_ids |= set(r_authors)
+        query = {'field': 'author', 'ids': list(author_ids)}
+        message = [3, query, 10]
+        author_map = json.loads(serverquery(message))['neighbors']
+
         topics = results['topics']
         return render_template('rusnlp_paper.html',
                                result=results['neighbors'],
-                               query=query,
                                metadata=metadata,
                                search=True,
-                               url=url,
+                               url=url, author_map=author_map,
                                topn=topn, topics=topics)
 
 
