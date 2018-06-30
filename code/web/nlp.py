@@ -145,8 +145,7 @@ def paper(fname):
                                topn=topn)
 
     else:
-        author_ids = set()
-        author_ids |= set(metadata['author'])
+        author_ids = set(metadata['author'])
         for res in results['neighbors']:
             r_authors = res[2]
             author_ids |= set(r_authors)

@@ -70,9 +70,10 @@ def find_nearest(q_vector, q, number, restrict=None):
                         and cossim(q_vector, text_vectors[d]) > 0.01}
     neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
     results = [
-        (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)), reader.select_year_by_id(i),
+        (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
+         reader.select_year_by_id(i),
          reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i),
-         reader.select_abstract_by_id(i)[:300]+'...', similarities[i]) for i in neighbors]
+         reader.select_abstract_by_id(i)[:300] + '...', similarities[i]) for i in neighbors]
     return results
 
 
@@ -126,9 +127,10 @@ def search(sets, number, keywords=None):
         q_vector = model[dictionary.doc2bow(keywords)]
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
-        results = [(i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)), reader.select_year_by_id(i),
+        results = [(i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
+                    reader.select_year_by_id(i),
                     reader.select_conference_by_id(i), reader.select_url_by_id(i),
-                    reader.select_affiliation_by_id(i), reader.select_abstract_by_id(i)[:300]+'...') for i in valid]
+                    reader.select_affiliation_by_id(i), reader.select_abstract_by_id(i)[:300] + '...') for i in valid]
     return results
 
 
@@ -161,7 +163,7 @@ def queryparser(query):
                            'year': reader.select_year_by_id(article_id),
                            'conference': reader.select_conference_by_id(article_id),
                            'affiliation': reader.select_affiliation_by_id(article_id),
-                           'abstract': reader.select_abstract_by_id(article_id)[:300]+'...',
+                           'abstract': reader.select_abstract_by_id(article_id)[:300] + '...',
                            'url': reader.select_url_by_id(article_id)},
                   'topics': {}
                   }
@@ -171,16 +173,22 @@ def queryparser(query):
     if operation != 3:
         for n in output['neighbors']:
             text_vector = text_vectors[n[0]]
-            candidates = [(topic, nlpub_terms[topic]['url']) for topic in nlpub_terms if cossim(text_vector, nlpub_terms[topic]['terms']) > 0.03]
+            candidates = [(topic, nlpub_terms[topic]['url']) for topic in nlpub_terms if
+                          cossim(text_vector, nlpub_terms[topic]['terms']) > 0.03]
             if candidates:
                 output['topics'][n[0]] = candidates
     return output
+
 
 def ids2names(query, number):
     ids = query['ids']
     field = query['field']
     if field == 'author':
         names = {int(identifier): reader.select_alias_name_by_author_cluster(identifier) for identifier in ids}
+    elif field == 'affiliation':
+        names = {int(identifier): reader.select_affiliation_by_cluster(identifier) for identifier in ids}
+    else:
+        names = None
     return names
 
 
