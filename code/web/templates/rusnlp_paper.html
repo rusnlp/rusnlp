@@ -2,7 +2,7 @@
 
 {%- block title %}
 	{% if not error %}
-	<title>Похожие статьи: {{metadata['title']}} </title>
+	<title>{{strings['topicresult4']}}: {{metadata['title']}} </title>
 	{% endif %}
 
 {%- endblock title %}
@@ -10,8 +10,8 @@
 {% block content %}
 	<div class="row" style="text-align: center;">
 		{% if not result %}
-		<h1>RusNLP: cемантический поиск по публикациям на российских конференциях</h1>
-		<p class="lead">компьютерная лингвистика и natural language processing</p>
+		<h1>{{strings['topic4']}}</h1>
+		<p class="lead">{{strings['topic5']}}</p>
 		{% endif %}
 	</div>
 	<div class="row" style="text-align: center;">
@@ -24,22 +24,22 @@
 		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}">{{ metadata['title'] }}</a>»</h2>
 		<p><i>
 		{% for author in metadata['author'] %}
-            <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author_map[author|string] }}</a>;
+            <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>;
             {% endfor %}</i>
 		<i>{{ metadata['affiliation'] }};</i></p>
-		<p><i><a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
-		<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
-      <h3>Похожие публикации:</h3>
+		<p><i><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
+      <h3>{{strings['topicresult4']}}:</h3>
         <div id="queryform">
    	<form id="inputform" action="#" method=post>
       	<div class="form-group">
-                  <i>Число результатов:</i>
+                  <i>{{strings['topicresult15']}}:</i>
          {% if topn  %}
          	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" value="{{ topn }}">
          {% else %}
          	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" placeholder="10">
          {% endif %}
-         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;">Искать</button>
+         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;">{{strings['topic13']}}</button>
       	</div>
       	
       	
@@ -49,45 +49,43 @@
 				<div class="col-md-12">
 				<table class="sortable table table-hover">
 					<tr style="border-bottom:1px solid black;">
-						<th style="text-align:center;">Заголовок</th>
-						<th style="text-align:center;">Автор</th>
-						<th style="text-align:center;">Аффилиация</th>
-						<th>Конференция</th> 
-						<th>Год</th>
-						<th style="text-align:center;">Задачи</th>
-						<th>Близость</th>
+						<th style="text-align:center;">{{strings['topicresult3']}}</th>
+						<th style="text-align:center;">{{strings['topic11']}}</th>
+						<th style="text-align:center;">{{strings['topicresult5']}}</th>
+						<th>{{strings['topicresult6']}}</th>
+						<th>{{strings['topicresult7']}}</th>
+						<th style="text-align:center;">{{strings['topicresult8']}}</th>
+						<th>{{strings['topicresult9']}}</th>
 					</tr>
 				{% for res in result if not "No results" in res and not 'is unknown' in res  %}
 					<tr style="border-bottom:1px solid black;">
 						<td>
-							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}publ/{{ res[0] }}">
+							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}{{lang}}/publ/{{ res[0] }}">
 								{{ res[1] }}
 							</a> 
-							(<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color:green;">URL</a>)
+							(<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult10']}}" href="{{ res[5] }}" style="color:green;">URL</a>)
 						</td> 
 						<td>
 						{% for author in res[2] %}
-        					<a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank"
-        					href="{{ url }}author/{{ author }}">{{ author_map[author|string] }}</a>
+        					<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank"
+        					href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
         					<br/>
 				                {% endfor %}
 
-						
-						
 						</td>
 						<td>
 							{{ res[6] }}
 						</td>
 						<td>
-							<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a>
+							<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a>
 						</td> 
 						<td>
-							<a data-toggle="tooltip" data-placement="top" title="Кликните чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a>
+							<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a>
 						</td>
                         <td>
                           {% if res[0] in topics %}
                             {% for topic in topics[res[0]] %}
-                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните чтобы узнать больше об этой теме" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
+                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult13']}}" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
                              {% endfor %}
                             {% else %}
                             -

@@ -1,6 +1,6 @@
 import configparser
 from flask import Flask, url_for, send_from_directory, redirect
-
+from lang_converter import LangConverter
 from nlp import *
 
 config = configparser.RawConfigParser()
@@ -16,9 +16,12 @@ def send(query):
     else:
         return send_from_directory('data/', query)
 
-
+app_rusnlp.url_map.converters['lang'] = LangConverter
 app_rusnlp.register_blueprint(nlpsearch)
 
+@app_rusnlp.context_processor
+def set_globals():
+    return dict(lang=g.lang, strings=g.strings)
 
 def url_for_other_page(page):
     args = request.view_args.copy()

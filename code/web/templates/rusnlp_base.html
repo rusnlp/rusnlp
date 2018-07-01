@@ -1,17 +1,17 @@
 {% block doc -%}
 <!DOCTYPE html>
 
-<html{% block html_attribs %} lang="ru"{% endblock html_attribs %}>
+<html{% block html_attribs %} lang="{{ lang }}"{% endblock html_attribs %}>
 {%- block html %}
   <head>
     {%- block head %}
     {%- block title %}
-    <title>RusNLP</title>
+    <title>{{strings['base3']}}</title>
     {%- endblock title %}
     {%- block metas %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
-    <meta name="description" content="RusNLP">
+    <meta name="description" content="{{strings['topic4']}}, {{strings['topic5']}}">
     {%- endblock metas %}
 
     {%- block styles %}
@@ -35,12 +35,17 @@
 	<span class="icon-bar"></span>
 	<span class="icon-bar"></span>
      </button>
-    <a class="navbar-brand" href="http://nlp.rusvectores.org">RusNLP</a>
+    <a class="navbar-brand" href="http://nlp.rusvectores.org/{{lang}}/">{{strings['base1']}}</a>
 </div>
 <div id="navbar" class="collapse navbar-collapse">
 <ul class="nav navbar-nav">
-        <li><a href="/topical/">Тематическая структура</a></li>
-        <li><a href="/about/">О проекте</a></li>
+        <li><a href="/{{lang}}/topical/">{{strings['topic2']}}</a></li>
+        <li><a href="/{{lang}}/about/">{{strings['topic3']}}</a></li>
+     {% if lang=="en" %}
+	<li><a title="{{strings['base2']}}" href="{{request.script_root}}/{{ other_lang }}{{request.path[3:]}}">{{ languages }}</a></li>
+     {% else %}
+	<li><a title="{{strings['base2']}}" href="{{request.script_root}}/{{ other_lang }}{{request.path[3:]}}">{{ languages }}</a></li>
+     {% endif %}
     </ul>
 
  </div>

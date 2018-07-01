@@ -1,0 +1,54 @@
+id	ru	en
+base1	RusNLP	RusNLP
+base2	Switch language	Сменить язык
+base3	RusNLP: поиск	RusNLP: search
+topic1	Пишите имена собственные, например, названия языков, с большой буквы	Proper names (language names, etc) must be capitalized
+topic2	Тематическая структура	Topical structure
+topic3	О проекте	About
+topic4	RusNLP: поиск по научным статьям в области natural language processing	RusNLP: searcn engine for papers in natural language processing
+topic5	Российские конференции, англоязычные статьи	Russian conferences, papers written in English
+topic6	Ключевые слова через пробел:	Space-separated keywords:
+topic7	Выберите одну или несколько конференций:	Select one or more conferences:
+topic8	Годы (от-до):	Years (since-till):
+topic11	Автор	Paper author
+topic13	Искать	Search
+topic14	Показать дополнительные фильтры >>>	Show advanced filters >>>
+topic15	Латиницей! Также можно использовать метасимволы * и ?	In Latin script! You can also use metasymbols like * and ?
+topic16	Начните набирать фамилию...	Start typing a surname...
+topic17	Можно использовать метасимволы * и ?	You can use metasymbols like * and ?
+topicresult1	Вот что мы нашли для вас	What we found for you
+topicresult2	Кликните по заголовку статьи для поиска похожих публикаций	Click on the paper title to search for similar publications
+topicresult3	Заголовок	Paper title
+topicresult4	Похожие публикации	Similar publications
+topicresult5	Аффилиация	Affiliation
+topicresult6	Конференция	Conference
+topicresult7	Год	Year
+topicresult8	Задачи	Tasks
+topicresult9	Близость к запросу	Similarity
+topicresult10	Кликните, чтобы перейти к оригиналу публикации	Click for the publication source
+topicresult11	Кликните, чтобы увидеть все публикации этого автора	Click to search for all papers by this author
+topicresult12	Кликните, чтобы увидеть все публикации на этой конференции	Click to search for all papers in this conference
+topicresult13	Кликните чтобы узнать больше об этой задаче	Click to learn more about this task
+topicresult14	Кликните, чтобы увидеть все публикации за этот год	Click to search for all papers published this year
+topicresult15	Число результатов	Number of results
+topicalstructure1	Тематическая структура публикаций на российских NLP-конференциях	Topical structure of publications in Russian NLP conferences
+topicalstructure2	PyLDA-визуализации	PyLDA visualisations
+topicalstructure3	Глобальная структура	Global structure
+topicalstructure4	Конференции	Conferences
+topicalstructure5	Годы	Years
+topicabout1	О сервисе	About the service
+topicabout2	<strong>RusNLP</strong> - это поисковик по англоязычным статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for English-language papers presented in Russian NLP conferences:
+topicabout3	Диалог	Dialogue
+topicabout4	Он позволяет искать по авторам, годам и конференциям, а также по ключевым словам (с использованием TF/IDF). Публикации снабжены богатыми метаданными, включая исходный URL и автоматически определенные тематики.	You can search by author, year and conference and even by keywords (using TF-IDF). Papers are accompanied with vast metadata, including the original URLs and automatically defined relevant tasks.
+topicabout5	Это часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>.Данный сервис пока находится в стадии подготовки и не претендует на полноту или точность.	It is a part of a larger project called <strong>"Analysis of publication activity in Russian comutational linguistics"</strong>.The current web service is a work in progress and does not claim to be 100% complete or accurate.
+topicabout6	Скачать весь датасет в виде базы данных Sqlite	Download the dataset as Sqlite database
+topicabout7	Публикации по проекту	Publications describing the project
+topicabout8	"<i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"	"<i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"
+topicabout9	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // Принято на AIST-2018"	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // Accepted to AIST-2018"
+topicabout10	Команда проекта	Project team
+topicabout11	В алфавитном порядке:	In alphabetic order:
+topicabout12	Амир Бакаров (НИУ ВШЭ)	Amir Bakarov (NRU HSE)
+topicabout13	Андрей Кутузов (Университет Осло)	Andrey Kutuzov(University of Oslo)
+topicabout14	Ирина Никишина (НИУ ВШЭ)	Irina Nikishina (NRU HSE)
+topicabout15	AIST	AIST
+topicabout16	AINL	AINL
