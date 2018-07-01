@@ -233,7 +233,10 @@ if __name__ == "__main__":
             nlpub_terms[row['description']]['url'] = row['url'].strip()
 
     id_index = text_vectors.keys()
-    authorsindex = set(reader.select_all_authors())
+    authorsindex = set()
+    for i in id_index:
+        cur_authors = reader.select_author_by_id(i)
+        authorsindex |= set(cur_authors)
     titlesindex = {reader.select_title_by_id(ident): ident for ident in id_index}
 
     maxthreads = 2  # Maximum number of threads

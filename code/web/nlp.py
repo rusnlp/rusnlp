@@ -99,9 +99,11 @@ def homepage(conference, year, author):
             tagged_keywords = keywords
         query = \
             {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title, 'keywords': tagged_keywords}
+        if query["f_author"] == "" and query["f_title"] == "" and len(query["f_conf"]) == 3 and query["keywords"] == [] and query["f_year"] == (2002, 2018):
+            return render_template('rusnlp.html', error="Введите какой-нибудь запрос!", url=url)
         message = [2, query, 10]
         results = json.loads(serverquery(message))
-        if len(results) == 0:
+        if len(results['neighbors']) == 0:
             return render_template('rusnlp.html', conf_query=conference, year_query=year, author_query=author,
                                    error='Поиск не дал результатов.', search=True, url=url,
                                    query=title, keywords=' '.join(keywords))
