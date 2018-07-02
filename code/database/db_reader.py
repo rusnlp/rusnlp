@@ -164,14 +164,22 @@ class ReaderDBase:
         return self._bd.select(what, where, condition)[0][0]
 
     def select_affiliation_by_id(self, article_id):
-        where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
-        cluster = list(set([i[0] for i in self._bd.select("cluster", where, '''common_id="{}"'''.format(article_id))]))
-        if len(cluster) > 0:
-            return "; ".join([self.select_affiliation_by_cluster(i) for i in cluster])
-        else:
-            where = "catalogue JOIN author JOIN article ON article.id=article_id AND author.id=author_id" 
-            result = "; ".join([i[0] for i in self._bd.select('''affiliation''', where, '''common_id="{}"'''.format(article_id))])
-            return "* "+result
+        where = "catalogue JOIN author JOIN article ON article.id=catalogue.article_id AND author.id=catalogue.author_id"
+        affiliations = list(set([i[0] for i in self._bd.select("author.affiliation", where, '''common_id="{}"'''.format(article_id))]))
+        print(affiliations)
+        aff_list = [] 
+        for affiliation in affiliations:
+            cluster = self.select_aff_cluster_by_affiliation(affiliation)
+            if len(cluster) == 1:
+                aff_list.append(self.select_affiliation_by_cluster(int(cluster[0][0])))
+            else:
+                aff_list.append("*{}".format(affiliation))               
+        return "; ".join(aff_list)
+    
+    def select_aff_cluster_by_affiliation(self, affiliation):
+        where = """author JOIN affiliation_alias ON affiliation_alias.author_id=author.id """
+        condition = '''affiliation="{}"'''.format(affiliation)
+        return self._bd.select("cluster", where, condition)
 
     def select_aff_clusters_by_id(self, common_id):
         where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
