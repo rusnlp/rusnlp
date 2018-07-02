@@ -1,4 +1,5 @@
 import numpy as np
+import re
 from pandas import DataFrame
 from nltk import word_tokenize
 
@@ -166,29 +167,22 @@ class ReaderDBase:
     def select_affiliation_by_id(self, article_id):
         where = "catalogue JOIN author JOIN article ON article.id=catalogue.article_id AND author.id=catalogue.author_id"
         affiliations = list(set([i[0] for i in self._bd.select("author.affiliation", where, '''common_id="{}"'''.format(article_id))]))
-        aff_list = [] 
+        aff_list = []
         for affiliation in affiliations:
             cluster = self.select_aff_cluster_by_affiliation(affiliation)
-            if type(cluster) is int:
-                aff_list.append(self.select_aff_cluster_by_affiliation(cluster))
+            if cluster is not None:
+                aff_list.append(self.select_affiliation_by_cluster(cluster))
             else:
-                if type(cluster) is list:
-                    for cl in cluster:
-                        aff_list.append(self.select_aff_cluster_by_affiliation(cl))
-                else:
+                affiliation = re.sub("^, ", '', affiliation.replace("\n", "")).strip()
+                if affiliation not in aff_list:
                     aff_list.append("*{}".format(affiliation))
         return "; ".join(list(set(aff_list)))
 
     def select_aff_cluster_by_affiliation(self, affiliation):
         where = """author JOIN affiliation_alias ON affiliation_alias.author_id=author.id """
         condition = '''affiliation="{}"'''.format(affiliation)
-        result = self._bd.select("cluster", where, condition)
-        if len(result) == 1:
-            return int(result[0][0])
-        elif len(result) >1:
-            return result
-        else:
-            return None
+        result = list(set(self._bd.select("cluster", where, condition)))
+        return int(result[0][0]) if len(result) == 1 else None
 
     def select_aff_clusters_by_id(self, common_id):
         where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
