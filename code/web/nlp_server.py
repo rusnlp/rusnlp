@@ -72,7 +72,7 @@ def find_nearest(q_vector, q, number, restrict=None):
     results = [
         (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
          reader.select_year_by_id(i),
-         reader.select_conference_by_id(i), reader.select_url_by_id(i), reader.select_affiliation_by_id(i),
+         reader.select_conference_by_id(i), reader.select_url_by_id(i), list(reader.select_aff_clusters_by_id(i)),
          reader.select_abstract_by_id(i)[:300] + '...', similarities[i]) for i in neighbors]
     return results
 
@@ -108,6 +108,12 @@ def f_author(q):
                 results = results.union(set(reader.select_articles_of_author(q_author)))
     return results
 
+def f_affiliation(q):
+    if q.strip().isdigit():
+        q = reader.select_affiliation_by_cluster(int(q))
+    aff_id= reader.select_aff_cluster_by_affiliation(q)[0][0]
+    results = set(reader.select_articles_by_cluster(aff_id))
+    return results
 
 def f_title(q):
     results = set()
@@ -130,7 +136,7 @@ def search(sets, number, keywords=None):
         results = [(i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
                     reader.select_year_by_id(i),
                     reader.select_conference_by_id(i), reader.select_url_by_id(i),
-                    reader.select_affiliation_by_id(i), reader.select_abstract_by_id(i)[:300] + '...') for i in valid]
+                    list(reader.select_aff_clusters_by_id(i)), reader.select_abstract_by_id(i)[:300] + '...') for i in valid]
     return results
 
 
@@ -162,7 +168,7 @@ def queryparser(query):
                            'author': list(reader.select_cluster_author_by_common_id(article_id)),
                            'year': reader.select_year_by_id(article_id),
                            'conference': reader.select_conference_by_id(article_id),
-                           'affiliation': reader.select_affiliation_by_id(article_id),
+                           'affiliation': list(reader.select_aff_clusters_by_id(article_id)),
                            'abstract': reader.select_abstract_by_id(article_id)[:300] + '...',
                            'url': reader.select_url_by_id(article_id)},
                   'topics': {}

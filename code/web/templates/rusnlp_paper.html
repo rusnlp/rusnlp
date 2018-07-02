@@ -21,12 +21,19 @@
 	
 	{% if result %}
 		
-		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}">{{ metadata['title'] }}</a>»</h2>
+		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}" style="color:green;">{{ metadata['title'] }}</a>»</h2>
 		<p><i>
 		{% for author in metadata['author'] %}
             <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>;
             {% endfor %}</i>
-		<i>{{ metadata['affiliation'] }};</i></p>
+		<i>
+		{% for aff in metadata['affiliation'] %}
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff] }}</a>;
+		{% endfor %}
+		
+		</i>
+		
+		</p>
 		<p><i><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
 		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
       <h3>{{strings['topicresult4']}}:</h3>
@@ -74,7 +81,10 @@
 
 						</td>
 						<td>
-							{{ res[6] }}
+					            {% for affiliation in res[6] %}
+					    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation] }}</a>
+					                <br/>
+						    {% endfor %}
 						</td>
 						<td>
 							<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a>

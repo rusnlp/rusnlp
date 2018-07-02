@@ -16,6 +16,7 @@ topic14	Показать дополнительные фильтры >>>	Show ad
 topic15	Латиницей! Также можно использовать метасимволы * и ?	In Latin script! You can also use metasymbols like * and ?
 topic16	Начните набирать фамилию...	Start typing a surname...
 topic17	Можно использовать метасимволы * и ?	You can use metasymbols like * and ?
+topic18	Начните набирать аффилиацию...	Start typing an affiliation name...
 topicresult1	Вот что мы нашли для вас	What we found for you
 topicresult2	Кликните по заголовку статьи для поиска похожих публикаций	Click on the paper title to search for similar publications
 topicresult3	Заголовок	Paper title
@@ -31,6 +32,7 @@ topicresult12	Кликните, чтобы увидеть все публика�
 topicresult13	Кликните чтобы узнать больше об этой задаче	Click to learn more about this task
 topicresult14	Кликните, чтобы увидеть все публикации за этот год	Click to search for all papers published this year
 topicresult15	Число результатов	Number of results
+topicresult16	Кликните, чтобы увидеть все публикации с этой аффилиацией	Click to search for all papers with this affiliation
 topicalstructure1	Тематическая структура публикаций на российских NLP-конференциях	Topical structure of publications in Russian NLP conferences
 topicalstructure2	PyLDA-визуализации	PyLDA visualisations
 topicalstructure3	Глобальная структура	Global structure

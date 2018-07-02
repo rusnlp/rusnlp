@@ -166,7 +166,6 @@ class ReaderDBase:
     def select_affiliation_by_id(self, article_id):
         where = "catalogue JOIN author JOIN article ON article.id=catalogue.article_id AND author.id=catalogue.author_id"
         affiliations = list(set([i[0] for i in self._bd.select("author.affiliation", where, '''common_id="{}"'''.format(article_id))]))
-        print(affiliations)
         aff_list = [] 
         for affiliation in affiliations:
             cluster = self.select_aff_cluster_by_affiliation(affiliation)

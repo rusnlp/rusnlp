@@ -60,7 +60,7 @@
         <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2018" min="2000" max="2020" size=4>
         {% endif %}
     	</p>
- 
+	<div id="authorform">
         <p style="margin-top:10px;width:auto;">
         {{strings['topic11']}}:
         {% if author_query %}
@@ -69,6 +69,18 @@
         <input type="text" title="{{strings['topic15']}}" class="typeahead" id="author_query" name="author_query" placeholder="{{strings['topic16']}}" maxlength=100 style="font-size:15px;">
         {% endif %}
         </p>
+        </div>
+        
+        <div id="affform">
+        <p style="margin-top:10px;width:auto;">
+        {{strings['topicresult5']}}:
+        {% if affiliation_query %}
+        <input type="text" class="typeahead" id="affiliation_query" name="affiliation_query" value="{{ affiliation_query }}" maxlength=100 style="font-size:15px;" >
+        {% else %}
+        <input type="text" class="typeahead" id="affiliation_query" name="affiliation_query" placeholder="{{strings['topic18']}}" maxlength=100 style="font-size:15px;">
+        {% endif %}
+        </p>
+        </div>
 
     <p style="margin-top:10px;width:auto;">
     {{strings['topicresult3']}}:
@@ -119,7 +131,13 @@
     	    <br/>
     	    {% endfor %}
     	    </td>
-    	    <td style="text-align:center;">{{ res[6] }}</td>
+    	    <td style="text-align:center;">
+    	    {% for affiliation in res[6] %}
+    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation] }}</a>
+    		<br/>
+    	    {% endfor %}
+    	    
+    	    </td>
     	    <td><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a></td>
     	    <td><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a></td>
                 <td>
