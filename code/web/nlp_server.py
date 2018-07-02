@@ -111,7 +111,7 @@ def f_author(q):
 def f_affiliation(q):
     if q.strip().isdigit():
         q = reader.select_affiliation_by_cluster(int(q))
-    aff_id= reader.select_aff_cluster_by_affiliation(q)[0][0]
+    aff_id= reader.select_aff_cluster_by_affiliation(q)
     results = set(reader.select_articles_by_cluster(aff_id))
     return results
 

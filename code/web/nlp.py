@@ -168,6 +168,10 @@ def paper(lang, fname):
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
+    if '.' in fname or not fname:
+        print('Error!', file=sys.stderr)
+        return render_template('rusnlp_paper.html', error="С вашим запросом что-то не так!", url=url, other_lang=other_lang, languages=languages)
+
     query = fname.strip()
     topn = 10
     if request.method == 'POST':
@@ -175,9 +179,6 @@ def paper(lang, fname):
             topn = int(request.form['topn'])
         except ValueError:
             pass
-        if not fname:
-            print('Error!', file=sys.stderr)
-            return render_template('rusnlp_paper.html', error="С вашим запросом что-то не так!", url=url, other_lang=other_lang, languages=languages)
 
     message = [1, query, topn]
     results = json.loads(serverquery(message))
@@ -197,7 +198,7 @@ def paper(lang, fname):
         message = [3, query, 10]
         author_map = json.loads(serverquery(message))['neighbors']
 
-        affiliation_ids = set()
+        affiliation_ids = set(metadata['affiliation'])
         for res in results['neighbors']:
             r_affiliations = res[6]
             affiliation_ids |= set(r_affiliations)
