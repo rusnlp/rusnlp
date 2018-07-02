@@ -174,7 +174,7 @@ class ReaderDBase:
                 aff_list.append(self.select_affiliation_by_cluster(int(cluster[0][0])))
             else:
                 aff_list.append("*{}".format(affiliation))               
-        return "; ".join(aff_list)
+        return "; ".join(list(set(aff_list)))
     
     def select_aff_cluster_by_affiliation(self, affiliation):
         where = """author JOIN affiliation_alias ON affiliation_alias.author_id=author.id """
