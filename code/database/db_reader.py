@@ -169,16 +169,26 @@ class ReaderDBase:
         aff_list = [] 
         for affiliation in affiliations:
             cluster = self.select_aff_cluster_by_affiliation(affiliation)
-            if len(cluster) == 1:
-                aff_list.append(self.select_affiliation_by_cluster(int(cluster[0][0])))
+            if type(cluster) is int:
+                aff_list.append(self.select_aff_cluster_by_affiliation(cluster))
             else:
-                aff_list.append("*{}".format(affiliation))               
+                if type(cluster) is list:
+                    for cl in cluster:
+                        aff_list.append(self.select_aff_cluster_by_affiliation(cl))
+                else:
+                    aff_list.append("*{}".format(affiliation))
         return "; ".join(list(set(aff_list)))
-    
+
     def select_aff_cluster_by_affiliation(self, affiliation):
         where = """author JOIN affiliation_alias ON affiliation_alias.author_id=author.id """
         condition = '''affiliation="{}"'''.format(affiliation)
-        return self._bd.select("cluster", where, condition)
+        result = self._bd.select("cluster", where, condition)
+        if len(result) == 1:
+            return int(result[0][0])
+        elif len(result) >1:
+            return result
+        else:
+            return None
 
     def select_aff_clusters_by_id(self, common_id):
         where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
