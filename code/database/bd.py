@@ -129,11 +129,11 @@ class DBaseRusNLP:
             The optional condition according to which the rows would be selected
         :return:
         """
-        query = "SELECT {} FROM {}".format(what, where)
+        query = '''SELECT {} FROM {}'''.format(what, where)
         if condition:
-            query += " WHERE {}".format(condition)
+            query += ''' WHERE {}'''.format(condition)
         # TODO: Replace prints with logging
-        # print(query)
+        #print(query)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
