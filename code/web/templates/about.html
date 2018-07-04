@@ -14,9 +14,28 @@
 	<li><a href="https://aistconf.org/">{{strings['topicabout15']}}</a></li>
 	<li><a href="http://ainlconf.ru/">{{strings['topicabout16']}}</a></li>
 	</ul>
-<p>{{strings['topicabout4']}}</p>
+<p></p>
 <p>{{strings['topicabout5']}}</p>
 <p><a href="/data/rus_nlp.db.gz/">{{strings['topicabout6']}}</a></p>
+
+<h2>{{strings['topicabout24']}}</h2>
+<ul>
+{% for el in stats['parameter'] %}
+    {% if stats['parameter'][el] == 'Amount of English papers'%}
+	<li>
+	{{ strings['topicabout22'] }}: {{ stats['count'][el]}}
+	</li>
+    {% elif stats['parameter'][el] == 'Amount of English authors' %}
+	<li>
+	{{ strings['topicabout18'] }}: {{ stats['count'][el]}}
+	</li>
+    {% elif stats['parameter'][el] == 'Amount of Eglish affiliations'%}
+	<li>
+	{{ strings['topicabout23'] }}: {{ stats['count'][el]}}
+	</li>
+    {% endif %}
+{% endfor %}
+</ul>
 
 <h2>{{strings['topicabout7']}}</h2>
 <ol>

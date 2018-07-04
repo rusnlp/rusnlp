@@ -176,7 +176,7 @@ def queryparser(query):
         output['meta']['filename'] = article_id
     else:
         output = {'topics': {}, 'neighbors': operations[operation](searchstring, number)}
-    if operation != 3:
+    if operation < 3:
         for n in output['neighbors']:
             text_vector = text_vectors[n[0]]
             candidates = [(topic, nlpub_terms[topic]['url']) for topic in nlpub_terms if
@@ -197,9 +197,12 @@ def ids2names(query, number):
         names = None
     return names
 
+def stats(query, number):
+    statistics = reader.get_statistics().to_dict()
+    return statistics
 
 if __name__ == "__main__":
-    operations = {1: find_nearest, 2: finder, 3: ids2names}
+    operations = {1: find_nearest, 2: finder, 3: ids2names, 4: stats}
 
     config = configparser.RawConfigParser()
     config.read('rusnlp.cfg')

@@ -235,7 +235,11 @@ def about_page(lang):
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
-    return render_template('/about.html', url=url, other_lang=other_lang, languages=languages)
+    query = {'dummy': 'dummy'}
+    message = [4, query, 10]
+    stats = json.loads(serverquery(message))["neighbors"]
+    return render_template('/about.html', url=url, other_lang=other_lang, languages=languages,
+            stats=stats)
 
 
 # redirecting requests with no lang:
