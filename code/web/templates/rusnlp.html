@@ -1,7 +1,13 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-<title>{{strings['topic4']}}</title>
+{% if '/author/' in request.path %}
+    <title>RusNLP: {{ author_query }}</title>
+{% elif '/affiliation/' in request.path %}
+    <title>RusNLP: {{ affiliation_query }}</title>
+{% else %}
+    <title>{{strings['topic4']}}</title>
+{% endif %}
 {%- endblock title %}
 
 {% block content %}
@@ -105,7 +111,13 @@
     {% endif %}
      {% if result %}
      <hr/>
+    {% if '/author/' in request.path %}
+    <h3>{{strings['topic9']}}: {{ author_query }}</h3>
+    {% elif '/affiliation/' in request.path %}
+    <h3>{{strings['topic19']}}: {{ affiliation_query }}</h3>
+    {% else %}
     <h3>{{strings['topicresult1']}}</h3>
+    {% endif %}
     <div>
         <h4>{{strings['topicresult2']}}</h4>
         <table class="sortable table table-hover">

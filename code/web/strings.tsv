@@ -10,6 +10,7 @@ topic5	Российские конференции, англоязычные с�
 topic6	Ключевые слова через пробел:	Space-separated keywords:
 topic7	Выберите одну или несколько конференций:	Select one or more conferences:
 topic8	Годы (от-до):	Years (since-till):
+topic9	Статьи автора	Papers by
 topic11	Автор	Paper author
 topic13	Искать	Search
 topic14	Показать дополнительные фильтры >>>	Show advanced filters >>>
@@ -17,6 +18,7 @@ topic15	Латиницей! Также можно использовать ме�
 topic16	Начните набирать фамилию...	Start typing a surname...
 topic17	Можно использовать метасимволы * и ?	You can use metasymbols like * and ?
 topic18	Начните набирать аффилиацию...	Start typing an affiliation name...
+topic19	Статьи с аффилиацией	Papers with the affiliation
 topicresult1	Вот что мы нашли для вас	What we found for you
 topicresult2	Кликните по заголовку статьи для поиска похожих публикаций	Click on the paper title to search for similar publications
 topicresult3	Заголовок	Paper title
@@ -62,3 +64,13 @@ topicabout21	Статей на русском	Papers in Russian
 topicabout22	Статей на английском	Papers in English
 topicabout23	Уникальных аффилиаций в англоязычных статьях	Affiliation in papers in English
 topicabout24	Статистика датасета	Dataset stats
+topicabout25	Исходный код веб-сервиса	Web service source code
+topicabout26	Вы можете использовать его наподобие <a href="https://scholar.google.com">Google Scholar</a> или <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>	You can use it in the same way as <a href="https://scholar.google.com">Google Scholar</a> or <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>.
+topicabout27	Искать публикации, о которых вы не знали	Discover academic knowledge you were not aware of
+topicabout28	находить пробелы в русском NLP, требующие дальнейшего изучения	identify "gaps" in Russian NLP, where we still lack knowledge
+topicabout29	анализировать исследовательские сообщества и публикационные тренды	analyze academic communities and publishing patterns
+topicabout30	Вопросы, на которые может ответить RusNLP	Questions that RusNLP can answer
+topicabout31	Какие есть публикации в российском NLP, похожие на уже известную мне статью?	I know this paper, what other similar papers are there in Russian NLP?
+topicabout32	Что публиковали в 2008 году компьютерные лингвисты из МГУ?	What was published in 2008 by NLP scholars from Moscow State University?
+topicabout33	Представляли ли в 2015 году на конференции AINL какие-либо исследования, связанные с перифразированием?	Were there any papers about paraphrases detection at the AINL conference in 2015?
+topicabout34	И так далее...	Etc...

@@ -12,6 +12,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta name="description" content="{{strings['topic4']}}, {{strings['topic5']}}">
+    <meta name="keywords" content="NLP, natural language processing, Russian, computational linguistics, search, поиск, компьютерная лингвистика, русский, обработка естественного языка" />
+    <link rel="shortcut icon" type="image/x-icon" href="http://nlp.rusvectores.org/static/favicon.ico"/>
+    <link rel="image_src" href="http://nlp.rusvectores.org/static/nlp.png" />
+    <link rel="canonical" href="http://nlp.rusvectores.org/" />
+    <meta name="rights" content="Creative Commons Attribution-Share Alike 4.0 International" />
+    <link rel="shortlink" href="http://nlp.rusvectores.org/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="{{strings['base1']}}" />
+    <meta property="og:url" content="http://nlp.rusvectores.org/" />
+    <meta property="og:title" content="{{strings['base3']}}" />
+    <meta property="og:description" content="{{strings['topic4']}}, {{strings['topic5']}}" />
+    <meta property="og:image" content="http://nlp.rusvectores.org/static/nlp.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://nlp.rusvectores.org/" />
+    <meta name="twitter:title" content="{{strings['base1']}}" />
+    <meta name="twitter:description" content="{{strings['topic4']}}" />
+    <meta name="dcterms.title" content="{{strings['base1']}}" />
+    <meta name="dcterms.description" content="{{strings['topic4']}}" />
     {%- endblock metas %}
 
     {%- block styles %}
@@ -53,12 +71,16 @@
   <!--/.nav-collapse -->
 </nav>
     {%- endblock navbar %}
-        <div class="container-fluid">
+        <div class="container">
       <div class="starter-template">
         <span><br><br><br></span>
     {% block content -%}
     {%- endblock content %}
     </div>
+</div>
+<hr/>
+<div style="text-align:right;">
+<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span property="dct:title" rel="dct:type">RusNLP</span> by <a href="http://nlp.rusvectores.org" property="cc:attributionName" rel="cc:attributionURL">http://nlp.rusvectores.org</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 </div>
 </div>
     {% block scripts %}
