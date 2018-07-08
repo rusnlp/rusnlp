@@ -44,7 +44,7 @@ topicabout1	О сервисе	About the service
 topicabout2	<strong>RusNLP</strong> - это поисковик по англоязычным статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for English-language papers presented in Russian NLP conferences:
 topicabout3	Диалог	Dialogue
 topicabout4	Он позволяет искать по авторам, годам и конференциям, а также по ключевым словам (с использованием TF/IDF). Публикации снабжены богатыми метаданными, включая исходный URL и автоматически определенные тематики.	You can search by author, year and conference and even by keywords (using TF-IDF). Papers are accompanied with vast metadata, including the original URLs and automatically defined relevant tasks.
-topicabout5	Это часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>.Данный сервис пока находится в стадии подготовки и не претендует на полноту или точность.	It is a part of a larger project called <strong>"Analysis of publication activity in Russian comutational linguistics"</strong>.The current web service is a work in progress and does not claim to be 100% complete or accurate.
+topicabout5	Это часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>. Данный сервис пока находится в стадии подготовки и не претендует на полноту или точность.	It is a part of a larger project called <strong>"Analysis of publication activity in Russian comutational linguistics"</strong>. The current web service is a work in progress and does not claim to be 100% complete or accurate.
 topicabout6	Скачать весь датасет в виде базы данных Sqlite	Download the dataset as Sqlite database
 topicabout7	Публикации по проекту	Publications describing the project
 topicabout8	"<i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"	"<i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"
@@ -62,15 +62,16 @@ topicabout19	Уникальных авторов	Unique authors
 topicabout20	Всего статей	Total papers
 topicabout21	Статей на русском	Papers in Russian
 topicabout22	Статей на английском	Papers in English
-topicabout23	Уникальных аффилиаций в англоязычных статьях	Affiliation in papers in English
+topicabout23	Уникальных аффилиаций в англоязычных статьях	Affiliations in papers in English
 topicabout24	Статистика датасета	Dataset stats
 topicabout25	Исходный код веб-сервиса	Web service source code
-topicabout26	Вы можете использовать его наподобие <a href="https://scholar.google.com">Google Scholar</a> или <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>	You can use it in the same way as <a href="https://scholar.google.com">Google Scholar</a> or <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>.
+topicabout26	Вы можете использовать его наподобие <a href="https://scholar.google.com">Google Scholar</a> или <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>	You can use it in the same way as <a href="https://scholar.google.com">Google Scholar</a> or <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>
 topicabout27	Искать публикации, о которых вы не знали	Discover academic knowledge you were not aware of
 topicabout28	находить пробелы в русском NLP, требующие дальнейшего изучения	identify "gaps" in Russian NLP, where we still lack knowledge
 topicabout29	анализировать исследовательские сообщества и публикационные тренды	analyze academic communities and publishing patterns
-topicabout30	Вопросы, на которые может ответить RusNLP	Questions that RusNLP can answer
+topicabout30	Вопросы, на которые может ответить <strong>RusNLP</strong>	Questions that <strong>RusNLP</strong> can answer
 topicabout31	Какие есть публикации в российском NLP, похожие на уже известную мне статью?	I know this paper, what other similar papers are there in Russian NLP?
 topicabout32	Что публиковали в 2008 году компьютерные лингвисты из МГУ?	What was published in 2008 by NLP scholars from Moscow State University?
 topicabout33	Представляли ли в 2015 году на конференции AINL какие-либо исследования, связанные с перифразированием?	Were there any papers about paraphrases detection at the AINL conference in 2015?
 topicabout34	И так далее...	Etc...
+topicabout35	Слайды	Slides
