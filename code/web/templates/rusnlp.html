@@ -1,33 +1,36 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-     <title>RusNLP: поиск</title>
-
+{% if '/author/' in request.path %}
+    <title>RusNLP: {{ author_query }}</title>
+{% elif '/affiliation/' in request.path %}
+    <title>RusNLP: {{ affiliation_query }}</title>
+{% else %}
+    <title>{{strings['topic4']}}</title>
+{% endif %}
 {%- endblock title %}
 
 {% block content %}
     <div class="row" style="text-align:center;">
-        <h1>RusNLP: поиск по научным статьям в области natural language processing</h1>
-          <p class="lead">Российские конференции, англоязычные статьи</p>
 	{% if search %}
         <div id="queryform">
             <form id="inputform" action="#" method=post>
             
 
               <div class="form-group center-block" style="text-align:center">
-	      <p style="margin-top:15px;font-size:30px;"><strong>Ключевые слова через пробел:</strong></p>
+	      <p style="margin-top:15px;font-size:30px;"><strong>{{strings['topic6']}}</strong></p>
     {% if keywords %}
-       	   <input type="text" title="Пишите имена собственные, например, названия языков, с большой буквы" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
+       	   <input type="text" title="{{strings['topic1']}}" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
         {% else %}
-               <input type="text" title="Пишите имена собственные, например, названия языков, с большой буквы" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
+               <input type="text" title="{{strings['topic1']}}" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
     {% endif %}
 	       </div>
     
     <details>
-    <summary><a class="lead" style="cursor:pointer;">Показать дополнительные фильтры >>></a></summary>
+    <summary><a class="lead" style="cursor:pointer;">{{strings['topic14']}}</a></summary>
             <div class="form-group" id="advtab">
         <fieldset style="width:auto;text-align:center;">
-                Конференции:
+                {{strings['topicalstructure4']}}:
                  <select name="conf_query" multiple class="form-control" style="text-align:center;max-width:400px;margin-right:auto;margin-left:auto;">
         	    <option value="Dialogue"
                     {% if conf_query  %}
@@ -35,26 +38,26 @@
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:center;">Диалог</option>
+                        style="text-align:center;">{{strings['topicabout3']}}</option>
         	    <option value="AIST"
                            {% if conf_query  %}
                     {% if 'AIST' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:center;">AIST</option>
+                        style="text-align:center;">{{strings['topicabout15']}}</option>
                 <option value="AINL"
                                     {% if conf_query  %}
                     {% if 'AINL' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:center;">AINL</option>
+                        style="text-align:center;">{{strings['topicabout16']}}</option>
                  </select>
         	</fieldset>
 
        <p style="margin-top:10px;">
-       Даты (от-до):
+       {{strings['topic8']}}
         {% if year_query %}
         <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2000" max="2020" size=4>
         <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2000" max="2020" size=4>
@@ -63,29 +66,41 @@
         <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2018" min="2000" max="2020" size=4>
         {% endif %}
     	</p>
- 
+	<div id="authorform">
         <p style="margin-top:10px;width:auto;">
-        Автор:
+        {{strings['topic11']}}:
         {% if author_query %}
-        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=100 style="font-size:15px;" >
+        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=100 style="font-size:15px;" >
         {% else %}
-        <input type="text" title="Латиницей! Также можно использовать метасимволы * и ?" class="typeahead" id="author_query" name="author_query" placeholder="Начните набирать фамилию латиницей..." maxlength=100 style="font-size:15px;">
+        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="author_query" name="author_query" placeholder="{{strings['topic16']}}" maxlength=100 style="font-size:15px;">
         {% endif %}
         </p>
+        </div>
+        
+        <div id="affform">
+        <p style="margin-top:10px;width:auto;">
+        {{strings['topicresult5']}}:
+        {% if affiliation_query %}
+        <input type="text" class="typeahead" id="affiliation_query" name="affiliation_query" value="{{ affiliation_query }}" maxlength=100 style="font-size:15px;" >
+        {% else %}
+        <input type="text" class="typeahead" id="affiliation_query" name="affiliation_query" placeholder="{{strings['topic18']}}" maxlength=100 style="font-size:15px;">
+        {% endif %}
+        </p>
+        </div>
 
     <p style="margin-top:10px;width:auto;">
-    Заголовок:
+    {{strings['topicresult3']}}:
     {% if query %}
-       	   <input type="text" title="Можно использовать метасимволы * и ?" class="tt-left" id="query" name="query" value="{{ query }}" maxlength=500 size=80 style="font-size:15px;">
+       	   <input type="text" title="{{strings['topic17']}}" class="tt-left" id="query" name="query" value="{{ query }}" maxlength=500 size=80 style="font-size:15px;">
         {% else %}
-               <input type="text" title="Можно использовать метасимволы * и ?" class="tt-left" id="query" name="query" placeholder="*embedding*" maxlength=500 style="font-size:15px;">
+               <input type="text" title="{{strings['topic17']}}" class="tt-left" id="query" name="query" placeholder="*embedding*" maxlength=500 style="font-size:15px;">
     {% endif %}
     </p>
 
       </div>
       </details>
 
-      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;font-size: 40px;padding-top: 0px;margin-top:20px;">Искать</button>
+      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;font-size: 40px;padding-top: 0px;margin-top:20px;">{{strings['topic13']}}</button>
             </form>
         </div>
     {% endif %}
@@ -96,39 +111,51 @@
     {% endif %}
      {% if result %}
      <hr/>
-    <h3>Вот что мы нашли для вас</h3>
+    {% if '/author/' in request.path %}
+    <h3>{{strings['topic9']}}: {{ author_query }}</h3>
+    {% elif '/affiliation/' in request.path %}
+    <h3>{{strings['topic19']}}: {{ affiliation_query }}</h3>
+    {% else %}
+    <h3>{{strings['topicresult1']}}</h3>
+    {% endif %}
     <div>
-        <h4>Кликните по заголовку статьи, чтобы увидеть похожие публикации</h4>
+        <h4>{{strings['topicresult2']}}</h4>
         <table class="sortable table table-hover">
         <tr style="border-bottom:1px solid black;">
-        <th style="text-align: left;">Заголовок</th> 
-        <th style="text-align:center;">Автор</th> 
-        <th style="text-align:center;">Аффилиация</th> 
-        <th  style="text-align:center;">Конференция</th> 
-        <th>Год</th>
-        <th style="text-align:center;">Задачи</th>
+        <th style="text-align: left;">{{strings['topicresult3']}}</th>
+        <th style="text-align:center;">{{strings['topic11']}}</th>
+        <th style="text-align:center;">{{strings['topicresult5']}}</th>
+        <th  style="text-align:center;">{{strings['topicresult6']}}</th>
+        <th>{{strings['topicresult7']}}</th>
+        <th style="text-align:center;">{{strings['topicresult8']}}</th>
         {% if keywords %}
-        <th>Близость к запросу </th>
+        <th>{{strings['topicresult9']}}</th>
         {% endif %}
         
         </tr>
 	{% for res in result if not "No results" in res and not 'is unknown' in res  %}
     	    <tr style="border-bottom:1px solid black;">
-    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}publ/{{ res[0] }}">{{ res[1] }}</a>
-    	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните, чтобы перейти к оригиналу публикации" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
+    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}{{lang}}/publ/{{ res[0] }}">{{ res[1] }}</a>
+    	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult10']}}" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
     	    <td style="text-align:center;">
     	    {% for author in res[2] %}
-    	    <a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации этого автора" target="_blank" href="{{ url }}author/{{ author }}">{{ author_map[author|string] }}</a>
+    	    <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
     	    <br/>
     	    {% endfor %}
     	    </td>
-    	    <td style="text-align:center;">{{ res[6] }}</td>
-    	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации на этой конференции" target="_blank" href="{{ url }}conf/{{ res[4] }}">{{ res[4] }}</a></td>
-    	    <td><a data-toggle="tooltip" data-placement="top" title="Кликните, чтобы увидеть все публикации за этот год" target="_blank" href="{{ url }}year/{{ res[3] }}">{{ res[3] }}</a></td>
+    	    <td style="text-align:center;">
+    	    {% for affiliation in res[6] %}
+    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation] }}</a>
+    		<br/>
+    	    {% endfor %}
+    	    
+    	    </td>
+    	    <td><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a></td>
+    	    <td><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a></td>
                 <td>
                           {% if res[0] in topics %}
                             {% for topic in topics[res[0]] %}
-                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="Кликните чтобы узнать больше об этой теме" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
+                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult13']}}" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
                              {% endfor %}
                             {% else %}
                             -

@@ -1,3 +1,5 @@
 # Map of Russian NLP
 
-Under active development, currently unusable
+This is the repository of code for the RusNLP project.
+
+http://nlp.rusvectores.org

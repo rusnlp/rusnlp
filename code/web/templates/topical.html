@@ -1,24 +1,24 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-     <title>RusNLP: Тематическая структура</title>
+     <title>RusNLP: {{strings['topic2']}}</title>
  {%- endblock title %}
 
 
 {% block content %}
 <div>
-<h1>Тематическая структура публикаций на российских NLP-конференциях</h1>
-<h3>PyLDA-визуализации</h3>
+<h1>{{strings['topicalstructure1']}}</h1>
+<h3>{{strings['topicalstructure2']}}</h3>
 <ul>
-    <li><strong><a href="http://rusvectores.org/static/rusnlp/global.html">Глобальная структура</a></strong></li>
-    <li><strong>Конференции</strong>
+    <li><strong><a href="http://rusvectores.org/static/rusnlp/global.html">{{strings['topicalstructure3']}}</a></strong></li>
+    <li><strong>{{strings['topicalstructure4']}}</strong>
     <ol>
-        <li><a href="http://rusvectores.org/static/rusnlp/conferences/dialog.html">Dialog</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/conferences/ainl.html">AINL</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/conferences/aist.html">AIST</a></li>
+        <li><a href="http://rusvectores.org/static/rusnlp/conferences/dialog.html">{{strings['topicabout3']}}</a></li>
+        <li><a href="http://rusvectores.org/static/rusnlp/conferences/ainl.html">{{strings['topicabout16']}}</a></li>
+        <li><a href="http://rusvectores.org/static/rusnlp/conferences/aist.html">{{strings['topicabout15']}}</a></li>
     </ol>
     </li>
-    <li><strong>Годы</strong>
+    <li><strong>{{strings['topicalstructure5']}}</strong>
     <ol>
         <li><a href="http://rusvectores.org/static/rusnlp/years/2001.html">2001</a></li>
         <li><a href="http://rusvectores.org/static/rusnlp/years/2003.html">2003</a></li>

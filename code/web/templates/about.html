@@ -1,38 +1,71 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-     <title>RusNLP: О проекте</title>
+     <title>RusNLP: {{strings['topic3']}}</title>
  {%- endblock title %}
 
 
 {% block content %}
 <div>
-        <h1>О сервисе</h1>
-<p><strong>RusNLP</strong> - это поисковик по англоязычным статьям, опубликованным на российских конференциях по компьютерной лингвистике:</p>
+        <h1>{{strings['topicabout1']}}</h1>
+<p>{{strings['topicabout2']}}</p>
 <ul>
-	<li><a href="http://www.dialog-21.ru">"Диалог"</a></li>
-	<li><a href="https://aistconf.org/">AIST</a></li> 
-	<li><a href="http://ainlconf.ru/">AINL</a></li> 	
+	<li><a href="http://www.dialog-21.ru">"{{strings['topicabout3']}}"</a></li>
+	<li><a href="https://aistconf.org/">{{strings['topicabout15']}}</a></li>
+	<li><a href="http://ainlconf.ru/">{{strings['topicabout16']}}</a></li>
 	</ul>
-<p>Он позволяет искать по авторам, годам и конференциям, а также по ключевым словам (с использованием TF/IDF). Публикации снабжены богатыми метаданными, включая исходный URL и автоматически определенные тематики.</p>
-<p>Это часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>.
-Данный сервис пока находится в стадии подготовки и не претендует на полноту или точность.
-</p>
-<p><a href="/data/rus_nlp.db.gz/">Скачать весь датасет в виде базы данных Sqlite</a></p>
+<p>{{strings['topicabout26']}}:</p>
+<ul>
+	<li>{{strings['topicabout27']}};</li>
+	<li>{{strings['topicabout28']}};</li>
+	<li>{{strings['topicabout29']}};</li>
+</ul>
+<p>{{strings['topicabout30']}}:</p>
+<ul>
+	<li><i>{{strings['topicabout31']}}</i></li>
+	<li><i>{{strings['topicabout32']}}</i></li>
+	<li><i>{{strings['topicabout33']}}</i></li>
+	<li><i>{{strings['topicabout34']}}</i></li>
+</ul>
 
-<h2>Публикации по проекту</h2>
+
+<p>{{strings['topicabout5']}}</p>
+<p><strong><a href="/data/rus_nlp.db.gz/">{{strings['topicabout6']}}</a></strong></p>
+<p><strong><a target="_blank" href="https://github.com/bakarov/rusnlp/tree/master/code/web">{{strings['topicabout25']}}</a></strong></p>
+
+
+<h2>{{strings['topicabout24']}}</h2>
+<ul>
+{% for el in stats['parameter'] %}
+    {% if stats['parameter'][el] == 'Amount of English papers'%}
+	<li>
+	{{ strings['topicabout22'] }}: {{ stats['count'][el]}}
+	</li>
+    {% elif stats['parameter'][el] == 'Amount of English authors' %}
+	<li>
+	{{ strings['topicabout18'] }}: {{ stats['count'][el]}}
+	</li>
+    {% elif stats['parameter'][el] == 'Amount of Eglish affiliations'%}
+	<li>
+	{{ strings['topicabout23'] }}: {{ stats['count'][el]}}
+	</li>
+    {% endif %}
+{% endfor %}
+</ul>
+
+<h2>{{strings['topicabout7']}}</h2>
 <ol>
-<li><p><i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href="http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf" target="_blank">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018</p></li>
-<li><p><i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // Принято на AIST-2018</p></li>
+<li><p><i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href="http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf" target="_blank">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue-2018</p></li>
+<li><p><i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. <a href="http://nlp.rusvectores.org/static/rusnlp-semantic-search.pdf">RusNLP: Semantic search engine for Russian NLP conference papers</a> // AIST-2018 (<a href="/static/rusnlp_slides.pdf">{{strings['topicabout35']}}</a>)</p></li>
 <li><p>...</p></li>
 </ol>
 
-<h2>Команда проекта</h2>
-В алфавитном порядке:
+<h2>{{strings['topicabout10']}}</h2>
+{{strings['topicabout11']}}
 <ul>
-<li>Амир Бакаров (НИУ ВШЭ)</li>
-<li>Андрей Кутузов (Университет Осло)</li>
-<li>Ирина Никишина (НИУ ВШЭ)</li>
+<li>{{strings['topicabout12']}}</li>
+<li>{{strings['topicabout13']}}</li>
+<li>{{strings['topicabout14']}}</li>
 </ul>
 
 

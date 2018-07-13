@@ -1,4 +1,5 @@
 import numpy as np
+import re
 from pandas import DataFrame
 from nltk import word_tokenize
 
@@ -164,13 +165,24 @@ class ReaderDBase:
         return self._bd.select(what, where, condition)[0][0]
 
     def select_affiliation_by_id(self, article_id):
-        where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
-        cluster = list(set([i[0] for i in self._bd.select("cluster", where, '''common_id="{}"'''.format(article_id))]))
-        if len(cluster) == 1:
-            return self.select_affiliation_by_cluster(cluster[0])
-        else:
-            where = "catalogue JOIN author JOIN article ON article.id=article_id AND author.id=author_id" 
-            return self._bd.select('''affiliation''', where, '''common_id="{}"'''.format(article_id))
+        where = "catalogue JOIN author JOIN article ON article.id=catalogue.article_id AND author.id=catalogue.author_id"
+        affiliations = list(set([i[0] for i in self._bd.select("author.affiliation", where, '''common_id="{}"'''.format(article_id))]))
+        aff_list = []
+        for affiliation in affiliations:
+            cluster = self.select_aff_cluster_by_affiliation(affiliation)
+            if cluster is not None:
+                aff_list.append(self.select_affiliation_by_cluster(cluster))
+            else:
+                affiliation = re.sub("^, ", '', affiliation.replace("\n", "")).strip()
+                if affiliation not in aff_list:
+                    aff_list.append("*{}".format(affiliation))
+        return "; ".join(list(set(aff_list)))
+
+    def select_aff_cluster_by_affiliation(self, affiliation):
+        where = """author JOIN affiliation_alias ON affiliation_alias.author_id=author.id """
+        condition = '''affiliation="{}"'''.format(affiliation)
+        result = list(set(self._bd.select("cluster", where, condition)))
+        return int(result[0][0]) if len(result) == 1 else None
 
     def select_aff_clusters_by_id(self, common_id):
         where = "catalogue JOIN author JOIN article JOIN affiliation_alias ON article.id=catalogue.article_id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
@@ -182,6 +194,11 @@ class ReaderDBase:
         condition = "cluster={}".format(cluster_id)
         return set([i[0] for i in self._bd.select("common_id", where, condition)])
     
+    def select_affiliation_by_language(self, lang):
+        where = "catalogue JOIN author JOIN article ON article.id=catalogue.article_id AND author.id=catalogue.author_id"
+        condition = '''language="{}"'''.format(lang)
+        return set([re.sub("^, ", '', i[0].replace("\n", "")).strip() for i in self._bd.select("affiliation", where, condition)])
+        
     def select_author_cluster_by_alias_name(self, alias):
         where = "author_alias"
         condition = '''alias="{}"'''.format(alias)
@@ -219,9 +236,9 @@ class ReaderDBase:
         :return: list of strings
             All rows of a specified column.
         """
-        where = "catalogue INNER JOIN conference INNER JOIN article INNER JOIN author INNER JOIN author_alias  INNER JOIN affiliation_alias ON" \
-                " author.id=author_alias.author_id AND catalogue.conference_id=conference.id AND " \
-                "catalogue.article_id=article.id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id"
+        where = '''catalogue JOIN conference  JOIN article  JOIN author  JOIN author_alias  JOIN affiliation_alias ON''' \
+                ''' author.id=author_alias.author_id AND catalogue.conference_id=conference.id AND ''' \
+                '''catalogue.article_id=article.id AND author.id=catalogue.author_id AND affiliation_alias.author_id=author.id'''
         return [i[0] for i in self._bd.select('DISTINCT '+ column, where, condition)]
 
     def select_all_common_ids(self):
@@ -248,13 +265,16 @@ class ReaderDBase:
 
         :return: None
         """
-        df = DataFrame(index=np.arange(0, 6), columns=['parameter', 'count'])
+        df = DataFrame(index=np.arange(0, 7), columns=['parameter', 'count'])
         df.loc[0]=('Overall amount of papers', self.select_count('article'))
         df.loc[1]=('Amount of unique authors', len(self.select_all_authors()))
         df.loc[2]=('Amount of unique affiliations', len(self.select_all_affiliations()))
         df.loc[3]=('Amount of Russian papers', self.count_articles_with_lang('ru'))
         df.loc[4]=('Amount of English papers', self.count_articles_with_lang('en'))
-        df.loc[5]=('Corpus size in tokens',  7515811)
+        #df.loc[5]=('Amount of Russian authors',len(self.select_all_from_column("author_alias.alias", '''language="ru"''')))
+        df.loc[5]=('Amount of English authors',len(self.select_all_from_column("author_alias.alias", '''language="en"''')))
+        #df.loc[7]=('Amount of Russian affiliations',len(self.select_all_from_column("affiliation_alias.cluster", '''language="ru"''')))
+        df.loc[6]=('Amount of Eglish affiliations',len(self.select_all_from_column("affiliation_alias.cluster", '''language="en"''')))
         self.__db_statistics = df
 
     def count_articles_with_lang(self, language):
