@@ -4,7 +4,7 @@
 {% if '/author/' in request.path %}
     <title>RusNLP: {{ author_query }}</title>
 {% elif '/affiliation/' in request.path %}
-    <title>RusNLP: {{ affiliation_query[0] }}</title>
+    <title>RusNLP: {{ affiliation_query }}</title>
 {% elif '/conf/' in request.path %}
     <title>RusNLP: {{ conf_query[0] }}</title>
 {% else %}
