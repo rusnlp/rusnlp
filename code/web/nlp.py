@@ -18,7 +18,6 @@ languages_list = config.get('Languages', 'interface_languages').split(',')
 languages = '/'.join(list(language_dicts.keys())).upper()
 url = config.get('Other', 'url')
 
-
 # Establishing connection to model server
 host = config.get('Sockets', 'host')
 port = config.getint('Sockets', 'port')
@@ -65,11 +64,13 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 
 nlpsearch = Blueprint('nlpsearch', __name__, template_folder='templates')
 
+
 def after_this_request(func):
     if not hasattr(g, 'call_after_request'):
         g.call_after_request = []
     g.call_after_request.append(func)
     return func
+
 
 @nlpsearch.after_request
 def per_request_callbacks(response):
@@ -77,20 +78,29 @@ def per_request_callbacks(response):
         response = func(response)
     return response
 
-@nlpsearch.route('/'+ '<lang:lang>/', defaults={'conference': '', 'year': '', 'author': '', 'affiliation': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/'+ '<lang:lang>/' + 'conf/<conference>', defaults={'year': '', 'author': '', 'affiliation': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/'+ '<lang:lang>/' + 'year/<year>', defaults={'conference': '', 'author': '', 'affiliation': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/'+ '<lang:lang>/' + 'author/<author>', defaults={'conference': '', 'year': '', 'affiliation': ''}, methods=['GET', 'POST'])
-@nlpsearch.route('/'+ '<lang:lang>/' + 'affiliation/<affiliation>', defaults={'conference': '', 'year': '', 'author': ''}, methods=['GET', 'POST'])
-def homepage(lang, conference, year, author, affiliation):
+
+@nlpsearch.route('/' + '<lang:lang>/',
+                 defaults={'conference': '', 'year': '', 'author': '', 'affiliation': '', 'keywords': ''},
+                 methods=['GET', 'POST'])
+@nlpsearch.route('/' + '<lang:lang>/' + 'conf/<conference>',
+                 defaults={'year': '', 'author': '', 'affiliation': '', 'keywords': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/' + '<lang:lang>/' + 'year/<year>',
+                 defaults={'conference': '', 'author': '', 'affiliation': '', 'keywords': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/' + '<lang:lang>/' + 'author/<author>',
+                 defaults={'conference': '', 'year': '', 'affiliation': '', 'keywords': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/' + '<lang:lang>/' + 'affiliation/<affiliation>',
+                 defaults={'conference': '', 'year': '', 'author': '', 'keywords': ''}, methods=['GET', 'POST'])
+@nlpsearch.route('/' + '<lang:lang>/' + 'kw/<keywords>',
+                 defaults={'conference': '', 'year': '', 'author': '', 'affiliation': ''}, methods=['GET', 'POST'])
+def homepage(lang, conference, year, author, affiliation, keywords):
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
-    s = set([lang])
+    s = {lang}
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
-    if conference or year or author or affiliation or request.method == 'POST':
+    if conference or year or author or affiliation or keywords or request.method == 'POST':
         if request.method == 'POST':
             keywords = request.form['keywords'].strip().split()
             author = request.form['author_query'].strip()
@@ -104,8 +114,9 @@ def homepage(lang, conference, year, author, affiliation):
             if year_max:
                 year_max = int(year_max)
         else:
-            keywords = ''
             title = ''
+            if keywords:
+                keywords = keywords.strip().split('+')
             if conference:
                 conference = [conference]
             year_min = year
@@ -113,7 +124,8 @@ def homepage(lang, conference, year, author, affiliation):
         year = (year_min, year_max)
         if year[0] and year[1]:
             if year[0] > year[1]:
-                return render_template('rusnlp.html', error="Проверьте даты!", url=url, other_lang=other_lang, languages=languages, search=True)
+                return render_template('rusnlp.html', error="Проверьте даты!", url=url, other_lang=other_lang,
+                                       languages=languages, search=True)
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
         if keywords:
@@ -122,15 +134,18 @@ def homepage(lang, conference, year, author, affiliation):
         else:
             tagged_keywords = keywords
         query = \
-            {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title, "f_affiliation": affiliation, 'keywords': tagged_keywords}
-        if query["f_author"] == "" and query["f_affiliation"] == "" and query["f_title"] == "" and len(query["f_conf"]) == 3 and query["keywords"] == [] and query["f_year"] == (2002, 2018):
-            return render_template('rusnlp.html', error="Введите какой-нибудь запрос!", url=url, other_lang=other_lang, languages=languages, search=True)
+            {'f_author': author, 'f_year': year, "f_conf": conference, "f_title": title, "f_affiliation": affiliation,
+             'keywords': tagged_keywords}
+        if query["f_author"] == "" and query["f_affiliation"] == "" and query["f_title"] == "" and len(
+                query["f_conf"]) == 3 and query["keywords"] == [] and query["f_year"] == (2002, 2018):
+            return render_template('rusnlp.html', error="Введите какой-нибудь запрос!", url=url, other_lang=other_lang,
+                                   languages=languages, search=True)
         message = [2, query, 10]
         results = json.loads(serverquery(message))
         if len(results['neighbors']) == 0:
             return render_template('rusnlp.html', conf_query=conference, year_query=year, author_query=author,
                                    error='Поиск не дал результатов.', search=True, url=url,
-                                   affiliation_query = affiliation,
+                                   affiliation_query=affiliation,
                                    query=title, keywords=' '.join(keywords), other_lang=other_lang, languages=languages)
         author_ids = set()
         for res in results['neighbors']:
@@ -155,22 +170,24 @@ def homepage(lang, conference, year, author, affiliation):
         return render_template('rusnlp.html', result=results['neighbors'], conf_query=conference, author_query=author,
                                year_query=year, search=True, url=url, query=title,
                                affiliation_query=affiliation,
-                               topics=results['topics'], aff_map=aff_map, keywords=' '.join(keywords), author_map=author_map, other_lang=other_lang, languages=languages)
+                               topics=results['topics'], aff_map=aff_map, keywords=' '.join(keywords),
+                               author_map=author_map, other_lang=other_lang, languages=languages)
     return render_template('rusnlp.html', search=True, url=url, other_lang=other_lang, languages=languages)
 
 
-@nlpsearch.route('/'+ '<lang:lang>/' + 'publ/<fname>', methods=['GET', 'POST'])
+@nlpsearch.route('/' + '<lang:lang>/' + 'publ/<fname>', methods=['GET', 'POST'])
 def paper(lang, fname):
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
-    s = set([lang])
+    s = {lang}
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
     if '.' in fname or not fname:
         print('Error!', file=sys.stderr)
-        return render_template('rusnlp_paper.html', error="С вашим запросом что-то не так!", url=url, other_lang=other_lang, languages=languages)
+        return render_template('rusnlp_paper.html', error="С вашим запросом что-то не так!", url=url,
+                               other_lang=other_lang, languages=languages)
 
     query = fname.strip()
     topn = 10
@@ -214,12 +231,12 @@ def paper(lang, fname):
                                topn=topn, topics=topics, other_lang=other_lang, languages=languages)
 
 
-@nlpsearch.route('/'+ '<lang:lang>/' + 'topical/')
+@nlpsearch.route('/' + '<lang:lang>/' + 'topical/')
 def topical_page(lang):
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
-    s = set([lang])
+    s = {lang}
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
@@ -231,7 +248,7 @@ def about_page(lang):
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
-    s = set([lang])
+    s = {lang}
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
@@ -239,7 +256,7 @@ def about_page(lang):
     message = [4, query, 10]
     stats = json.loads(serverquery(message))["neighbors"]
     return render_template('/about.html', url=url, other_lang=other_lang, languages=languages,
-            stats=stats)
+                           stats=stats)
 
 
 # redirecting requests with no lang:
@@ -248,16 +265,15 @@ def about_page(lang):
 def redirect_main(path):
     req = request.path.split('/')[-2]
     if path:
-        req += '/'+path
+        req += '/' + path
     if len(req) == 0:
         req = '/'
     else:
-        #if req[-1] != '/':
+        # if req[-1] != '/':
         #    req += '/'
         if req[0] != '/':
-            req = '/'+req
+            req = '/' + req
     return redirect(url + 'ru' + req)
-
 
 
 @nlpsearch.route('/api/<title>/<num>', methods=['GET'])

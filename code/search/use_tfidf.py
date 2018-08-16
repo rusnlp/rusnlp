@@ -13,10 +13,14 @@ from db_reader import ReaderDBase
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_withouttexts.db'),
+bd_m = DBaseRusNLP(path.join('..', '..', '..', 'database', 'rus_nlp_withouttexts_aff_authid.db'),
                    path.join('..', '..', '..', 'database', 'database_metadata.json'))
 reader = ReaderDBase(bd_m)
 
+a = reader.select_all_authors()
+print(len(a))
+
+exit()
 
 orderfile = sys.argv[1]
 indexfile = sys.argv[2]

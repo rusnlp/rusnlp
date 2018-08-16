@@ -9,6 +9,7 @@ url = config.get('Other', 'url')
 
 app_rusnlp = Flask(__name__, static_url_path='/data/')
 
+
 @app_rusnlp.route('/data/<path:query>/')
 def send(query):
     if 'rus_nlp.db.gz' in query:
@@ -16,12 +17,15 @@ def send(query):
     else:
         return send_from_directory('data/', query)
 
+
 app_rusnlp.url_map.converters['lang'] = LangConverter
 app_rusnlp.register_blueprint(nlpsearch)
+
 
 @app_rusnlp.context_processor
 def set_globals():
     return dict(lang=g.lang, strings=g.strings)
+
 
 def url_for_other_page(page):
     args = request.view_args.copy()

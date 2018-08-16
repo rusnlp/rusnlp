@@ -7,6 +7,7 @@ the strings, and lets the main app use it
 """
 
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import next
 import sys
