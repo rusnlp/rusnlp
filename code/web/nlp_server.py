@@ -51,6 +51,7 @@ def clientthread(connection, address):
         print(now.strftime("%Y-%m-%d %H:%M"), '\t', address[0] + ':' + str(address[1]), '\t', data, file=sys.stderr)
 
         output = queryparser(query)
+        # print(output)
 
         reply = json.dumps(output, ensure_ascii=False) + '&&&'
         connection.sendall(reply.encode('utf-8'))
@@ -222,8 +223,10 @@ if __name__ == "__main__":
     metadatafile = config.get('Files and directories', 'database_meta')
     nlpubfile = config.get('Files and directories', 'nlpub_file')
 
-    bd_m = DBaseRusNLP(path.join('data', 'rus_nlp_withouttexts.db'),
-                       path.join('data', 'database_metadata.json'))
+    print('Loading database from', databasefile, file=sys.stderr)
+
+    bd_m = DBaseRusNLP(path.join('data', databasefile),
+                       path.join('data', metadatafile))
     reader = ReaderDBase(bd_m)
 
     # Loading model
