@@ -6,7 +6,7 @@ http://nlp.rusvectores.org
 
 Papers:
 
-1. [http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf](Russian Computational Linguistics: Topical Structure in 2007-2017 Conference Papers)
+1. [Russian Computational Linguistics: Topical Structure in 2007-2017 Conference Papers](http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf)
 ```
 @article{bakarovrussian,
   title={Russian Computational Linguistics: Topical Structure in 2007-2017 Conference Papers},
