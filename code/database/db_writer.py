@@ -2,6 +2,7 @@ import sqlite3
 from pandas import DataFrame
 from nltk.corpus import stopwords
 import shutil
+import re
 
 
 class WriterDBase:
@@ -80,9 +81,24 @@ class WriterDBase:
         """
         max_id = self.db.select_max('author_alias')
         max_id += 1
-        variant_alias_id = self.select_id_from_author_alias(variant)
-        if not variant_alias_id:
-            self.db.insert('author_alias', (max_id, alias, variant), ["id", "alias", "author_id"])
+        self.db.insert('author_alias', (max_id, alias, variant), ["id", "alias", "author_id"])
+
+    def insert_into_author_alias_new(self, cluster_id, alias, variant):
+        """
+        Associate author with a new alias for her name.
+        :param cluster_id: string
+            Unique author identified
+        :param alias: string
+            Unique author identified
+        :param variant: string
+            New variant of author's name
+        :return: None
+        """
+        max_id = self.db.select_max('author_alias')
+        max_id += 1
+        self.db.insert('author_alias', (max_id, cluster_id, alias, variant), ["id", "cluster_id", "alias", "variant"])
+
+
 
     def select_id_from_author_alias(self, variant):
         """
@@ -113,6 +129,22 @@ class WriterDBase:
         max_id = self.db.select_max('affiliation_alias')
         max_id += 1
         self.db.insert('affiliation_alias', (max_id, cluster, alias, author), ["id", "cluster",  "alias", "author_id"])
+
+    def insert_into_affiliation_alias_new(self, cluster_id, alias, variant):
+        """
+        Associate affiliation with a new alias for its name.
+
+        :param cluster_id: string
+            Unique affiliation identified
+        :param alias: string
+            New variant of author's name
+        :param variant: string
+            I don't know why its here
+        :return: None
+        """
+        max_id = self.db.select_max('affiliation_alias')
+        max_id += 1
+        self.db.insert('affiliation_alias', (max_id, cluster_id, alias, variant), ["id", "cluster_id", "alias", "variant"])
 
     def insert_new_article(self, author, article, conference_name, url, file_path, common_id, year):
         """
@@ -334,9 +366,24 @@ class WriterDBase:
                 exceptions.append((name, index))
         return exceptions
 
-    def load_to_affiliation_alias(self, file_path):
+    def load_to_author_alias_new(self, file_path):
         """
 
+        :param file_path:
+        :return:
+        """
+        with open(file_path, 'r', encoding='utf-8') as f:
+            string = f.read().split('\n')
+        for i in range(len(string)):
+            alias, variants = [i.strip() for i in string[i].split(':')]
+            new_variants = [variant.strip() for variant in variants[1:-1].split(',')]
+            for variant in new_variants:
+                self.insert_into_author_alias_new(i+1, alias, variant)
+
+
+    def load_to_affiliation_alias(self, file_path):
+        """
+        @deprecated
         :param file_path:
         :return:
         """
@@ -357,6 +404,40 @@ class WriterDBase:
                 #print(affiliation[1].replace("\n", "").strip())
                 # TODO: Replace prints with logging
                 # print("foreign key error:\n", e,  "for \n", results[affiliation[1]], affiliation[1], affiliation[0])
+
+    def __refine_affiliation(self, aff):
+        aff = aff.replace("\n", '')
+        aff = re.sub("^(\d{1,2})?,( )+", "", aff)
+        aff = re.sub("^((\d|\*)( )?,?( )?)+( )*", "", aff)
+        return aff.strip()
+
+    def load_to_affiliation_alias_new(self, file_path):
+        """
+        :param file_path:
+        :return:
+        """
+        with open(file_path, 'r', encoding='utf-8') as f:
+            affiliations = f.readlines()
+        results = {}
+        for aff_cluster in range(len(affiliations)):
+            for aff in affiliations[aff_cluster].split("\t"):
+                ref_aff = self.__refine_affiliation(aff)
+                if ref_aff != "":
+                    self.insert_into_affiliation_alias_new(aff_cluster+1, "", ref_aff)
+                    results[ref_aff] = aff_cluster+1
+        return results
+
+        # self.db.cursor.execute("""SELECT id, affiliation FROM author""")
+        # results_aff = self.db.cursor.fetchall()
+        # for affiliation in results_aff:
+        #    try:
+        #        normalized_ = affiliation[1].replace("\n", "").strip()
+        #        self.insert_into_affiliation_alias(results[normalized_], affiliation[1], affiliation[0])
+        #    except (sqlite3.IntegrityError, KeyError):
+        #        pass
+        #        #print(affiliation[1].replace("\n", "").strip())
+        #        # TODO: Replace prints with logging
+        #        # print("foreign key error:\n", e,  "for \n", results[affiliation[1]], affiliation[1], affiliation[0])
 
     def delete_column(self, table, column):
         """
@@ -386,7 +467,18 @@ class WriterDBase:
         self.db.cursor.execute("ALTER TABLE {} RENAME TO {}".format(middle_name,
                                table))
         self.db.conn.commit()
-	
+
+    def delete_article(self, common_id):
+        self.db.cursor.execute('SELECT id FROM article WHERE common_id="{}"'.format(common_id))
+        article_id = self.db.cursor.fetchall()[0][0]
+        self.db.cursor.execute('SELECT author_id FROM catalogue WHERE article_id={}'.format(article_id))
+        author_ids = [i[0] for i in self.db.cursor.fetchall()]
+        print(article_id, author_ids)
+        self.db.delete("catalogue", "article_id", article_id)
+        self.db.delete("article", "common_id", common_id)
+        for au in author_ids:
+            self.db.delete("author", "id", au)
+
     def delete_rows_from_article_by_common_id(self, values_to_delete):
         for i in values_to_delete:
             self.db.cursor.execute('SELECT id FROM article WHERE common_id="{}"'.format(i))

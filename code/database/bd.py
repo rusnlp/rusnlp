@@ -101,9 +101,12 @@ class DBaseRusNLP:
             The optional condition
         :return:
         """
-        query = "DELETE * FROM " + table
-        where = "WHERE {} = {}".format(column, self.check(condition))
+        query = "DELETE FROM " + table
+        where = " WHERE {} = {}".format(column, self.check(condition))
         self.cursor.execute(query + where)
+        self.conn.isolation_level = None
+        self.cursor.execute('VACUUM')
+        self.conn.isolation_level = ''
         self.conn.commit()
 
     def drop(self, table):
@@ -201,7 +204,7 @@ class DBaseRusNLP:
         if type(value) == int:
             return str(value)
         elif type(value) == str:
-            value = value.replace("'",""" """).replace('"', """ """)
+            value = value.replace('"', '')
             value = ''.join([x for x in value if ord(x)])
             return u''+'''"''' + value + '''"'''
         elif not value:
@@ -223,9 +226,47 @@ class DBaseRusNLP:
 
 
 if __name__ == '__main__':
-    c = DBaseRusNLP("rus_nlp_up.db", "meta_data.json")
-    # print(c.author_columns)
+    c = DBaseRusNLP("rus_nlp_withouttexts_server_after_update.db", "meta_data.json")
     bd_read_helper = ReaderDBase(c)
     bd_write_helper = WriterDBase(c)
-    # print(bd_read_helper.get_statistics())
-    # print(bd_read_helper.select_author_and_title_by_id("%.+%"))
+
+    # c.alter_add_column("conference", "description_ru", "text")
+    # c.alter_add_column("conference", "description_en", "text")
+    # c.alter_add_column("conference", "conf_id", "INT")
+    # c.update("conference", "conf_id", 1, "conference", "Dialogue")
+    # c.update("conference", "conf_id", 2, "conference", "AIST")
+    # c.update("conference", "conf_id", 3, "conference", "AINL")
+    # c.update("conference", "conf_id", 4, "conference", "RuSSIR")
+    # descr_ru_d = '''"Диалог" - старейшая и крупнейшая российская конференция по компьютерной лингвистике и обработке естественного языка. Объединяет как лингвистов общего направления так и специалистов по автоматическим методам.\nРегулярно проводится с 1995 года, предшествующие ей семинары проводились с 70-х годов XX века.\nМестоположение: Москва\nСайт: http://www.dialog-21.ru/'''
+    # descr_en_d = '''"Dialogue" is the oldest and the largest Russian conference in computational linguistics and NLP. Its participants come both from general linguistics and from automatic language processing communities.\nThe conference is held regularly since 1995, it was preceded by irregular topical workshops since 1970s.\nLocation: Moscow\nWeb page: http://www.dialog-21.ru/'''
+    # descr_ru_as = '''AIST - это конференция, посвященная "анализу изображений, социальных сетей и текстов" ("Analysis of Images, Social networks and Texts" - отсюда английская аббревиатура AIST). В основном направлена на специалистов по компьютерным наукам и обработке данных, но доклады по автоматической обработке языка традиционно составляют весьма существенную часть программы.\nРегулярно проводится с 2012 года.\nМестоположение: ранее Екатеринбург, ныне Москва\nСайт: https://aistconf.org/'''
+    # descr_en_as = '''AIST is a conference dedicated to the Analysis of Images, Social networks and Texts (hence the AIST abbreviation). It is mostly aimed at computer and data scientists, but has a very strong NLP component.\nAIST is regularly held since 2012.\nLocation: previously Yekaterinburg, recently Moscow\nWeb page: https://aistconf.org/'''
+    # descr_ru_an = '''AINL - это конференция по искусственному интеллекту и естественному языка ("Artificial Intelligence and Natural Language"). Заявляется о сильном упоре на практические задачи и демонстрацию реальных приложений, традиционно много докладчиков из индустрии. Многие из организаторов AINL являются специалистами в NLP, и темы, связанны с автоматической обработкой естественного языка являются неотъемлемой частью конференции. AINL активно приглашает к участию студентов.\nРегулярно проводится с 2012 года.\nМестоположение: Санкт-Петербург\nСайт: https://ainlconf.ru/'''
+    # descr_en_an = '''AINL is a conference in Artificial Intelligence and Natural Language. It has strong focus on practical tasks, with industrial talks and demos. NLP topics are ubiquitous, with many organizers coming from the NLP community. Students are particularly encourage to participate in AINL\nAINL is regularly held since 2012.\nLocation: Saint Petersburg\nWeb page: https://ainlconf.ru/'''
+    # c.update("conference", "description_ru", descr_ru_d, "conference", "Dialogue")
+    # c.update("conference", "description_ru", descr_ru_as, "conference", "AIST")
+    # c.update("conference", "description_ru", descr_ru_an, "conference", "AINL")
+    # c.update("conference", "description_en", descr_en_d, "conference", "Dialogue")
+    # c.update("conference", "description_en", descr_en_as, "conference", "AIST")
+    # c.update("conference", "description_en", descr_en_an, "conference", "AINL")
+
+    #bd_write_helper.delete_article("ainl_2016_7868559ccb77c5c82fae24a937fa266db151ddf0")
+
+    #bd_write_helper.delete_rows_from_article_by_common_id(["ainl_2016_7868559ccb77c5c82fae24a937fa266db151ddf0"])
+    c.cursor.execute("SELECT * FROM conference")
+    a = c.cursor.fetchall()
+    for i in a:
+        print(i)
+    # try:
+    #     for i in range(18):
+    #         bd_write_helper.insert_into_conference([('Dialogue', 2000 + i)])
+    #     for i in range(15, 18):
+    #         bd_write_helper.insert_into_conference([('AINL', 2000 + i)])
+    #     for i in range(7, 18):
+    #         bd_write_helper.insert_into_conference([('AIST', 2000 + i)])
+    #     for i in range(7, 18):
+    #         bd_write_helper.insert_into_conference([('RuSSIR', 2000 + i)])
+    # except Exception as e:
+    #     print(e)
+    # # bd_write_helper.load_to_affiliation_alias_new("affiliations_final.tsv")
+    # bd_write_helper.load_to_author_alias_new("new_names.txt")

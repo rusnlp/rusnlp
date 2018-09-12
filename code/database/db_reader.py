@@ -7,9 +7,9 @@ from nltk import word_tokenize
 class ReaderDBase:
     def __init__(self, db):
         self._bd = db
-        self.__counted_corpus_size = 7515811
-        self.__db_statistics = None
-        self.update_statistics()
+        #self.__counted_corpus_size = 7515811
+        #self.__db_statistics = None
+        #self.update_statistics()
 
     def get_statistics(self):
         """
@@ -130,12 +130,12 @@ class ReaderDBase:
         """
         title_result = self.select_title_by_id(article_id)
         if title_result:
-            title = ' '.join(list(title_result[0]))
+            title = title_result
         else:
             title = "No id in db"
         result_author = self.select_author_by_id(article_id)
         if result_author:
-            authors = ', '.join([j[0] for j in result_author])
+            authors = ', '.join([j for j in result_author])
         else:
             authors = ""
         return 'Title: "{}" Authors: {}'.format(title, authors)
