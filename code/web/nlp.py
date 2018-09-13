@@ -100,6 +100,8 @@ def homepage(lang, conference, year, author, affiliation, keywords):
     other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
 
+    descriptions = {}
+
     if conference or year or author or affiliation or keywords or request.method == 'POST':
         if request.method == 'POST':
             keywords = request.form['keywords'].strip().split()
@@ -119,6 +121,9 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                 keywords = keywords.strip().split('+')
             if conference:
                 conference = [conference]
+                query = {'field': 'conference', 'ids': conference}
+                message = [5, query, 10]
+                descriptions['conferences'] = json.loads(serverquery(message))['neighbors']
             year_min = year
             year_max = year
         year = (year_min, year_max)
@@ -169,7 +174,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
 
         return render_template('rusnlp.html', result=results['neighbors'], conf_query=conference, author_query=author,
                                year_query=year, search=True, url=url, query=title,
-                               affiliation_query=affiliation,
+                               affiliation_query=affiliation, descriptions=descriptions,
                                topics=results['topics'], aff_map=aff_map, keywords=' '.join(keywords),
                                author_map=author_map, other_lang=other_lang, languages=languages)
     return render_template('rusnlp.html', search=True, url=url, other_lang=other_lang, languages=languages)

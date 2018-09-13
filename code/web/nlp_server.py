@@ -206,9 +206,18 @@ def stats(query, number):
     statistics = reader.get_statistics().to_dict()
     return statistics
 
+def descriptions(query, number):
+    entity = query['field']
+    ids = query['ids']
+    if entity == 'conference':
+        descr = reader.get_dict_of_conference_description(ids[0])
+    else:
+        descr = None
+    return descr
+
 
 if __name__ == "__main__":
-    operations = {1: find_nearest, 2: finder, 3: ids2names, 4: stats}
+    operations = {1: find_nearest, 2: finder, 3: ids2names, 4: stats, 5: descriptions}
 
     config = configparser.RawConfigParser()
     config.read('rusnlp.cfg')

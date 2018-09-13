@@ -119,6 +119,11 @@
     <h3>{{strings['topic19']}}: {{ affiliation_query }}</h3>
     {% elif '/conf/' in request.path %}
     <h3>{{strings['topic20']}}: {{ conf_query[0] }}</h3>
+    <p>
+    {% for par in descriptions['conferences'][lang].split('\n') %}
+	<i>{{ par }}</i><br/>
+    {% endfor %}
+    </p>
     {% else %}
     <h3>{{strings['topicresult1']}}</h3>
     {% endif %}
