@@ -226,7 +226,7 @@ class DBaseRusNLP:
 
 
 if __name__ == '__main__':
-    c = DBaseRusNLP("rus_nlp_withouttexts_server_after_update.db", "meta_data.json")
+    c = DBaseRusNLP("rus_nlp_withouttexts_server_12_09.db", "meta_data.json")
     bd_read_helper = ReaderDBase(c)
     bd_write_helper = WriterDBase(c)
 
@@ -253,10 +253,8 @@ if __name__ == '__main__':
     #bd_write_helper.delete_article("ainl_2016_7868559ccb77c5c82fae24a937fa266db151ddf0")
 
     #bd_write_helper.delete_rows_from_article_by_common_id(["ainl_2016_7868559ccb77c5c82fae24a937fa266db151ddf0"])
-    c.cursor.execute("SELECT * FROM conference")
-    a = c.cursor.fetchall()
-    for i in a:
-        print(i)
+
+    print(bd_read_helper.get_dict_of_conference_description("AINL"))
     # try:
     #     for i in range(18):
     #         bd_write_helper.insert_into_conference([('Dialogue', 2000 + i)])
