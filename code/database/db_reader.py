@@ -316,3 +316,8 @@ class ReaderDBase:
         texts = self.select_all_from_column("article")
         all_text_len = sum([len(word_tokenize(text[0])) for text in texts])
         return all_text_len
+
+    def get_dict_of_conference_description(self, confname):
+        self._bd.cursor.execute('SELECT description_ru, description_en FROM conference WHERE conference.conference="{}"'.format(confname))
+        result = self._bd.cursor.fetchall()[0]
+        return {"ru": result[0], "en": result[1]}
