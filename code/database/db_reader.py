@@ -318,6 +318,6 @@ class ReaderDBase:
         return all_text_len
 
     def get_dict_of_conference_description(self, confname):
-        self._bd.cursor.execute('SELECT description_ru, description_en FROM conference WHERE conference.conference="{}"'.format(confname))
+        self._bd.cursor.execute('SELECT description_ru, description_en, url FROM conference WHERE conference.conference="{}"'.format(confname))
         result = self._bd.cursor.fetchall()[0]
-        return {"ru": result[0], "en": result[1]}
+        return {"ru": result[0], "en": result[1], "url": result[2]}
