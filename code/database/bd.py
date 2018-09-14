@@ -226,10 +226,11 @@ class DBaseRusNLP:
 
 
 if __name__ == '__main__':
-    c = DBaseRusNLP("rus_nlp_withouttexts_server_12_09.db", "meta_data.json")
+    c = DBaseRusNLP("rus_nlp_withouttexts_server_14_09.db", "meta_data.json")
     bd_read_helper = ReaderDBase(c)
     bd_write_helper = WriterDBase(c)
 
+    # c.alter_add_column("conference", "url", "text")
     # c.alter_add_column("conference", "description_ru", "text")
     # c.alter_add_column("conference", "description_en", "text")
     # c.alter_add_column("conference", "conf_id", "INT")
@@ -237,24 +238,32 @@ if __name__ == '__main__':
     # c.update("conference", "conf_id", 2, "conference", "AIST")
     # c.update("conference", "conf_id", 3, "conference", "AINL")
     # c.update("conference", "conf_id", 4, "conference", "RuSSIR")
-    # descr_ru_d = '''"Диалог" - старейшая и крупнейшая российская конференция по компьютерной лингвистике и обработке естественного языка. Объединяет как лингвистов общего направления так и специалистов по автоматическим методам.\nРегулярно проводится с 1995 года, предшествующие ей семинары проводились с 70-х годов XX века.\nМестоположение: Москва\nСайт: http://www.dialog-21.ru/'''
-    # descr_en_d = '''"Dialogue" is the oldest and the largest Russian conference in computational linguistics and NLP. Its participants come both from general linguistics and from automatic language processing communities.\nThe conference is held regularly since 1995, it was preceded by irregular topical workshops since 1970s.\nLocation: Moscow\nWeb page: http://www.dialog-21.ru/'''
-    # descr_ru_as = '''AIST - это конференция, посвященная "анализу изображений, социальных сетей и текстов" ("Analysis of Images, Social networks and Texts" - отсюда английская аббревиатура AIST). В основном направлена на специалистов по компьютерным наукам и обработке данных, но доклады по автоматической обработке языка традиционно составляют весьма существенную часть программы.\nРегулярно проводится с 2012 года.\nМестоположение: ранее Екатеринбург, ныне Москва\nСайт: https://aistconf.org/'''
-    # descr_en_as = '''AIST is a conference dedicated to the Analysis of Images, Social networks and Texts (hence the AIST abbreviation). It is mostly aimed at computer and data scientists, but has a very strong NLP component.\nAIST is regularly held since 2012.\nLocation: previously Yekaterinburg, recently Moscow\nWeb page: https://aistconf.org/'''
-    # descr_ru_an = '''AINL - это конференция по искусственному интеллекту и естественному языка ("Artificial Intelligence and Natural Language"). Заявляется о сильном упоре на практические задачи и демонстрацию реальных приложений, традиционно много докладчиков из индустрии. Многие из организаторов AINL являются специалистами в NLP, и темы, связанны с автоматической обработкой естественного языка являются неотъемлемой частью конференции. AINL активно приглашает к участию студентов.\nРегулярно проводится с 2012 года.\nМестоположение: Санкт-Петербург\nСайт: https://ainlconf.ru/'''
-    # descr_en_an = '''AINL is a conference in Artificial Intelligence and Natural Language. It has strong focus on practical tasks, with industrial talks and demos. NLP topics are ubiquitous, with many organizers coming from the NLP community. Students are particularly encourage to participate in AINL\nAINL is regularly held since 2012.\nLocation: Saint Petersburg\nWeb page: https://ainlconf.ru/'''
+    # descr_ru_d = '''"Диалог" - старейшая и крупнейшая российская конференция по компьютерной лингвистике и обработке естественного языка. Объединяет как лингвистов общего направления так и специалистов по автоматическим методам.\nРегулярно проводится с 1995 года, предшествующие ей семинары проводились с 70-х годов XX века.\nМестоположение: Москва'''
+    # descr_en_d = '''"Dialogue" is the oldest and the largest Russian conference in computational linguistics and NLP. Its participants come both from general linguistics and from automatic language processing communities.\nThe conference is held regularly since 1995, it was preceded by irregular topical workshops since 1970s.\nLocation: Moscow'''
+    # descr_ru_as = '''AIST - это конференция, посвященная "анализу изображений, социальных сетей и текстов" ("Analysis of Images, Social networks and Texts" - отсюда английская аббревиатура AIST). В основном направлена на специалистов по компьютерным наукам и обработке данных, но доклады по автоматической обработке языка традиционно составляют весьма существенную часть программы.\nРегулярно проводится с 2012 года.\nМестоположение: ранее Екатеринбург, ныне Москва'''
+    # descr_en_as = '''AIST is a conference dedicated to the Analysis of Images, Social networks and Texts (hence the AIST abbreviation). It is mostly aimed at computer and data scientists, but has a very strong NLP component.\nAIST is regularly held since 2012.\nLocation: previously Yekaterinburg, recently Moscow'''
+    # descr_ru_an = '''AINL - это конференция по искусственному интеллекту и естественному языка ("Artificial Intelligence and Natural Language"). Заявляется о сильном упоре на практические задачи и демонстрацию реальных приложений, традиционно много докладчиков из индустрии. Многие из организаторов AINL являются специалистами в NLP, и темы, связанны с автоматической обработкой естественного языка являются неотъемлемой частью конференции. AINL активно приглашает к участию студентов.\nРегулярно проводится с 2012 года.\nМестоположение: Санкт-Петербург'''
+    # descr_en_an = '''AINL is a conference in Artificial Intelligence and Natural Language. It has strong focus on practical tasks, with industrial talks and demos. NLP topics are ubiquitous, with many organizers coming from the NLP community. Students are particularly encourage to participate in AINL\nAINL is regularly held since 2012.\nLocation: Saint Petersburg'''
+    # url_d = '''http://www.dialog-21.ru/'''
+    # url_as = '''https://aistconf.org/'''
+    # url_an = '''https://ainlconf.ru/'''
     # c.update("conference", "description_ru", descr_ru_d, "conference", "Dialogue")
     # c.update("conference", "description_ru", descr_ru_as, "conference", "AIST")
     # c.update("conference", "description_ru", descr_ru_an, "conference", "AINL")
     # c.update("conference", "description_en", descr_en_d, "conference", "Dialogue")
     # c.update("conference", "description_en", descr_en_as, "conference", "AIST")
     # c.update("conference", "description_en", descr_en_an, "conference", "AINL")
+    # c.update("conference", "url", url_d, "conference", "Dialogue")
+    # c.update("conference", "url", url_as, "conference", "AIST")
+    # c.update("conference", "url", url_an, "conference", "AINL")
 
     #bd_write_helper.delete_article("ainl_2016_7868559ccb77c5c82fae24a937fa266db151ddf0")
 
     #bd_write_helper.delete_rows_from_article_by_common_id(["ainl_2016_7868559ccb77c5c82fae24a937fa266db151ddf0"])
 
-    print(bd_read_helper.get_dict_of_conference_description("AINL"))
+    x = bd_read_helper.get_dict_of_conference_description("Dialogue")
+    for i,v in x.items():
+        print(i, v)
     # try:
     #     for i in range(18):
     #         bd_write_helper.insert_into_conference([('Dialogue', 2000 + i)])
