@@ -1,0 +1,62 @@
+{
+  "author": [
+    {
+      "id": "INT PRIMARY KEY",
+      "name": "text",
+      "email": "text"
+    }
+  ],
+  "article": [
+    {
+      "id": "INT PRIMARY KEY",
+      "title": "text",
+      "keywords": "text",
+      "abstract": "text",
+      "bibliography": "text",
+      "language": "text",
+      "url": "text"
+    }
+  ],
+  "conference": [
+    {
+      "id": "INT PRIMARY KEY",
+	  "conference_id": "INT",
+      "conference_name": "text",
+      "year": "int",
+	  "description": "text"
+    }
+  ],
+  "catalogue": [
+    {
+      "id": "INT PRIMARY KEY",
+      "author_id": "INT",
+      "author_alias_id": "INT",
+      "article_id": "INT",
+      "affiliation_alias_id": "INT",
+      "conference_id": "INT",
+      "common_id": "text",
+      "filepath": "text"
+    },
+    "CONSTRAINT catalogue_author FOREIGN KEY(author_id) REFERENCES author(id) ON DELETE CASCADE",
+    "CONSTRAINT catalogue_article FOREIGN KEY(article_id) REFERENCES article(id) ON DELETE CASCADE",
+    "CONSTRAINT catalogue_conference FOREIGN KEY(conference_id) REFERENCES conference(id) ON DELETE CASCADE",
+    "CONSTRAINT alias_article FOREIGN KEY(article_alias_id) REFERENCES article_alias(id) ON DELETE CASCADE",
+    "CONSTRAINT alias_author FOREIGN KEY(author_alias_id) REFERENCES author_alias(id) ON DELETE CASCADE"
+  ],
+  "author_alias": [
+    {
+      "id": "INT PRIMARY KEY",
+      "cluster_id": "INT",
+      "alias": "text",
+      "variant": "text"
+    }
+  ],
+  "affiliation_alias": [
+    {
+      "id": "INT PRIMARY KEY",
+      "cluster_id": "INT",
+      "alias": "text",
+      "variant": "text"
+    }
+  ]
+}
