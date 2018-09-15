@@ -1,62 +1,74 @@
 {
+  "article_map": [
+    {
+      "article_id": "INT PRIMARY KEY",
+      "author_id": "INT",
+      "affiliation_id": "INT",
+      "email_id": "INT"
+    }
+  ],
   "author": [
     {
       "id": "INT PRIMARY KEY",
+      "name": "text"
+    }
+  ],
+  "affilition": [
+    {
+      "id": "INT PRIMARY KEY",
       "name": "text",
-      "email": "text"
+      "city": "text",
+      "country": "text"
     }
   ],
-  "article": [
+  "email": [
     {
       "id": "INT PRIMARY KEY",
-      "title": "text",
-      "keywords": "text",
-      "abstract": "text",
-      "bibliography": "text",
-      "language": "text",
-      "url": "text"
+      "name": "text"
     }
   ],
-  "conference": [
+  "article_lang_map": [
     {
       "id": "INT PRIMARY KEY",
-	  "conference_id": "INT",
-      "conference_name": "text",
-      "year": "int",
-	  "description": "text"
+	    "lang_id": "INT"
+    }
+  ],
+  "language": [
+    {
+      "id": "INT PRIMARY KEY",
+	    "name": "text"
     }
   ],
   "catalogue": [
     {
       "id": "INT PRIMARY KEY",
-      "author_id": "INT",
-      "author_alias_id": "INT",
-      "article_id": "INT",
-      "affiliation_alias_id": "INT",
       "conference_id": "INT",
+      "language_id": "INT",
       "common_id": "text",
-      "filepath": "text"
+      "filepath": "text",
+      "url": "text"
     },
-    "CONSTRAINT catalogue_author FOREIGN KEY(author_id) REFERENCES author(id) ON DELETE CASCADE",
-    "CONSTRAINT catalogue_article FOREIGN KEY(article_id) REFERENCES article(id) ON DELETE CASCADE",
-    "CONSTRAINT catalogue_conference FOREIGN KEY(conference_id) REFERENCES conference(id) ON DELETE CASCADE",
-    "CONSTRAINT alias_article FOREIGN KEY(article_alias_id) REFERENCES article_alias(id) ON DELETE CASCADE",
-    "CONSTRAINT alias_author FOREIGN KEY(author_alias_id) REFERENCES author_alias(id) ON DELETE CASCADE"
   ],
-  "author_alias": [
+  "conference": [
     {
       "id": "INT PRIMARY KEY",
-      "cluster_id": "INT",
-      "alias": "text",
-      "variant": "text"
-    }
+      "name": "text"
+    },
   ],
-  "affiliation_alias": [
+  "ru_article_metadata": [
     {
       "id": "INT PRIMARY KEY",
-      "cluster_id": "INT",
-      "alias": "text",
-      "variant": "text"
-    }
+      "title": "text",
+      "abstract": "text",
+      "keywords": "text"
+    },
+  ],
+  "en_article_metadata": [
+    {
+      "id": "INT PRIMARY KEY",
+      "title": "text",
+      "abstract": "text",
+      "keywords": "text"
+    },
   ]
 }
