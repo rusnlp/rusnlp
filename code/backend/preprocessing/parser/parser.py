@@ -3,7 +3,7 @@ from collections import defaultdict
 from pickle import dump
 from langdetect import detect_langs
 
-path_to_dataset = path.join('..', '..', '..', '..', 'gitlab-rusnlp', 'rusnlp', 'DATASET', 'conferences/')
+path_to_dataset = path.join('..', '..', '..', '..', '..', 'gitlab-rusnlp', 'rusnlp', 'DATASET', 'conferences/')
 splitter = '%\n%\n'
 english_label = '==ENGLISH==\n'
 russian_label = '==RUSSIAN==\n'
