@@ -54,7 +54,7 @@ def serverquery(message):
     # Now receive data
     reply = ''
     while '&&&' not in reply:
-        reply += s.recv(32768).decode('utf-8')
+        reply += s.recv(65536).decode('utf-8')
     s.close()
     reply = reply[:-3]
     return reply

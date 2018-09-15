@@ -123,6 +123,7 @@
     {% for par in descriptions['conferences'][lang].split('\n') %}
 	<i>{{ par }}</i><br/>
     {% endfor %}
+    <a target="_blank" data-toggle="tooltip" data-placement="top" title="{{ conf_query[0] }}" href="{{ descriptions['conferences']['url'] }}" style="color: green;">{{ descriptions['conferences']['url'] }}</a>
     </p>
     {% else %}
     <h3>{{strings['topicresult1']}}</h3>
