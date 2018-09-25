@@ -1,7 +1,8 @@
-from os import walk, path
+from os import walk, path, makedirs
 from collections import defaultdict
-from pickle import dump
+from pickle import dump, load
 from langdetect import detect_langs
+import json
 
 path_to_dataset = path.join('..', '..', '..', '..', '..', 'gitlab-rusnlp', 'rusnlp', 'DATASET', 'conferences/')
 splitter = '%\n%\n'
@@ -11,13 +12,17 @@ number_of_splits = 4
 serialized_name = 'tmp.pickle'
 empty_symbol = '-'
 minimum_text_length = 50
+authors_list = {}
 
 
-def get_data_from_filename(filename):
+def get_data_from_filename(metadata, filename):
     chunks = filename.split('/')
     year = chunks[~0]
     conference = chunks[~1]
-    return year, conference
+    metadata['year'] = year
+    metadata['conference'] = conference
+    metadata['path'] = filename
+    return year, conference, metadata
 
 
 def set_language_metadata(lang_1_tag, lang_2_tag):
@@ -53,13 +58,20 @@ def define_first_and_last_to_seek(text):
 
 
 def add_author_metadata(author):
-    if '\n' not in 'author':
+    if '\n' not in author:
         return empty_symbol
     data = {}
     data_fields = author.split('\n')
-    data['author'] = data_fields[0]
+    for k, v in authors_list.items():
+        if data_fields[0] in v:
+            data['author'] = k
+        else:
+            data['author'] = data_fields[0]
     data['affiliations'] = data_fields[1].split(';')
-    data['email'] = data_fields[2].split(',')
+    try:
+        data['email'] = data_fields[2].split(',')
+    except:
+        data['email'] = '-'
     return data
 
 
@@ -109,7 +121,6 @@ def update_text_metadata(text):
     if not text:
         text = '-'
     text_metadata = {}
-    text_metadata['text'] = text
     text_metadata['token_length'] = len(text.split())
     text_metadata = detext_text_language(text_metadata, text)
     return text_metadata
@@ -121,10 +132,12 @@ def parse_paper(text):
     metadata, text = update_metadata(metadata, 'language_1', text[fts_pos:].split(splitter, number_of_splits))
     if not last_to_seek:
         metadata['text'] = update_text_metadata(text)
+        metadata['text-text'] = text
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_2', text[lts_pos:].split(splitter, number_of_splits))
     metadata['text'] = update_text_metadata(text)
+    metadata['text-text'] = text
     return dict(metadata)
 
 
@@ -134,13 +147,33 @@ def serialize_data(data):
 
 
 if __name__ == '__main__':
+    with open('authors.pickle', 'rb') as f:
+        authors_list = load(f)
     data = {}
     for root, dirs, files in walk(path_to_dataset):
         for file in files:
             if path.splitext(file)[1] == '.txt':
-                year, conference = get_data_from_filename(root)
+                name_of_file = path.splitext(file)[0]
                 with open(path.join(root, file), 'r', encoding='utf-8') as f:
                     read = f.read()
-                    data[path.join(root, file)] = parse_paper(read)
+                    metadata = parse_paper(read)
+                    year, conference, metadata = get_data_from_filename(metadata, root)
+                    data[path.join(root, file)] = metadata
+                    if not path.exists(path.join('../../../../../gitlab-rusnlp/rusnlp/data/', conference, year, name_of_file)):
+                        makedirs(path.join('../../../../../gitlab-rusnlp/rusnlp/data/', conference, year, name_of_file))
+                    with open(path.join('../../../../../gitlab-rusnlp/rusnlp/data/', conference, year, name_of_file,'lang_1' + '.json'), 'w') as f:
+                        json.dump(metadata['language_1'], f, indent=4, sort_keys=True)
+                    try:
+                        with open(path.join('../../../../../gitlab-rusnlp/rusnlp/data/', conference, year, name_of_file, 'lang_2' + '.json'), 'w') as f:
+                            json.dump(metadata['language_2'], f, indent=4, sort_keys=True)
+                    except KeyError:
+                        pass
+                    with open(path.join('../../../../../gitlab-rusnlp/rusnlp/data/', conference, year, name_of_file, 'common' + '.json'), 'w') as f:
+                        json.dump(metadata['text'], f, indent=4, sort_keys=True)
+                    try:
+                        with open(path.join('../../../../../gitlab-rusnlp/rusnlp/data/', conference, year, name_of_file, 'text' + '.txt'), 'w', encoding='utf-8') as f:
+                            f.write(metadata['text-text'])
+                    except TypeError:
+                        pass
     serialize_data(data)
     print('Done')
