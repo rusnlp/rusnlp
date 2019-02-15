@@ -3,6 +3,8 @@ from collections import defaultdict
 from pickle import dump, load
 from langdetect import detect_langs
 from platform import system
+from hashlib import sha1
+from transliterate import translit
 import json
 
 path_to_dataset = path.join('DATASET', 'conferences')
@@ -17,7 +19,8 @@ authors_list = {}
 global_affils = set()
 
 
-def get_data_from_filename(metadata, filename):
+def get_data_from_filename(filename):
+    metadata = defaultdict(lambda: {})
     if system() == 'Windows':
         chunks = filename.split('\\')
     else:
@@ -30,8 +33,7 @@ def get_data_from_filename(metadata, filename):
     return year, conference, metadata
 
 
-def set_language_metadata(lang_1_tag, lang_2_tag):
-    metadata = defaultdict(lambda: {})
+def set_language_metadata(lang_1_tag, lang_2_tag, metadata):
     metadata['language_1']['lang'] = lang_1_tag
     if not lang_2_tag:
         return metadata
@@ -39,24 +41,24 @@ def set_language_metadata(lang_1_tag, lang_2_tag):
     return metadata
 
 
-def define_first_and_last_to_seek(text, filepath):
+def define_first_and_last_to_seek(text, filepath, metadata):
     if english_label in text and russian_label in text:
         if text.find(english_label) > text.find(russian_label):
             first_to_seek = russian_label
             last_to_seek = english_label
-            metadata = set_language_metadata('ru', 'en')
+            metadata = set_language_metadata('ru', 'en', metadata)
         else:
             first_to_seek = english_label
             last_to_seek = russian_label
-            metadata = set_language_metadata('en', 'ru')
+            metadata = set_language_metadata('en', 'ru', metadata)
     elif english_label in text and russian_label not in text:
         first_to_seek = english_label
         last_to_seek = None
-        metadata = set_language_metadata('en', None)
+        metadata = set_language_metadata('en', None, metadata)
     elif english_label not in text and russian_label in text:
         first_to_seek = russian_label
         last_to_seek = None
-        metadata = set_language_metadata('ru', None)
+        metadata = set_language_metadata('ru', None, metadata)
     else:
         with open('errors.txt', 'a') as f:
             f.write('{}\n'.format(filepath))
@@ -102,6 +104,13 @@ def parse_title(title):
     return title.replace('\n', ' ').strip().lower().title()
 
 
+def generate_hash(text_metadata, title):
+    hasher = sha1()
+    hasher.update(translit(title.replace(' ', '_').lower(), 'ru', reversed=True).encode())
+    text_metadata['hash'] = '{}_{}_{}'.format(metadata['conference'], metadata['year'], str(hasher.hexdigest())).lower()
+    return text_metadata
+
+
 def update_metadata(metadata, language_num, chunks):
     metadata[language_num]['title'] = parse_title(chunks[0])
     metadata[language_num]['authors'] = parse_authors(chunks[1])
@@ -128,26 +137,27 @@ def detext_text_language(text_metadata, text):
     return text_metadata
 
 
-def update_text_metadata(text):
+def update_text_metadata(text, title):
     if not text:
         text = '-'
     text_metadata = {}
     text_metadata['token_length'] = len(text.split())
     text_metadata = detext_text_language(text_metadata, text)
+    text_medatata = generate_hash(text_metadata, title)
     return text_metadata
 
 
-def parse_paper(text, filepath):
-    first_to_seek, last_to_seek, metadata = define_first_and_last_to_seek(text, filepath)
+def parse_paper(text, filepath, metadata):
+    first_to_seek, last_to_seek, metadata = define_first_and_last_to_seek(text, filepath, metadata)
     fts_pos = text.find(first_to_seek) + len(first_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_1', text[fts_pos:].split(splitter, number_of_splits))
     if not last_to_seek:
-        metadata['text'] = update_text_metadata(text)
+        metadata['text'] = update_text_metadata(text, metadata['language_1']['title'])
         metadata['text-text'] = text
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_2', text[lts_pos:].split(splitter, number_of_splits))
-    metadata['text'] = update_text_metadata(text)
+    metadata['text'] = update_text_metadata(text, metadata['language_1']['title'])
     metadata['text-text'] = text
     return dict(metadata)
 
@@ -167,8 +177,8 @@ if __name__ == '__main__':
                 name_of_file = path.splitext(file)[0]
                 with open(path.join(root, file), 'r', encoding='utf-8') as f:
                     read = f.read()
-                    metadata = parse_paper(read, path.join(root, file))
-                    year, conference, metadata = get_data_from_filename(metadata, root)
+                    year, conference, metadata = get_data_from_filename(root)
+                    metadata = parse_paper(read, path.join(root, file), metadata)
                     data[path.join(root, file)] = metadata
                     datapath_ = path.join('DATASET')
                     if not path.exists(
