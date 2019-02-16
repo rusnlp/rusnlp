@@ -137,27 +137,36 @@ def detext_text_language(text_metadata, text):
     return text_metadata
 
 
-def update_text_metadata(text, title):
+def update_text_metadata(text, title, url):
     if not text:
         text = '-'
     text_metadata = {}
     text_metadata['token_length'] = len(text.split())
+    text_metadata['url'] = url
     text_metadata = detext_text_language(text_metadata, text)
     text_medatata = generate_hash(text_metadata, title)
     return text_metadata
 
 
+def find_url(text, metadata):
+    url = 'not yet parsed'
+    if text[0] == '%' and text[2] != '%':
+        url = text.split('%\n%\n', 1)[0][2:].replace('\n', '')
+    return url
+
+
 def parse_paper(text, filepath, metadata):
     first_to_seek, last_to_seek, metadata = define_first_and_last_to_seek(text, filepath, metadata)
+    url = find_url(text, metadata)
     fts_pos = text.find(first_to_seek) + len(first_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_1', text[fts_pos:].split(splitter, number_of_splits))
     if not last_to_seek:
-        metadata['text'] = update_text_metadata(text, metadata['language_1']['title'])
+        metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
         metadata['text-text'] = text
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_2', text[lts_pos:].split(splitter, number_of_splits))
-    metadata['text'] = update_text_metadata(text, metadata['language_1']['title'])
+    metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
     metadata['text-text'] = text
     return dict(metadata)
 
