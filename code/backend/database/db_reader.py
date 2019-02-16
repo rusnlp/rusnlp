@@ -117,7 +117,11 @@ class ReaderDBase:
         what = '''DISTINCT alias'''
         where = '''author JOIN catalogue JOIN article JOIN author_alias ON author.id=catalogue.author_id AND article_id=article.id AND author.id=author_alias.author_id'''
         condition = '''common_id="{}"'''.format(str(article_id))
-        return [res[0] for res in self._bd.select(what, where, condition)]
+        result = [res[0] for res in self._bd.select(what, where, condition)]
+        if result:
+            return result
+        else:
+            return self.select_author_simple_by_id(article_id)
         
     def select_author_and_title_by_id(self, article_id):
         """
@@ -128,17 +132,19 @@ class ReaderDBase:
         :return: string
             Concatenated paper's name and authors.
         """
-        title_result = self.select_title_by_id(article_id)
-        if title_result:
-            title = ' '.join(list(title_result[0]))
-        else:
-            title = "No id in db"
+        title = self.select_title_by_id(article_id)
         result_author = self.select_author_by_id(article_id)
         if result_author:
             authors = ', '.join([j[0] for j in result_author])
         else:
-            authors = ""
+            authors = self.select_author_simple_by_id(article_id)
         return 'Title: "{}" Authors: {}'.format(title, authors)
+
+    def select_author_simple_by_id(self, article_id):
+        what = '''DISTINCT name'''
+        where = '''author JOIN catalogue JOIN article ON author.id=catalogue.author_id AND article_id=article.id'''
+        condition = '''common_id="{}"'''.format(str(article_id))
+        return [res[0] for res in self._bd.select(what, where, condition)]
 
     def select_url_by_id(self, article_id):
         what = '''DISTINCT url'''
