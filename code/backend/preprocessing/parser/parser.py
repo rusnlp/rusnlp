@@ -166,7 +166,12 @@ def parse_paper(text, filepath, metadata):
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_2', text[lts_pos:].split(splitter, number_of_splits))
-    metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
+    if metadata['language_1']['title'] != '-':
+        metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
+    elif metadata['language_2']['title'] != '-':
+        metadata['text'] = update_text_metadata(text, metadata['language_2']['title'], url)
+    metadata['text-text'] = text
+    return dict(metadata)
     metadata['text-text'] = text
     return dict(metadata)
 
