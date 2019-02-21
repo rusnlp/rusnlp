@@ -101,7 +101,7 @@ def parse_keywords(keyword_string):
 
 
 def parse_title(title):
-    return title.replace('\n', ' ').strip().lower().title()
+    return sub(' +', ' ', title.replace('%', '').replace('\n', ' ').strip().lower().title())
 
 
 def generate_hash(text_metadata, title):
