@@ -23,7 +23,7 @@ texts = {}
 for doc in files:
     label = doc.split('.')[0]
     print('Loading', doc, file=sys.stderr)
-    data = open(path.join(corpusdir, doc)).readlines()
+    data = open(path.join(corpusdir, doc), errors='replace').readlines()
     text = extract_lemmas(data)
     texts[label] = model[dictionary.doc2bow(text)]
 

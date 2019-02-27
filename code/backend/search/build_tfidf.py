@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     for doc in files:
         print(doc, file=sys.stderr)
-        data = open(os.path.join(textdirectory, doc)).readlines()
+        data = open(os.path.join(textdirectory, doc), errors='replace').readlines()
         text = extract_lemmas(data)
         texts.append(text)
 
