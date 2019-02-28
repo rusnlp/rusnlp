@@ -1,19 +1,15 @@
-from os import walk, path, makedirs
-from shutil import copyfile
-from pickle import dump, load
-from platform import system
-from hashlib import sha1
 import json
 import sys
+from os import walk, path
+from shutil import copyfile
 
 path_to_dataset = sys.argv[1]
-
-
 
 for root, dirs, files in walk(path_to_dataset):
     if root == './':
         continue
-    print(root,dirs,files, file=sys.stderr)
+    print(root, dirs, files, file=sys.stderr)
+    h = None
     for f in sorted(files):
         if f == 'common.json':
             metadata = json.loads(open(path.join(root, f)).read())
