@@ -119,7 +119,7 @@ class ReaderDBase:
         condition = '''common_id="{}"'''.format(str(article_id))
         result = self._bd.select(what, where, condition)
         if result:
-            return result
+            return [i[0] for i in result]
         else:
             return self.select_author_simple_by_id(article_id)
         
@@ -141,7 +141,7 @@ class ReaderDBase:
         what = '''DISTINCT name'''
         where = '''author JOIN catalogue JOIN article ON author.id=catalogue.author_id AND article_id=article.id'''
         condition = '''common_id="{}"'''.format(str(article_id))
-        return self._bd.select(what, where, condition)
+        return [i[0] for i in self._bd.select(what, where, condition)]
 
     def select_url_by_id(self, article_id):
         what = '''DISTINCT url'''
