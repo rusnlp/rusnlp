@@ -1,63 +1,56 @@
 from os import path, walk, makedirs
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
-from pdfminer.pdfpage import PDFPage
 from io import StringIO
-from pickle import dump, load
-
-conferences = ['Dialogue', 'AIST', 'AINL', 'RuSSIR']
-saving_dir = path.join('..', '..', '..', '..', '..', 'data', 'TXTs', 'RAW')
-source_dir = path.join('..', '..', '..', '..', '..', 'data', 'PDFs')
-first_year = 2000
-last_year = 2018
+from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer3.converter import TextConverter
+from pdfminer3.layout import LAParams
+from pdfminer3.pdfpage import PDFPage
 
 
-def convert_pdf_to_txt(path):
-    rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-    codec = 'utf-8'
-    laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-    fp = open(path, 'rb')
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    password = ''
-    maxpages = 0
-    caching = True
-    pagenos = set()
-    for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password, caching=caching,
-                                  check_extractable=True):
-        interpreter.process_page(page)
-    text = retstr.getvalue()
-    fp.close()
+def convert_pdf_to_txt(filepath):
+    rm = PDFResourceManager()
+    sio = StringIO()
+    device = TextConverter(rm, sio, codec='utf-8', laparams=LAParams())
+    interpreter = PDFPageInterpreter(rm, device)
+    with open(filepath, 'rb') as fp:
+        for page in PDFPage.get_pages(fp=fp, pagenos=set(), maxpages=0, password='',
+                                      caching=True, check_extractable=True):
+            interpreter.process_page(page)
+    text = sio.getvalue()
     device.close()
-    retstr.close()
+    sio.close()
     return text
 
 
-def convert_all_pdf_to_text():
-    papers = []
-    mapping = {}
-    for conference in conferences:
-        for year in range(first_year, last_year):
-            for root, dirs, files in walk(path.join(source_dir, conference, str(year)), 'rb'):
-                for file in files:
-                    try:
-                        papers.append(convert_pdf_to_txt('{}/{}'.format(root, file)))
-                        mapping['{}/{}'.format(root, file)] = str(path.join(saving_dir, conference, str(year))) + str
-                    except:
-                        continue
-            for paper_id, paper in enumerate(papers):
-                directory = path.join(saving_dir, conference, str(year))
-                if not path.exists(directory):
-                    makedirs(directory)
-                with open(path.join(directory, str(paper_id)) + '.txt', 'w') as writefile:
-                    writefile.write(paper)
-            papers = []
-    return mapping
+def write_errors(errors):
+    with open('errors.txt', 'w', encoding='utf-8') as f:
+        for error in errors:
+            f.write('{}\n'.format(error))
+
+
+def write_file(root, file, text):
+    with open(path.join(root.replace(source_dir, saving_dir), file).replace('.pdf', '.txt'), 'w',
+              encoding='utf-8') as f:
+        f.write(text)
+
+
+def convert(source_dir, saving_dir):
+    errors = []
+    for root, dirs, files in walk(source_dir):
+        for file in files:
+            if not file.endswith('pdf'):
+                errors.append(path.join(root, file))
+                continue
+            text = convert_pdf_to_txt(path.join(root, file))
+            try:
+                write_file(root, file, text)
+            except FileNotFoundError:
+                makedirs(path.dirname(path.join(root.replace(source_dir, saving_dir), file)))
+                write_file(root, file, text)
+    write_errors(errors)
 
 
 if __name__ == '__main__':
-    mapping = convert_all_pdf_to_text()
-    with open(path.join('pickles', 'mapping.pickle'), 'wb') as f:
-        dump(mapping, f)
+    saving_dir = 'parsed'
+    source_dir = 'sources'
+    convert(source_dir, saving_dir)
+
