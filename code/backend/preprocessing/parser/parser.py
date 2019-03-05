@@ -65,6 +65,30 @@ def define_first_and_last_to_seek(text, filepath, metadata):
     return first_to_seek, last_to_seek, metadata
 
 
+def fillna(metadata_):
+    metadata = metadata_
+    source = 'language_2'
+    target = 'language_1'
+    if 'language_1' in metadata and 'language_2' in metadata:
+        if metadata['language_2']['authors'][0]['author'] == empty_symbol:
+            source = 'language_1'
+            target = 'language_2'
+        target_lang = metadata[target]['lang']
+        reverse = False
+        if target_lang == 'en':
+            target_lang = metadata[source]['lang']
+            reverse = True
+        metadata[target]['authors'] = []
+        for author in metadata[source]['authors']:
+            author_trans = defaultdict(lambda: [])
+            author_trans['author'] = translit(author['author'], target_lang, reversed=reverse)
+            for affiliation in author['affiliations']:
+                author_trans['affiliations'].append(translit(affiliation, target_lang, reversed=reverse))
+            author_trans['email'] = author['email']
+            metadata[target]['authors'].append(dict(author_trans))
+    return metadata
+
+
 def add_author_metadata(author):
     if '\n' not in author:
         return empty_symbol
@@ -191,8 +215,9 @@ if __name__ == '__main__':
                 name_of_file = path.splitext(file)[0]
                 with open(path.join(root, file), 'r', encoding='utf-8') as f:
                     read = f.read()
-                    year, conference, metadata = get_data_from_filename(root)
                     metadata = parse_paper(read, path.join(root, file), metadata)
+                    metadata = fillna(metadata)
+                    year, conference, metadata = get_data_from_filename(root)
                     data[path.join(root, file)] = metadata
                     datapath_ = path.join('DATASET')
                     if not path.exists(
