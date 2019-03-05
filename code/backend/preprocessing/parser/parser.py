@@ -98,10 +98,10 @@ def add_author_metadata(author):
         if data_fields[0] in v:
             data['author'] = k
         else:
-            data['author'] = data_fields[0]
-    data['affiliations'] = data_fields[1].split(';')
+            data['author'] = data_fields[0].strip()
+    data['affiliations'] = [affil.strip() for affil in data_fields[1].split(';')]
     try:
-        data['email'] = data_fields[2].split(',')
+        data['email'] = [email.strip() for email in data_fields[2].split(',')]
     except:
         data['email'] = '-'
     return data
@@ -170,7 +170,7 @@ def update_text_metadata(text, title, url):
     return text_metadata
 
 
-def find_url(text, metadata):
+def find_url(text):
     url = 'not yet parsed'
     if text[0] == '%' and text[2] != '%':
         url = text.split('%\n%\n', 1)[0][2:].replace('\n', '')
@@ -179,7 +179,7 @@ def find_url(text, metadata):
 
 def parse_paper(text, filepath, metadata):
     first_to_seek, last_to_seek, metadata = define_first_and_last_to_seek(text, filepath, metadata)
-    url = find_url(text, metadata)
+    url = find_url(text)
     fts_pos = text.find(first_to_seek) + len(first_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_1', text[fts_pos:].split(splitter, number_of_splits))
     if not last_to_seek:
@@ -194,15 +194,13 @@ def parse_paper(text, filepath, metadata):
         metadata['text'] = update_text_metadata(text, metadata['language_2']['title'], url)
     metadata['text-text'] = text
     return dict(metadata)
-    metadata['text-text'] = text
-    return dict(metadata)
 
 
 def serialize_data(data, filename=serialized_name):
-    with open(serialized_name, 'wb') as f:
+    with open(filename, 'wb') as f:
         dump(data, f)
-        
-        
+
+
 def make_clusters(data):
     affiliations = defaultdict(lambda: set())
     authors = defaultdict(lambda: set())
@@ -229,7 +227,7 @@ if __name__ == '__main__':
                     metadata = parse_paper(read, path.join(root, file), metadata)
                     metadata = fillna(metadata)
                     data[path.join(root, file)] = metadata
-                    datapath_ = path.join('DATASET')
+                    datapath_ = path.join('parsed')
                     if not path.exists(
                             path.join(datapath_, conference, year, name_of_file)):
                         makedirs(path.join(datapath_, conference, year, name_of_file))
