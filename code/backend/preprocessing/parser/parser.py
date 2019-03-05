@@ -5,9 +5,10 @@ from langdetect import detect_langs
 from platform import system
 from hashlib import sha1
 from transliterate import translit
+from re import sub
 import json
 
-path_to_dataset = path.join('DATASET', 'conferences')
+path_to_dataset = path.join('DATASET', 'conferences/')
 splitter = '%\n%\n'
 english_label = '==ENGLISH==\n'
 russian_label = '==RUSSIAN==\n'
@@ -16,7 +17,6 @@ serialized_name = 'tmp.pickle'
 empty_symbol = '-'
 minimum_text_length = 50
 authors_list = {}
-global_affils = set()
 
 
 def get_data_from_filename(filename):
@@ -100,8 +100,6 @@ def add_author_metadata(author):
         else:
             data['author'] = data_fields[0]
     data['affiliations'] = data_fields[1].split(';')
-    for affil in data_fields[1].split(';'):
-        global_affils.add(affil)
     try:
         data['email'] = data_fields[2].split(',')
     except:
@@ -215,33 +213,29 @@ if __name__ == '__main__':
                 name_of_file = path.splitext(file)[0]
                 with open(path.join(root, file), 'r', encoding='utf-8') as f:
                     read = f.read()
+                    year, conference, metadata = get_data_from_filename(root)
                     metadata = parse_paper(read, path.join(root, file), metadata)
                     metadata = fillna(metadata)
-                    year, conference, metadata = get_data_from_filename(root)
                     data[path.join(root, file)] = metadata
                     datapath_ = path.join('DATASET')
                     if not path.exists(
                             path.join(datapath_, conference, year, name_of_file)):
                         makedirs(path.join(datapath_, conference, year, name_of_file))
                     with open(path.join(datapath_, conference, year, name_of_file,
-                                        'lang_1' + '.json'), 'w') as f:
-                        json.dump(metadata['language_1'], f, indent=4, sort_keys=True)
-                    try:
+                                        'lang_1.json'), 'w', encoding='utf-8') as f:
+                        json.dump(metadata['language_1'], f, ensure_ascii=False, indent=4, sort_keys=True)
+                    if 'language_2' in metadata:
                         with open(path.join(datapath_, conference, year, name_of_file,
-                                            'lang_2' + '.json'), 'w') as f:
-                            json.dump(metadata['language_2'], f, indent=4, sort_keys=True)
-                    except KeyError:
-                        pass
+                                            'lang_2.json'), 'w', encoding='utf-8') as f:
+                            json.dump(metadata['language_2'], f, ensure_ascii=False, indent=4, sort_keys=True)
                     with open(path.join(datapath_, conference, year, name_of_file,
-                                        'common' + '.json'), 'w') as f:
-                        json.dump(metadata['text'], f, indent=4, sort_keys=True)
+                                        'common.json'), 'w', encoding='utf-8') as f:
+                        json.dump(metadata['text'], f, ensure_ascii=False, indent=4, sort_keys=True)
                     try:
                         with open(path.join(datapath_, conference, year, name_of_file,
-                                            'text' + '.txt'), 'w', encoding='utf-8') as f:
+                                            'text.txt'), 'w', encoding='utf-8') as f:
                             f.write(metadata['text-text'])
                     except TypeError:
                         pass
-                    with open('affiliations_set', 'wb') as f:
-                        dump(global_affils, f)
     serialize_data(data)
     print('Done')
