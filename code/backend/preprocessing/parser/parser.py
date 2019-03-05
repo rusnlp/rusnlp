@@ -198,9 +198,21 @@ def parse_paper(text, filepath, metadata):
     return dict(metadata)
 
 
-def serialize_data(data):
+def serialize_data(data, filename=serialized_name):
     with open(serialized_name, 'wb') as f:
         dump(data, f)
+        
+        
+def make_clusters(data):
+    affiliations = defaultdict(lambda: set())
+    authors = defaultdict(lambda: set())
+    for paper in data.values():
+        for language_id in ['language_1', 'language_2']:
+            if language_id in paper.keys():
+                lang = paper[language_id]['lang']
+                for author in paper[language_id]['authors']:
+                    affiliations[lang].update(author['affiliations'])
+                    authors[lang].add(author['author'])
 
 
 if __name__ == '__main__':
@@ -237,5 +249,6 @@ if __name__ == '__main__':
                             f.write(metadata['text-text'])
                     except TypeError:
                         pass
+    make_clusters(data)
     serialize_data(data)
     print('Done')
