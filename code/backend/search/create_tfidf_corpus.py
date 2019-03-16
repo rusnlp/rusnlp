@@ -27,6 +27,6 @@ for doc in files:
     text = extract_lemmas(data)
     texts[label] = model[dictionary.doc2bow(text)]
 
-corpus = json.dumps(texts, ensure_ascii=False)
+corpus = json.dumps(texts, ensure_ascii=False, indent=4, sort_keys=True)
 
 print(corpus)

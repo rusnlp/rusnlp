@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     files = [f for f in os.listdir(textdirectory) if f.endswith('.conll')]
 
-    order = json.dumps(files)
+    order = json.dumps(files, indent=4, sort_keys=True)
     orderfile = open('docorder.json', 'w')
     orderfile.write(order)
     orderfile.close()
