@@ -17,6 +17,8 @@ serialized_name = 'tmp.pickle'
 empty_symbol = '-'
 minimum_text_length = 50
 authors_list = {}
+l1 = 'en'
+l2 = 'ru'
 
 
 def get_data_from_filename(filename):
@@ -29,7 +31,7 @@ def get_data_from_filename(filename):
     conference = chunks[~1]
     metadata['year'] = year
     metadata['conference'] = conference
-    metadata['path'] = filename
+    metadata['path'] = filename.replace('\\', '/')
     return year, conference, metadata
 
 
@@ -86,6 +88,27 @@ def fillna(metadata_):
                 author_trans['affiliations'].append(translit(affiliation, target_lang, reversed=reverse))
             author_trans['email'] = author['email']
             metadata[target]['authors'].append(dict(author_trans))
+    return metadata
+
+
+def fillna_2(metadata_):
+    metadata = metadata_
+    reverse = False
+    fixed_lang = l2
+    if metadata['language_1']['lang'] == l2:
+        fixed_lang = l1
+    metadata['language_2'] = {}
+    metadata['language_2']['authors'] = []
+    metadata['language_2']['lang'] = fixed_lang
+    if fixed_lang == l1:
+        reverse = True
+    for author in metadata['language_1']['authors']:
+        author_trans = defaultdict(lambda: [])
+        author_trans['author'] = translit(author['author'], l2, reversed=reverse)
+        for affiliation in author['affiliations']:
+            author_trans['affiliations'].append(translit(affiliation, l2, reversed=reverse))
+        author_trans['email'] = author['email']
+        metadata['language_2']['authors'].append(dict(author_trans))
     return metadata
 
 
@@ -185,6 +208,7 @@ def parse_paper(text, filepath, metadata):
     if not last_to_seek:
         metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
         metadata['text-text'] = text
+        metadata = fillna_2(metadata)
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
     metadata, text = update_metadata(metadata, 'language_2', text[lts_pos:].split(splitter, number_of_splits))
@@ -211,6 +235,8 @@ def make_clusters(data):
                 for author in paper[language_id]['authors']:
                     affiliations[lang].update(author['affiliations'])
                     authors[lang].add(author['author'])
+    serialize_data(dict(authors), 'auth.pkl')
+    serialize_data(dict(affiliations), 'aff.pkl')
 
 
 if __name__ == '__main__':
@@ -226,7 +252,7 @@ if __name__ == '__main__':
                     year, conference, metadata = get_data_from_filename(root)
                     metadata = parse_paper(read, path.join(root, file), metadata)
                     metadata = fillna(metadata)
-                    data[path.join(root, file)] = metadata
+                    data[metadata['text']['hash']] = metadata
                     datapath_ = path.join('parsed')
                     if not path.exists(
                             path.join(datapath_, conference, year, name_of_file)):
