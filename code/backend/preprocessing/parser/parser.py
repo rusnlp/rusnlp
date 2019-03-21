@@ -6,9 +6,12 @@ from platform import system
 from hashlib import sha1
 from transliterate import translit
 from re import sub
+from ufal.udpipe import Model, Pipeline
 import json
 
 path_to_dataset = path.join('DATASET', 'conferences/')
+path_to_ud_en_model = path.join('ud_model', 'en.udpipe')
+path_to_ud_ru_model = path.join('ud_model', 'ru.udpipe')
 splitter = '%\n%\n'
 english_label = '==ENGLISH==\n'
 russian_label = '==RUSSIAN==\n'
@@ -200,7 +203,30 @@ def find_url(text):
     return url
 
 
-def parse_paper(text, filepath, metadata):
+def tokenize(sentence_, lemmatize=True, add_pos=False, pipeline):
+    sentence = re.sub('(@[A-Za-z0-9]+)', '', sentence_)
+    indent = 4
+    word_id = 1
+    lemma_id = 2
+    pos_id = 3
+    punct_tag = 'PUNCT'
+    tokenized_par = []
+    for par in pipeline.process(sentence).split('\n\n'):
+        for parsed_word in par.split('\n')[indent:]:
+            word = parsed_word.split('\t')[word_id].lower()
+            lemma = parsed_word.split('\t')[lemma_id]
+            pos = parsed_word.split('\t')[pos_id]
+            if pos == punct_tag:
+                continue
+            if lemmztize:
+                word = lemma, pos
+            elif add_pos:
+                word = '{}_{}'.format(lemma, pos)
+            tokenized_par.append(word)
+    return ' '.join(tokenized_par)
+
+
+def parse_paper(text, filepath, metadata, ru_pipeline, en_pipeline):
     first_to_seek, last_to_seek, metadata = define_first_and_last_to_seek(text, filepath, metadata)
     url = find_url(text)
     fts_pos = text.find(first_to_seek) + len(first_to_seek) + 1
@@ -208,6 +234,10 @@ def parse_paper(text, filepath, metadata):
     if not last_to_seek:
         metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
         metadata['text-text'] = text
+        pipeline = ru_pipeline
+        if metadata['text']['language'] == 'en':
+            pipeline = en_pipeline
+        metadata['text-lemma'] = tokenize(text)
         metadata = fillna_2(metadata)
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
@@ -217,6 +247,10 @@ def parse_paper(text, filepath, metadata):
     elif metadata['language_2']['title'] != '-':
         metadata['text'] = update_text_metadata(text, metadata['language_2']['title'], url)
     metadata['text-text'] = text
+    pipeline = ru_pipeline
+        if metadata['text']['language'] == 'en':
+            pipeline = en_pipeline
+        metadata['text-lemma'] = tokenize(text)
     return dict(metadata)
 
 
@@ -243,6 +277,10 @@ if __name__ == '__main__':
     with open('authors.pickle', 'rb') as f:
         authors_list = load(f)
     data = {}
+    ru_ud_model = Model.load(path_to_ud_ru_model)
+    ru_pipeline = Pipeline(ru_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
+    en_ud_model = Model.load(path_to_ud_en_model)
+    en_pipeline = Pipeline(en_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
     for root, dirs, files in walk(path_to_dataset):
         for file in files:
             if path.splitext(file)[1] == '.txt':
@@ -250,7 +288,7 @@ if __name__ == '__main__':
                 with open(path.join(root, file), 'r', encoding='utf-8') as f:
                     read = f.read()
                     year, conference, metadata = get_data_from_filename(root)
-                    metadata = parse_paper(read, path.join(root, file), metadata)
+                    metadata = parse_paper(read, path.join(root, file), metadata, ru_pipeline, en_pipeline)
                     metadata = fillna(metadata)
                     data[metadata['text']['hash']] = metadata
                     datapath_ = path.join('parsed')
