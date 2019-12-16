@@ -7,327 +7,203 @@ from hashlib import sha1
 from transliterate import translit
 from re import sub
 from ufal.udpipe import Model, Pipeline
+from typing import Tuple, Dict, List
+
 import json
 import git
 
-path_to_dataset_repo = 'https://username:password@gitlab.com/bakarov/rusnlp.git'
-path_to_dataset = path.join('rusnlp', 'DATASET', 'conferences')
-path_to_ud_en_model = '/Users/amir/Documents/projects/rusnlp/udpipe/english-ewt-ud-2.4-190531.udpipe'
-path_to_ud_ru_model = '/Users/amir/Documents/projects/rusnlp/udpipe/russian-syntagrus-ud-2.4-190531.udpipe'
-splitter = '%\n%\n'
-english_label = '==ENGLISH==\n'
-russian_label = '==RUSSIAN==\n'
-number_of_splits = 4
-serialized_name = 'tmp.pickle'
-empty_symbol = '-'
-minimum_text_length = 50
-authors_list = {}
-l1 = 'en'
-l2 = 'ru'
 
+class Parser:
 
-def get_data_from_filename(filename):
-    metadata = defaultdict(lambda: {})
-    if system() == 'Windows':
-        chunks = filename.split('\\')
-    else:
-        chunks = filename.split('/')
-    year = chunks[~0]
-    conference = chunks[~1]
-    metadata['year'] = year
-    metadata['conference'] = conference
-    metadata['path'] = filename.replace('\\', '/')
-    return year, conference, metadata
+    def __init__(self):
+        self.path_to_dataset_repo = 'https://username:password@gitlab.com/bakarov/rusnlp.git'
+        self.path_to_dataset = path.join('rusnlp', 'DATASET', 'conferences')
+        self.path_to_ud_en_model = '/Users/amir/Documents/projects/rusnlp/udpipe/english-ewt-ud-2.4-190531.udpipe'
+        self.path_to_ud_ru_model = '/Users/amir/Documents/projects/rusnlp/udpipe/russian-syntagrus-ud-2.4-190531.udpipe'
+        self.splitter = '%\n%\n'
+        self.number_of_splits = 4
+        self.serialized_name = 'tmp.pickle'
+        self.empty_symbol = '-'
+        self.minimum_text_length = 50
+        self.authors_list = {}
+        self.l1 = 'en'
+        self.l2 = 'ru'
+        self.metadata = defaultdict(lambda: {})
 
+    def lemmatize(self, text, pipeline):
+        indent = 4
+        word_id = 1
+        lemma_id = 2
+        pos_id = 3
+        punct_tag = 'PUNCT'
+        lemmatized_text = []
+        for par in pipeline.process(text).split('\n\n'):
+            for parsed_word in par.split('\n')[indent:]:
+                word = parsed_word.split('\t')[word_id].lower()
+                lemma = parsed_word.split('\t')[lemma_id]
+                pos = parsed_word.split('\t')[pos_id]
+                if pos == punct_tag:
+                    continue
+                lemmatized_text.append(lemma)
+        return ' '.join(lemmatized_text)
 
-def set_language_metadata(lang_1_tag, lang_2_tag, metadata):
-    metadata['language_1']['lang'] = lang_1_tag
-    if not lang_2_tag:
-        return metadata
-    metadata['language_2']['lang'] = lang_2_tag
-    return metadata
+    def parse_filename(self, filename: str, windows_id: str= 'Windows'):
+        chunks = filename.split('\\') if system() == windows_id else filename.split('/')
+        self.metadata['year'] = chunks[~0]
+        self.metadata['conference'] = chunks[~1]
+        self.metadata['path'] = filename.replace('\\', '/')
 
+    def get_url(self) -> str:
+        url = self.empty_symbol
+        if self.text[0] == '%' and self.text[2] != '%':
+            url = self.text.split('%\n%\n', 1)[0][2:].replace('\n', '')
+        return url
 
-def define_first_and_last_to_seek(text, filepath, metadata, first_to_seek=None, last_to_seek=None):
-    if english_label in text and russian_label in text:
-        if text.find(english_label) > text.find(russian_label):
-            first_to_seek = russian_label
-            last_to_seek = english_label
-            metadata = set_language_metadata('ru', 'en', metadata)
-        else:
-            first_to_seek = english_label
-            last_to_seek = russian_label
-            metadata = set_language_metadata('en', 'ru', metadata)
-    elif english_label in text and russian_label not in text:
-        first_to_seek = english_label
-        last_to_seek = None
-        metadata = set_language_metadata('en', None, metadata)
-    elif english_label not in text and russian_label in text:
-        first_to_seek = russian_label
-        last_to_seek = None
-        metadata = set_language_metadata('ru', None, metadata)
-    else:
-        with open('errors.txt', 'a') as f:
-            f.write('{}\n'.format(filepath))
-    return first_to_seek, last_to_seek, metadata
+    def set_language_metadata(self, lang_1_tag: str='en', lang_2_tag: str='ru'):
+        self.metadata['language_1']['lang'] = lang_1_tag
+        self.metadata['language_2']['lang'] = lang_2_tag
 
+    def get_metadata_positions(self, english_label :str='==ENGLISH==\n', russian_label: str='==RUSSIAN==\n', lang_label_length: int=13) -> Dict:
+        lang_positions = {}
+        ru_pos = re.search(russian_label, self.text)
+        lang_positions['ru'] = ru_pos.start() + lang_label_length if ru_pos else ru_pos
+        en_pos = re.search(english_label, self.text)
+        lang_positions['en'] = en_pos.start() + lang_label_length if en_pos else en_pos
+        return lang_positions
 
-def fillna(metadata_):
-    metadata = metadata_
-    source = 'language_2'
-    target = 'language_1'
-    if 'language_1' in metadata and 'language_2' in metadata:
-        if metadata['language_2']['authors'][0]['author'] == empty_symbol:
-            source = 'language_1'
-            target = 'language_2'
-        target_lang = metadata[target]['lang']
-        reverse = False
-        if target_lang == 'en':
-            target_lang = metadata[source]['lang']
-            reverse = True
-        metadata[target]['authors'] = []
-        for author in metadata[source]['authors']:
-            author_trans = defaultdict(lambda: [])
-            author_trans['author'] = translit(author['author'], target_lang, reversed=reverse)
-            for affiliation in author['affiliations']:
-                author_trans['affiliations'].append(translit(affiliation, target_lang, reversed=reverse))
-            author_trans['email'] = author['email']
-            metadata[target]['authors'].append(dict(author_trans))
-    return metadata
-
-
-def fillna_2(metadata_):
-    metadata = metadata_
-    reverse = False
-    fixed_lang = l2
-    if metadata['language_1']['lang'] == l2:
-        fixed_lang = l1
-    metadata['language_2'] = {}
-    metadata['language_2']['authors'] = []
-    metadata['language_2']['lang'] = fixed_lang
-    if fixed_lang == l1:
-        reverse = True
-    for author in metadata['language_1']['authors']:
-        author_trans = defaultdict(lambda: [])
-        author_trans['author'] = translit(author['author'], l2, reversed=reverse)
-        for affiliation in author['affiliations']:
-            author_trans['affiliations'].append(translit(affiliation, l2, reversed=reverse))
-        author_trans['email'] = author['email']
-        metadata['language_2']['authors'].append(dict(author_trans))
-    return metadata
-
-
-def add_author_metadata(author):
-    if '\n' not in author:
-        return empty_symbol
-    data = {}
-    data_fields = author.split('\n')
-    # for k, v in authors_list.items():
-    #     if data_fields[0] in v:
-    #         data['author'] = k
-    #     else:
-    #         data['author'] = data_fields[0].strip()
-    data['author'] = data_fields[0].strip()
-    data['affiliations'] = [affil.strip() for affil in data_fields[1].split(';')]
-    try:
+    def get_author_metadata(self, text: str) -> Dict:
+        if '\n' not in text:
+            return self.empty_symbol
+        data = {}
+        data_fields = text.split('\n')
+        # for k, v in authors_list.items():
+        #     if data_fields[0] in v:
+        #         data['author'] = k
+        #     else:
+        #         data['author'] = data_fields[0].strip()
+        data['author'] = data_fields[0].strip()
+        data['affiliations'] = [affil.strip() for affil in data_fields[1].split(';')]
         data['email'] = [email.strip() for email in data_fields[2].split(',')]
-    except:
-        data['email'] = '-'
-    return data
+        return data
 
-
-def parse_authors(authors_list):
-    authors = []
-    if '%\n' not in authors_list:
-        author = authors_list
-        authors.append(add_author_metadata(author))
+    def parse_authors(self, text_: str) -> List:
+        authors = []
+        text = text_ + '%\n' if '%\n' not in text_ else text_
+        for author in text.split('%\n'):
+            authors.append(self.get_author_metadata(author))
         return authors
-    for author in authors_list.split('%\n'):
-        authors.append(add_author_metadata(author))
-    return authors
 
+    def parse_keywords(self, text: str) -> List:
+        return text.replace('\n', ' ').strip().split(',')
 
-def parse_keywords(keyword_string):
-    return keyword_string.replace('\n', ' ').strip().split(',')
+    def parse_title(self, title: str) -> str:
+        return sub(' +', ' ', title.replace('%', '').replace('\n', ' ').strip().lower().title())
 
+    def get_language_metadata(self, language_number: int, language_name: str, text_chunks: List):
+        language_id = 'language_{}'.format(language_number)
+        self.metadata[language_id]['title'] = self.parse_title(text_chunks[0])
+        self.metadata[language_id]['authors'] = self.parse_authors(text_chunks[1])
+        self.metadata[language_id]['abstract'] = text_chunks[2].replace('\n', ' ').strip()
+        self.metadata[language_id]['keywords'] = self.parse_keywords(text_chunks[3])
+        self.metadata[language_id]['language'] = language_name
 
-def parse_title(title):
-    return sub(' +', ' ', title.replace('%', '').replace('\n', ' ').strip().lower().title())
+    def get_text_language(self, text: str) -> Tuple[str, float]:
+        language = '-'
+        probability = 0.0
+        if len(text) > self.minimum_text_length:
+            lang = detect_langs(text)
+            language = lang[0].lang
+            probability = round(lang[0].prob, 2)
+        return language, probability
 
+    def generate_hash(self) -> str:
+        hasher = sha1()
+        title = self.metadata['language_1']['title']
+        hasher.update(translit(title.replace(' ', '_').lower(), 'ru', reversed=True).encode())
+        return '{}_{}_{}'.format(self.metadata['conference'], self.metadata['year'],
+                                                  str(hasher.hexdigest())).lower()
 
-def generate_hash(text_metadata, title):
-    hasher = sha1()
-    hasher.update(translit(title.replace(' ', '_').lower(), 'ru', reversed=True).encode())
-    text_metadata['hash'] = '{}_{}_{}'.format(metadata['conference'], metadata['year'], str(hasher.hexdigest())).lower()
-    return text_metadata
+    def get_full_text_metadata(self, start: int, lemmatize: bool=False) -> str:
+        text = ' '.join(self.text[start:].split(self.splitter, self.number_of_splits)[4:])
+        self.metadata['full_text'] = text
+        text_language, language_probability = self.get_text_language(text)
+        text_metadata = {}
+        text_metadata['token_length'] = len(text.split())
+        text_metadata['url'] = self.get_url()
+        text_metadata['text_language'] = text_language
+        text_metadata['probability'] = language_probability
+        if lemmatize:
+            pipeline = self.en_pipeline if text_language == 'en' else self.ru_pipeline
+            self.metadatata['full_text_lemmatized'] = self.lemmatize(text, pipeline)
+        text_metadata['hash'] = self.generate_hash(title)
+        self.metadata['text'] = text_metadata
 
-
-def update_metadata(metadata, language_num, chunks):
-    metadata[language_num]['title'] = parse_title(chunks[0])
-    metadata[language_num]['authors'] = parse_authors(chunks[1])
-    metadata[language_num]['abstract'] = chunks[2].replace('\n', ' ').strip()
-    try:
-        metadata[language_num]['keywords'] = parse_keywords(chunks[3])
-    except IndexError:
-        print(parse_title(chunks[0]))
-    text = None
-    if len(chunks) > number_of_splits:
-        text = chunks[4]
-    return metadata, text
-
-
-def detext_text_language(text_metadata, text):
-    language = '-'
-    probability = '-'
-    if len(text) > minimum_text_length:
-        lang = detect_langs(text)
-        language = lang[0].lang
-        probability = round(lang[0].prob, 2)
-    text_metadata['language'] = language
-    text_metadata['probability'] = probability
-    return text_metadata
-
-
-def update_text_metadata(text, title, url):
-    if not text:
-        text = '-'
-    text_metadata = {}
-    text_metadata['token_length'] = len(text.split())
-    text_metadata['url'] = url
-    text_metadata = detext_text_language(text_metadata, text)
-    text_medatata = generate_hash(text_metadata, title)
-    return text_metadata
-
-
-def find_url(text):
-    url = 'not yet parsed'
-    if text[0] == '%' and text[2] != '%':
-        url = text.split('%\n%\n', 1)[0][2:].replace('\n', '')
-    return url
-
-
-def tokenize(sentence, pipeline, lemmatize=True, add_pos=False):
-    indent = 4
-    word_id = 1
-    lemma_id = 2
-    pos_id = 3
-    punct_tag = 'PUNCT'
-    tokenized_par = []
-    for par in pipeline.process(sentence).split('\n\n'):
-        for parsed_word in par.split('\n')[indent:]:
-            word = parsed_word.split('\t')[word_id].lower()
-            lemma = parsed_word.split('\t')[lemma_id]
-            pos = parsed_word.split('\t')[pos_id]
-            if pos == punct_tag:
+    def parse_paper(self):
+        lang_positions = self.get_metadata_positions()
+        enumerator = 1
+        for language, start in lang_positions.items():
+            if not start:
                 continue
-            if lemmatize:
-                word = lemma
-            elif add_pos:
-                word = '{}_{}'.format(lemma, pos)
-            tokenized_par.append(word)
-    return ' '.join(tokenized_par)
+            text_chunks = self.text[start:].split(self.splitter, self.number_of_splits)
+            self.get_language_metadata(enumerator, language, text_chunks)
+            enumerator += 1
+        last_lang_position = max(filter(lambda x: x is not None, lang_positions.values()))
+        self.get_full_text_metadata(last_lang_position)
 
+    def serialize_data(self):
+        with open(self.serialized_name, 'wb') as f:
+            dump(self.metadata, f)
 
-def parse_paper(text, filepath, metadata, ru_pipeline, en_pipeline):
-    first_to_seek, last_to_seek, metadata = define_first_and_last_to_seek(text, filepath, metadata)
-    url = find_url(text)
-    fts_pos = text.find(first_to_seek) + len(first_to_seek) + 1
-    metadata, text = update_metadata(metadata, 'language_1', text[fts_pos:].split(splitter, number_of_splits))
-    if not last_to_seek:
-        metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
-        metadata['text-text'] = text
-        pipeline = ru_pipeline
-        if metadata['text']['language'] == 'en':
-            pipeline = en_pipeline
-        try:
-            metadata['text-lemma'] = tokenize(text, pipeline)
-        except:
-            print(text)
-            print(filepath)
-        metadata = fillna_2(metadata)
-        return dict(metadata)
-    lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
-    metadata, text = update_metadata(metadata, 'language_2', text[lts_pos:].split(splitter, number_of_splits))
-    if metadata['language_1']['title'] != '-':
-        metadata['text'] = update_text_metadata(text, metadata['language_1']['title'], url)
-    elif metadata['language_2']['title'] != '-':
-        metadata['text'] = update_text_metadata(text, metadata['language_2']['title'], url)
-    metadata['text-text'] = text
-    pipeline = ru_pipeline
-    if metadata['text']['language'] == 'en':
-        pipeline = en_pipeline
-    try:
-        metadata['text-lemma'] = tokenize(text, pipeline)
-    except:
-        print(text)
-        print(filepath)
-    return dict(metadata)
+    # def make_clusters(data):
+    #     affiliations = defaultdict(lambda: set())
+    #     authors = defaultdict(lambda: set())
+    #     for paper in data.values():
+    #         for language_id in ['language_1', 'language_2']:
+    #             if language_id in paper.keys():
+    #                 lang = paper[language_id]['lang']
+    #                 for author in paper[language_id]['authors']:
+    #                     affiliations[lang].update(author['affiliations'])
+    #                     authors[lang].add(author['author'])
+    #     serialize_data(dict(authors), 'auth.pkl')
+    #     serialize_data(dict(affiliations), 'aff.pkl')
 
+    def parse_single_file(self, file_path: str):
+        name_of_file = path.splitext(path.basename(file_path))[0]
+        with open(file_path, 'r', encoding='utf-8') as f:
+            self.metadata = defaultdict(lambda: {})
+            self.text = f.read()
+            self.parse_filename(path.dirname(file_path))
+            self.parse_paper()
+            # datapath_ = path.join('parsed')
+            # makedirs(path.join(datapath_, conference, year, name_of_file))
+            # with open(path.join(datapath_, conference, year, name_of_file,
+            #                     'lang_1.json'), 'w', encoding='utf-8') as f:
+            #     json.dump(self.metadata['language_1'], f, ensure_ascii=False, indent=4, sort_keys=True)
+            # if 'language_2' in self.metadata:
+            #     with open(path.join(datapath_, conference, year, name_of_file,
+            #                         'lang_2.json'), 'w', encoding='utf-8') as f:
+            #         json.dump(self.metadata['language_2'], f, ensure_ascii=False, indent=4, sort_keys=True)
+            # with open(path.join(datapath_, conference, year, name_of_file,
+            #                     'common.json'), 'w', encoding='utf-8') as f:
+            #     json.dump(self.metadata['text'], f, ensure_ascii=False, indent=4, sort_keys=True)
+            # with open(path.join(datapath_, conference, year, name_of_file,
+            #                     'text.txt'), 'w', encoding='utf-8') as f:
+            #     f.write(self.metadata['full_text'])
 
-def serialize_data(data, filename=serialized_name):
-    with open(filename, 'wb') as f:
-        dump(data, f)
-
-
-def make_clusters(data):
-    affiliations = defaultdict(lambda: set())
-    authors = defaultdict(lambda: set())
-    for paper in data.values():
-        for language_id in ['language_1', 'language_2']:
-            if language_id in paper.keys():
-                lang = paper[language_id]['lang']
-                for author in paper[language_id]['authors']:
-                    affiliations[lang].update(author['affiliations'])
-                    authors[lang].add(author['author'])
-    serialize_data(dict(authors), 'auth.pkl')
-    serialize_data(dict(affiliations), 'aff.pkl')
-
-
-if __name__ == '__main__':
-    # with open('authors.pickle', 'rb') as f:
-    #     authors_list = load(f)
-    data = {}
-    ru_ud_model = Model.load(path_to_ud_ru_model)
-    ru_pipeline = Pipeline(ru_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
-    en_ud_model = Model.load(path_to_ud_en_model)
-    en_pipeline = Pipeline(en_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
-    if not path.exists(path_to_dataset):
-        git.Git('./').clone(path_to_dataset_repo)
-    for root, dirs, files in walk(path_to_dataset):
-        for file in files:
-            if 'RuSSIR' in root:
-                continue
-            if path.splitext(file)[1] == '.txt':
-                name_of_file = path.splitext(file)[0]
-                with open(path.join(root, file), 'r', encoding='utf-8') as f:
-                    read = f.read()
-                    year, conference, metadata = get_data_from_filename(root)
-                    if not path.join(root, file):
-                        print(path.join(root, file))
-                        continue
-                    metadata = parse_paper(read, path.join(root, file), metadata, ru_pipeline, en_pipeline)
-                    metadata = fillna(metadata)
-                    data[metadata['text']['hash']] = metadata
-                    datapath_ = path.join('parsed')
-                    if not path.exists(
-                            path.join(datapath_, conference, year, name_of_file)):
-                        makedirs(path.join(datapath_, conference, year, name_of_file))
-                    with open(path.join(datapath_, conference, year, name_of_file,
-                                        'lang_1.json'), 'w', encoding='utf-8') as f:
-                        json.dump(metadata['language_1'], f, ensure_ascii=False, indent=4, sort_keys=True)
-                    if 'language_2' in metadata:
-                        with open(path.join(datapath_, conference, year, name_of_file,
-                                            'lang_2.json'), 'w', encoding='utf-8') as f:
-                            json.dump(metadata['language_2'], f, ensure_ascii=False, indent=4, sort_keys=True)
-                    with open(path.join(datapath_, conference, year, name_of_file,
-                                        'common.json'), 'w', encoding='utf-8') as f:
-                        json.dump(metadata['text'], f, ensure_ascii=False, indent=4, sort_keys=True)
-                    try:
-                        with open(path.join(datapath_, conference, year, name_of_file,
-                                            'text.txt'), 'w', encoding='utf-8') as f:
-                            f.write(metadata['text-text'])
-                    except TypeError:
-                        pass
-    make_clusters(data)
-    serialize_data(data)
-    print('Done')
+    def parse(self):
+        # with open('authors.pickle', 'rb') as f:
+        #     authors_list = load(f)
+        data = {}
+        ru_ud_model = Model.load(self.path_to_ud_ru_model)
+        self.u_pipeline = Pipeline(ru_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
+        en_ud_model = Model.load(self.path_to_ud_en_model)
+        self.en_pipeline = Pipeline(en_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
+        if not path.exists(self.path_to_dataset):
+            git.Git('./').clone(self.path_to_dataset_repo)
+        for root, dirs, files in walk(self.path_to_dataset):
+            for file in files:
+                if 'RuSSIR' in root:
+                    continue
+                if path.splitext(file)[1] == '.txt':
+                    self.parse_single_file(path.join(root, file))
+        print('Done')
