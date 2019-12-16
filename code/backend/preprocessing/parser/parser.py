@@ -8,10 +8,12 @@ from transliterate import translit
 from re import sub
 from ufal.udpipe import Model, Pipeline
 import json
+import git
 
-path_to_dataset = path.join('DATASET', 'conferences/')
-path_to_ud_en_model = path.join('ud_model', 'en.udpipe')
-path_to_ud_ru_model = path.join('ud_model', 'ru.udpipe')
+path_to_dataset_repo = 'https://username:password@gitlab.com/bakarov/rusnlp.git'
+path_to_dataset = path.join('rusnlp', 'DATASET', 'conferences')
+path_to_ud_en_model = '/Users/amir/Documents/projects/rusnlp/udpipe/english-ewt-ud-2.4-190531.udpipe'
+path_to_ud_ru_model = '/Users/amir/Documents/projects/rusnlp/udpipe/russian-syntagrus-ud-2.4-190531.udpipe'
 splitter = '%\n%\n'
 english_label = '==ENGLISH==\n'
 russian_label = '==RUSSIAN==\n'
@@ -46,7 +48,7 @@ def set_language_metadata(lang_1_tag, lang_2_tag, metadata):
     return metadata
 
 
-def define_first_and_last_to_seek(text, filepath, metadata):
+def define_first_and_last_to_seek(text, filepath, metadata, first_to_seek=None, last_to_seek=None):
     if english_label in text and russian_label in text:
         if text.find(english_label) > text.find(russian_label):
             first_to_seek = russian_label
@@ -120,11 +122,12 @@ def add_author_metadata(author):
         return empty_symbol
     data = {}
     data_fields = author.split('\n')
-    for k, v in authors_list.items():
-        if data_fields[0] in v:
-            data['author'] = k
-        else:
-            data['author'] = data_fields[0].strip()
+    # for k, v in authors_list.items():
+    #     if data_fields[0] in v:
+    #         data['author'] = k
+    #     else:
+    #         data['author'] = data_fields[0].strip()
+    data['author'] = data_fields[0].strip()
     data['affiliations'] = [affil.strip() for affil in data_fields[1].split(';')]
     try:
         data['email'] = [email.strip() for email in data_fields[2].split(',')]
@@ -203,8 +206,7 @@ def find_url(text):
     return url
 
 
-def tokenize(sentence_, lemmatize=True, add_pos=False, pipeline):
-    sentence = re.sub('(@[A-Za-z0-9]+)', '', sentence_)
+def tokenize(sentence, pipeline, lemmatize=True, add_pos=False):
     indent = 4
     word_id = 1
     lemma_id = 2
@@ -218,8 +220,8 @@ def tokenize(sentence_, lemmatize=True, add_pos=False, pipeline):
             pos = parsed_word.split('\t')[pos_id]
             if pos == punct_tag:
                 continue
-            if lemmztize:
-                word = lemma, pos
+            if lemmatize:
+                word = lemma
             elif add_pos:
                 word = '{}_{}'.format(lemma, pos)
             tokenized_par.append(word)
@@ -237,7 +239,11 @@ def parse_paper(text, filepath, metadata, ru_pipeline, en_pipeline):
         pipeline = ru_pipeline
         if metadata['text']['language'] == 'en':
             pipeline = en_pipeline
-        metadata['text-lemma'] = tokenize(text)
+        try:
+            metadata['text-lemma'] = tokenize(text, pipeline)
+        except:
+            print(text)
+            print(filepath)
         metadata = fillna_2(metadata)
         return dict(metadata)
     lts_pos = text.find(last_to_seek) + len(last_to_seek) + 1
@@ -248,9 +254,13 @@ def parse_paper(text, filepath, metadata, ru_pipeline, en_pipeline):
         metadata['text'] = update_text_metadata(text, metadata['language_2']['title'], url)
     metadata['text-text'] = text
     pipeline = ru_pipeline
-        if metadata['text']['language'] == 'en':
-            pipeline = en_pipeline
-        metadata['text-lemma'] = tokenize(text)
+    if metadata['text']['language'] == 'en':
+        pipeline = en_pipeline
+    try:
+        metadata['text-lemma'] = tokenize(text, pipeline)
+    except:
+        print(text)
+        print(filepath)
     return dict(metadata)
 
 
@@ -274,20 +284,27 @@ def make_clusters(data):
 
 
 if __name__ == '__main__':
-    with open('authors.pickle', 'rb') as f:
-        authors_list = load(f)
+    # with open('authors.pickle', 'rb') as f:
+    #     authors_list = load(f)
     data = {}
     ru_ud_model = Model.load(path_to_ud_ru_model)
     ru_pipeline = Pipeline(ru_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
     en_ud_model = Model.load(path_to_ud_en_model)
     en_pipeline = Pipeline(en_ud_model, 'tokenize', Pipeline.DEFAULT, Pipeline.DEFAULT, 'conllu')
+    if not path.exists(path_to_dataset):
+        git.Git('./').clone(path_to_dataset_repo)
     for root, dirs, files in walk(path_to_dataset):
         for file in files:
+            if 'RuSSIR' in root:
+                continue
             if path.splitext(file)[1] == '.txt':
                 name_of_file = path.splitext(file)[0]
                 with open(path.join(root, file), 'r', encoding='utf-8') as f:
                     read = f.read()
                     year, conference, metadata = get_data_from_filename(root)
+                    if not path.join(root, file):
+                        print(path.join(root, file))
+                        continue
                     metadata = parse_paper(read, path.join(root, file), metadata, ru_pipeline, en_pipeline)
                     metadata = fillna(metadata)
                     data[metadata['text']['hash']] = metadata
