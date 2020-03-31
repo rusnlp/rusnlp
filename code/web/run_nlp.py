@@ -1,5 +1,4 @@
-import configparser
-from flask import Flask, url_for, send_from_directory, redirect
+from flask import Flask, url_for, send_from_directory
 from lang_converter import LangConverter
 from nlp import *
 
@@ -13,7 +12,7 @@ app_rusnlp = Flask(__name__, static_url_path='/data/')
 @app_rusnlp.route('/data/<path:query>/')
 def send(query):
     if 'rus_nlp.db.gz' in query:
-        return redirect('http://rusvectores.org/static/rusnlp/rus_nlp.db.gz')
+        return redirect('https://rusvectores.org/static/rusnlp/rus_nlp.db.gz')
     else:
         return send_from_directory('data/', query)
 

@@ -1,6 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # coding: utf-8
-
 
 import configparser
 import datetime
@@ -10,13 +9,13 @@ import logging
 import socket
 import sys
 from os import path
-import gzip
 import threading
 from gensim.models import TfidfModel
 from gensim.matutils import cossim
 from bd import DBaseRusNLP
 from db_reader import ReaderDBase
 import csv
+from smart_open import open
 
 
 class SrvThread(threading.Thread):
@@ -48,7 +47,8 @@ def clientthread(connection, address):
         query = json.loads(data)
 
         now = datetime.datetime.now()
-        print(now.strftime("%Y-%m-%d %H:%M"), '\t', address[0] + ':' + str(address[1]), '\t', data, file=sys.stderr)
+        print(now.strftime("%Y-%m-%d %H:%M"), '\t', address[0] + ':' + str(address[1]), '\t', data,
+              file=sys.stderr)
 
         output = queryparser(query)
         # print(output)
@@ -64,8 +64,8 @@ def clientthread(connection, address):
 # Vector functions
 def find_nearest(q_vector, q, number, restrict=None):
     if restrict:
-        similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict if cossim(q_vector,
-                                                                                         text_vectors[d]) > 0.01}
+        similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict
+                        if cossim(q_vector, text_vectors[d]) > 0.01}
     else:
         similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q
                         and cossim(q_vector, text_vectors[d]) > 0.01}
@@ -73,7 +73,8 @@ def find_nearest(q_vector, q, number, restrict=None):
     results = [
         (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
          reader.select_year_by_id(i),
-         reader.select_conference_by_id(i), reader.select_url_by_id(i), list(reader.select_aff_clusters_by_id(i)),
+         reader.select_conference_by_id(i), reader.select_url_by_id(i),
+         list(reader.select_aff_clusters_by_id(i)),
          reader.select_abstract_by_id(i)[:300] + '...', similarities[i]) for i in neighbors]
     return results
 
@@ -136,11 +137,13 @@ def search(sets, number, keywords=None):
         q_vector = model[dictionary.doc2bow(keywords)]
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
-        results = [(i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
-                    reader.select_year_by_id(i),
-                    reader.select_conference_by_id(i), reader.select_url_by_id(i),
-                    list(reader.select_aff_clusters_by_id(i)), reader.select_abstract_by_id(i)[:300] + '...') for i in
-                   valid]
+        results = [
+            (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
+             reader.select_year_by_id(i),
+             reader.select_conference_by_id(i), reader.select_url_by_id(i),
+             list(reader.select_aff_clusters_by_id(i)),
+             reader.select_abstract_by_id(i)[:300] + '...') for i in
+            valid]
     return results
 
 
@@ -190,23 +193,26 @@ def queryparser(query):
     return output
 
 
-def ids2names(query, number):
+def ids2names(query):
     ids = query['ids']
     field = query['field']
     if field == 'author':
-        names = {int(identifier): reader.select_alias_name_by_author_cluster(identifier) for identifier in ids}
+        names = {int(identifier): reader.select_alias_name_by_author_cluster(identifier) for
+                 identifier in ids}
     elif field == 'affiliation':
-        names = {int(identifier): reader.select_affiliation_by_cluster(identifier) for identifier in ids}
+        names = {int(identifier): reader.select_affiliation_by_cluster(identifier) for identifier in
+                 ids}
     else:
         names = None
     return names
 
 
-def stats(query, number):
+def stats():
     statistics = reader.get_statistics().to_dict()
     return statistics
 
-def descriptions(query, number):
+
+def descriptions(query):
     entity = query['field']
     ids = query['ids']
     if entity == 'conference':
@@ -238,24 +244,30 @@ if __name__ == "__main__":
                        path.join('data', metadatafile))
     reader = ReaderDBase(bd_m)
 
+    model = None
+    dictionary = None
+    text_vectors = None
     # Loading model
-    for line in open(root + config.get('Files and directories', 'models'), 'r').readlines():
+    for line in open(path.join(root, config.get('Files and directories', 'models')),
+                     'r').readlines():
         if line.startswith("#"):
             continue
         res = line.strip().split('\t')
         (mod_identifier, mod_description, mod_path) = res
         model = TfidfModel.load(path.join(mod_path, 'tfidf.model'))
         dictionary = model.id2word
-        text_vectors = gzip.open(path.join(mod_path, 'tfidf_corpus.json.gz'), 'r').read()
-        text_vectors = json.loads(text_vectors.decode('utf-8'))
-        print("Model", model, "from file", path.join(mod_path, 'tfidf.model'), "loaded successfully.", file=sys.stderr)
+        text_vectors_file = open(path.join(mod_path, 'tfidf_corpus.json.gz'), 'r').read()
+        text_vectors = json.loads(text_vectors_file)
+        print("Model", model, "from file", path.join(mod_path, 'tfidf.model'),
+              "loaded successfully.", file=sys.stderr)
 
     nlpub_terms = {}
     with open(nlpubfile, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter='\t')
         for row in csvreader:
             nlpub_terms[row['description']] = {}
-            nlpub_terms[row['description']]['terms'] = model[dictionary.doc2bow(row['terms'].strip().split())]
+            nlpub_terms[row['description']]['terms'] = model[
+                dictionary.doc2bow(row['terms'].strip().split())]
             nlpub_terms[row['description']]['url'] = row['url'].strip()
 
     id_index = text_vectors.keys()
