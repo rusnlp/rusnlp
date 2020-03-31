@@ -193,7 +193,7 @@ def queryparser(query):
     return output
 
 
-def ids2names(query):
+def ids2names(query, dummy):
     ids = query['ids']
     field = query['field']
     if field == 'author':
@@ -207,7 +207,7 @@ def ids2names(query):
     return names
 
 
-def stats():
+def stats(dummy0, dummy1):
     statistics = reader.get_statistics().to_dict()
     return statistics
 
