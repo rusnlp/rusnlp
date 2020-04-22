@@ -22,5 +22,5 @@ Example:
 * run:
 
 ```
-python run txt2json.py config.json
+python txt2json.py config.json
 ```
