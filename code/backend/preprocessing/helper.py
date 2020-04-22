@@ -7,6 +7,7 @@ def create_title2hash(filename, lower=True):
             conference, year = hashcode.split("_")[:2]
             if lower:
                 title = title.lower()
+            assert not title2hash.get((title, conference, year)), (title, conference, year)
             title2hash[(title, conference, year)] = hashcode
     return title2hash
 

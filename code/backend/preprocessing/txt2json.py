@@ -125,11 +125,37 @@ def detect_language(text):
     return {'language': language, 'probability': probability}
 
 
+def choose_between_metadata(metadata1, metadata2):
+    article_metadata = {
+        'title': metadata1['title'] if metadata1['title'] and metadata1['title'].strip() != "-" else metadata2['title'],
+
+        'authors': metadata1['authors'] if metadata1['authors'] else metadata2['authors'],
+
+        'abstract': metadata1['abstract'] if metadata1['abstract'] and metadata1['abstract'].strip() != "-" else
+        metadata2['abstract'],
+
+        'keywords': metadata1['keywords'] if metadata1['keywords'] else metadata2['keywords']}
+
+    return article_metadata
+
+
 def choose_correct_metadata(metadata, metadata_ru, metadata_en):
     if (filename == "65.txt" and metadata['year'] == "2004" and metadata['conference'] == "Dialogue") \
             or metadata['language'] == 'ru':
         return metadata_ru
-    return metadata_en
+    if metadata_ru and not metadata_en:
+        return metadata_ru
+    if metadata_en and not metadata_ru:
+        return metadata_en
+    if metadata_en and metadata_ru:
+        if metadata['language'] == 'en':
+            return choose_between_metadata(metadata_en, metadata_ru)
+        elif metadata['language'] == 'ru':
+            return choose_between_metadata(metadata_ru, metadata_en)
+        else:
+            raise Exception("undefined language")
+    else:
+        raise Exception(f"no metadata at all for {metadata}")
 
 
 def get_metadata_from_file(root_, filename_):
