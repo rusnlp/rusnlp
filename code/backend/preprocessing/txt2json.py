@@ -1,5 +1,4 @@
 import sys
-
 from langdetect import detect_langs
 from platform import system
 from hashlib import sha1
@@ -7,7 +6,6 @@ from transliterate import translit
 import re
 import os
 import json
-
 from helper import *
 
 splitter = '%\n%\n'
@@ -70,7 +68,8 @@ def get_affiliations_with_id(names, filename):
         name = name.strip()
         if name in name2affiliation:
             affiliation_id, affiliation_name = name2affiliation[name]
-            result_affiliations.append({"affiliation_id": affiliation_id, "affiliation_name": affiliation_name})
+            result_affiliations.append({"affiliation_id": affiliation_id,
+                                        "affiliation_name": affiliation_name})
         else:
             missing_affiliations.write(filename + "\t" + str([name]) + "\n")
     return result_affiliations
@@ -93,11 +92,13 @@ def generate_hash(metadata):
         old_hash = title2hash.get((title, conference, year))
         if old_hash:
             return old_hash
-    print(f'''No hash for article data: {[metadata['article']]}, title: "{metadata['article'].get('title')}"''')
+    print('No hash for article data: %s, title: %s' % ([metadata['article']],
+                                                       metadata['article'].get('title')))
     title = metadata['article']['title']
     hasher = sha1()
     hasher.update(translit(title.replace(' ', '_').lower(), 'ru', reversed=True).encode())
-    return '{}_{}_{}'.format(metadata['conference'], metadata['year'], str(hasher.hexdigest())).lower()
+    return '{}_{}_{}'.format(metadata['conference'], metadata['year'],
+                             str(hasher.hexdigest())).lower()
 
 
 def extract_metadata_from_text(pattern, text, filename):
@@ -106,7 +107,8 @@ def extract_metadata_from_text(pattern, text, filename):
     end = 0
     if header:
         end = header.end()
-        title, authors, abstract, keywords = text[header.end():].split(splitter, number_of_splits)[:-1]
+        title, authors, abstract, keywords = text[header.end():].split(splitter,
+                                                                       number_of_splits)[:-1]
         metadata['title'] = parse_title(title)
         metadata['authors'] = parse_authors(authors, filename)
         metadata['abstract'] = abstract.strip()
@@ -127,21 +129,22 @@ def detect_language(text):
 
 def choose_between_metadata(metadata1, metadata2):
     article_metadata = {
-        'title': metadata1['title'] if metadata1['title'] and metadata1['title'].strip() != "-" else metadata2['title'],
+        'title': metadata1['title'] if metadata1['title'] and metadata1['title'].strip() != "-"
+        else metadata2['title'],
 
         'authors': metadata1['authors'] if metadata1['authors'] else metadata2['authors'],
 
-        'abstract': metadata1['abstract'] if metadata1['abstract'] and metadata1['abstract'].strip() != "-" else
-        metadata2['abstract'],
-
+        'abstract': metadata1['abstract'] if metadata1['abstract'] and
+        metadata1['abstract'].strip() != "-"
+        else metadata2['abstract'],
         'keywords': metadata1['keywords'] if metadata1['keywords'] else metadata2['keywords']}
 
     return article_metadata
 
 
 def choose_correct_metadata(metadata, metadata_ru, metadata_en):
-    if (filename == "65.txt" and metadata['year'] == "2004" and metadata['conference'] == "Dialogue") \
-            or metadata['language'] == 'ru':
+    if (fname == "65.txt" and metadata['year'] == "2004"
+            and metadata['conference'] == "Dialogue") or metadata['language'] == 'ru':
         return metadata_ru
     if metadata_ru and not metadata_en:
         return metadata_ru
@@ -155,7 +158,7 @@ def choose_correct_metadata(metadata, metadata_ru, metadata_en):
         else:
             raise Exception("undefined language")
     else:
-        raise Exception(f"no metadata at all for {metadata}")
+        raise Exception('No metadata at all for %s' % metadata)
 
 
 def get_metadata_from_file(root_, filename_):
@@ -169,9 +172,12 @@ def get_metadata_from_file(root_, filename_):
         text = f.read()
         metadata.update(detect_language(text))
 
-        metadata_en, en_end = extract_metadata_from_text(english_label_p, text, os.path.join(root, filename))
-        metadata_ru, ru_end = extract_metadata_from_text(russian_label_p, text, os.path.join(root, filename))
-        metadata["article"] = choose_correct_metadata(metadata, metadata_ru=metadata_ru, metadata_en=metadata_en)
+        metadata_en, en_end = extract_metadata_from_text(english_label_p, text,
+                                                         os.path.join(basedir, fname))
+        metadata_ru, ru_end = extract_metadata_from_text(russian_label_p, text,
+                                                         os.path.join(basedir, fname))
+        metadata["article"] = choose_correct_metadata(metadata, metadata_ru=metadata_ru,
+                                                      metadata_en=metadata_en)
 
         metadata['hash'] = generate_hash(metadata)
         metadata['url'] = find_url(text, metadata)
@@ -190,8 +196,8 @@ def get_metadata_from_file(root_, filename_):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise Exception("Please specify path to config_file")
-    with open(sys.argv[1], "r", encoding="utf-8") as f:
-        params = json.loads(f.read())
+    with open(sys.argv[1], "r", encoding="utf-8") as config:
+        params = json.loads(config.read())
 
     title2hash = create_title2hash(params["hash_title_url"])
     hash2url = create_hash2url(params["hash_title_url"])
@@ -202,10 +208,10 @@ if __name__ == '__main__':
     missing_affiliations = open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n')
 
     with open(params["out_metadata_path"], 'w', encoding='utf-8', newline='\n') as w:
-        for root, dirs, files in os.walk(params["input_file"]):
-            for filename in files:
-                if filename.endswith('.txt'):
-                    meta_data = get_metadata_from_file(root, filename)
+        for basedir, dirs, files in os.walk(params["input_file"]):
+            for fname in files:
+                if fname.endswith('.txt'):
+                    meta_data = get_metadata_from_file(basedir, fname)
                     w.write(json.dumps(meta_data) + "\n")
 
     missing_authors.close()

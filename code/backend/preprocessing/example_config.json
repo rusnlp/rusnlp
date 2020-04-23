@@ -1,0 +1,10 @@
+{
+  "hash_title_url": "../../../../data-txt/hash_title_url.tsv",
+  "name2author": "../../../../data-txt/current_authors.tsv",
+  "name2affiliation": "../../../../data-txt/current_affiliations.tsv",
+  "missing_authors": "../../../../data-txt/missing_data/missing_authors.tsv",
+  "missing_affiliations": "../../../../data-txt/missing_data/missing_affiliations.tsv",
+  "input_file": "../../../../data-txt/",
+  "out_texts_dir": "../../../../data-txt/extracted_texts/",
+  "out_metadata_path": "../../../../data-txt/metadata.jsonlines"
+}
