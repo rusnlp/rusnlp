@@ -51,8 +51,9 @@ def add_author_metadata(author, filename):
 
 
 def get_name_with_id(name, filename):
+    name = name.replace("\n", " ").strip()
     if name in name2author:
-        return name2author[name.replace("\n", " ").strip()]
+        return name2author[name]
     else:
         missing_authors.write(filename + "\t" + str([name]) + "\n")
         return None, None
