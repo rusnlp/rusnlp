@@ -6,9 +6,9 @@ from code.web.db_classes.db_writer import WriterDBase
 from code.web.db_classes.db_reader import ReaderDBase
 from helper import *
 
-db = DBaseRusNLP("..///backend///database///rusnlp2.0.db", "..///backend///database///metadata.json")
+db = DBaseRusNLP("..///backend/database/rusnlp2.0.db", "../backend/database/metadata.json")
 reader = ReaderDBase(db)
-base_path = "<base path>"  # "D:/syncthing/RusNLP/data-txt/"
+base_path = "<base path>"  # "../../../data-txt"
 title2hash = create_title2hash(os.path.join(base_path, 'hash_title_url.tsv'))
 hash2url = create_hash2url(os.path.join(base_path, 'hash_title_url.tsv'))
 
@@ -17,7 +17,7 @@ def test_title_by_id():
     for (title, conference, year), hash in title2hash.items():
         new_titles = reader.select_title_by_id(hash)
         if reader.select_language_by_id(hash) == 'en':
-            assert len(new_titles) == 1, f"{new_titles}, {title}, {hash}"
+            assert len(new_titles) == 1, "{}, {}, {}".format(new_titles, title, hash)
             assert new_titles[0][0].lower() == title.lower().replace("'", ' ').replace('"', ' '), \
                 "{}, {}, {}".format(new_titles, title, hash)
 
