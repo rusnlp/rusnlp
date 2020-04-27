@@ -16,10 +16,7 @@ empty_symbol = '-'
 
 
 def get_data_from_filename(root):
-    if system() == 'Windows':
-        chunks = root.split('\\')
-    else:
-        chunks = root.split('/')
+    chunks = os.path.normpath(root).split(os.sep)
     return chunks[~0], chunks[~1]
 
 
@@ -54,8 +51,9 @@ def add_author_metadata(author, filename):
 
 
 def get_name_with_id(name, filename):
+    name = name.replace("\n", " ").strip()
     if name in name2author:
-        return name2author[name.replace("\n", " ").strip()]
+        return name2author[name]
     else:
         missing_authors.write(filename + "\t" + str([name]) + "\n")
         return None, None
@@ -143,9 +141,6 @@ def choose_between_metadata(metadata1, metadata2):
 
 
 def choose_correct_metadata(metadata, metadata_ru, metadata_en):
-    if (fname == "65.txt" and metadata['year'] == "2004"
-            and metadata['conference'] == "Dialogue") or metadata['language'] == 'ru':
-        return metadata_ru
     if metadata_ru and not metadata_en:
         return metadata_ru
     if metadata_en and not metadata_ru:

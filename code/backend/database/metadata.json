@@ -1,0 +1,37 @@
+{
+  "author": [{
+      "id": "INT PRIMARY KEY",
+      "author_id": "INT",
+      "name": "text"
+  }],
+  "affiliation": [{
+      "id": "INT PRIMARY KEY",
+      "affiliation_id": "INT",
+      "name": "text"
+  }],
+    "conference": [{
+      "id": "INT PRIMARY KEY",
+      "name": "text",
+      "year": "INT",
+      "description_ru":  "text",
+      "description_en":  "text",
+      "url": "text"
+  }],
+  "catalogue": [{
+      "id": "INT PRIMARY KEY",
+      "conference_id": "INT",
+      "language": "text",
+      "common_id": "text",
+      "url": "text",
+      "title": "text",
+      "abstract": "text",
+      "keywords": "text"
+  }],
+  "author_catalogue": [{
+      "id": "INT PRIMARY KEY",
+      "common_id": "text",
+      "author_id": "INT",
+      "email": "text",
+      "affiliation_id": "INT"
+  }]
+}

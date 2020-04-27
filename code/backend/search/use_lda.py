@@ -6,8 +6,8 @@ import gensim
 import pickle
 
 sys.path.insert(0, '../database/')
-from bd import DBaseRusNLP
-from db_reader import ReaderDBase
+from code.web.db_classes.db import DBaseRusNLP
+from code.web.db_classes.db_reader import ReaderDBase
 
 
 def getpos(ordering, name):
