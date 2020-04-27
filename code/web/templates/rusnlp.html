@@ -61,11 +61,11 @@
        <p style="margin-top:10px;">
        {{strings['topic8']}}
         {% if year_query %}
-        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2000" max="2020" size=4>
-        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2000" max="2020" size=4>
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2000" max="2020">
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2000" max="2020">
         {% else %}
-        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="2002" min="2000" max="2020" size=4>
-        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2018" min="2000" max="2020" size=4>
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="2002" min="2000" max="2020">
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2019" min="2000" max="2020">
         {% endif %}
     	</p>
 	<div id="authorform">
@@ -155,7 +155,7 @@
     	    </td>
     	    <td style="text-align:center;">
     	    {% for affiliation in res[6] %}
-    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation] }}</a>
+                <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
     		<br/>
     	    {% endfor %}
     	    

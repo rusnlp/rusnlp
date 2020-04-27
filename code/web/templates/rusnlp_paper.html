@@ -25,9 +25,10 @@
 		{% for author in metadata['author'] %}
             <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>;
             {% endfor %}</i>
+		<br/>
 		<i>
 		{% for aff in metadata['affiliation'] %}
-		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff] }}</a>;
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>;
 		{% endfor %}
 		
 		</i>
@@ -81,7 +82,7 @@
 						</td>
 						<td>
 					            {% for affiliation in res[6] %}
-					    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation] }}</a>
+					            <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
 					                <br/>
 						    {% endfor %}
 						</td>
