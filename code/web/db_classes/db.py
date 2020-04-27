@@ -1,7 +1,5 @@
 import sqlite3
 import json
-from db_reader import ReaderDBase
-from db_writer import WriterDBase
 
 
 class DBaseRusNLP:
@@ -13,10 +11,6 @@ class DBaseRusNLP:
         self.tables = json.load(open(config_file))
         for name, data in self.tables.items():
             self.create_table(name, data)
-        self.author_columns = self.select_columns_name("author")
-        self.article_columns = self.select_columns_name("article")
-        self.catalogue_columns = self.select_columns_name("catalogue")
-        self.conference_columns = self.select_columns_name("conference")
 
     def close(self):
         self.conn.close()
@@ -133,7 +127,6 @@ class DBaseRusNLP:
         if condition:
             query += ''' WHERE {}'''.format(condition)
         # TODO: Replace prints with logging
-        #print(query)
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
@@ -152,7 +145,18 @@ class DBaseRusNLP:
         if rows[0][0]:
             return rows[0][0]
         return 0
-    
+
+    def select_count(self, where):
+        """
+        Get amount of articles on the specified language.
+        :return: int
+            Amount of the articles with the specified language
+        """
+        what = '''COUNT(DISTINCT id) '''
+        where = '''{}'''.format(where)
+        result = self.select(what, where)
+        return result[0][0]
+
     def select_columns_name(self, table_name):
         """
         Get names of the columns in the table
@@ -220,12 +224,3 @@ class DBaseRusNLP:
         """
         self.cursor.execute("SELECT * FROM sqlite_master WHERE type='table'")
         return self.cursor.fetchall()
-
-
-if __name__ == '__main__':
-    c = DBaseRusNLP("rus_nlp_up.db", "meta_data.json")
-    # print(c.author_columns)
-    bd_read_helper = ReaderDBase(c)
-    bd_write_helper = WriterDBase(c)
-    # print(bd_read_helper.get_statistics())
-    # print(bd_read_helper.select_author_and_title_by_id("%.+%"))

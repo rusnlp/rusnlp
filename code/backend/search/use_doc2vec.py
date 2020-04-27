@@ -6,8 +6,8 @@ import logging
 from gensim.models.doc2vec import Doc2Vec
 
 sys.path.insert(0, '../database/')
-from bd import DBaseRusNLP
-from db_reader import ReaderDBase
+from code.web.db_classes.db import DBaseRusNLP
+from code.web.db_classes.db_reader import ReaderDBase
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 

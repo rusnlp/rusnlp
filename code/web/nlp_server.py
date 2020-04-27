@@ -12,8 +12,8 @@ from os import path
 import threading
 from gensim.models import TfidfModel
 from gensim.matutils import cossim
-from bd import DBaseRusNLP
-from db_reader import ReaderDBase
+from code.web.db_classes.db import DBaseRusNLP
+from code.web.db_classes.db_reader import ReaderDBase
 import csv
 from smart_open import open
 
