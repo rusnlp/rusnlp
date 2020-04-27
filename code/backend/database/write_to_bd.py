@@ -1,6 +1,5 @@
 import os
 import sys
-
 from code.web.db_classes.db import DBaseRusNLP
 from code.web.db_classes.db_writer import WriterDBase
 

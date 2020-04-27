@@ -2,16 +2,15 @@ class ReaderDBase:
     def __init__(self, db):
         self._bd = db
 
-    # ==================================================================================================
+    # ==========================================================================================
     # AUTHORS
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_author_by_id(self, article_id):
         """
         Get paper's authors by its unique identifier
         :param article_id:
-           Unique identifier of the paper (in format %s_%s_%s:(conference, year, paper's title hash))
-        :param language: string
+           Unique identifier of the paper (%s_%s_%s:(conference, year, paper's title hash))
         :returns string
         Return a list of authors of the paper associated with the specified identifier
         """
@@ -35,9 +34,9 @@ class ReaderDBase:
         condition = '''common_id="{}"'''.format(common_id)
         return set([i[0] for i in self._bd.select("author_id", where, condition)])
 
-    # ==================================================================================================
+    # ==========================================================================================
     # AFFILIATIONS
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_affiliation_by_cluster(self, cluster):  # TODO: rename
         where = "affiliation"
@@ -59,16 +58,15 @@ class ReaderDBase:
         where = '''affiliation '''
         return self._bd.select(what, where)
 
-    # ==================================================================================================
+    # ==========================================================================================
     # TITLE
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_title_by_id(self, article_id):
         """
         Get paper's title by its unique identifier.
         :param article_id: string
-            Unique identifier of the paper (in format %s_%s_%s:(conference, year, paper's title hash))
-        :param language: string
+            Unique identifier of the paper (%s_%s_%s:(conference, year, paper's title hash))
         :returns string
             Returns a title of the paper associated with the specified identifier
         """
@@ -77,9 +75,9 @@ class ReaderDBase:
         condition = '''common_id="{}"'''.format(article_id)
         return self._bd.select(what, where, condition)
 
-    # ==================================================================================================
+    # ==========================================================================================
     # CONFERENCE
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_year_by_id(self, article_id):
         return self.select_by_id("year", article_id)
@@ -93,9 +91,9 @@ class ReaderDBase:
         condition = '''common_id="{}"'''.format(article_id)
         return self._bd.select(what, where, condition)[0][0]
 
-    # ==================================================================================================
+    # ==========================================================================================
     # URL
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_url_by_id(self, article_id):
         what = '''url'''
@@ -103,9 +101,9 @@ class ReaderDBase:
         condition = '''common_id="{}"'''.format(article_id)
         return self._bd.select(what, where, condition)[0][0]
 
-    # ==================================================================================================
+    # ==========================================================================================
     # ABSTRACT
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_abstract_by_id(self, article_id):
         what = '''DISTINCT abstract'''
@@ -113,9 +111,9 @@ class ReaderDBase:
         condition = '''common_id = "{}"'''.format(article_id)
         return [i[0] for i in self._bd.select(what, where, condition)]
 
-    # ==================================================================================================
+    # ==========================================================================================
     # LANGUAGE
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_language_by_id(self, article_id):
         what = '''DISTINCT language'''
@@ -123,9 +121,9 @@ class ReaderDBase:
         condition = '''common_id = "{}"'''.format(article_id)
         return [i[0] for i in self._bd.select(what, where, condition)]
 
-    # ==================================================================================================
+    # ==========================================================================================
     # COMMON_ID
-    # ==================================================================================================
+    # ==========================================================================================
 
     def select_articles_from_conference(self, conf_name, year=None):
         """
@@ -141,8 +139,8 @@ class ReaderDBase:
             Names of articles from the all year proceedings of the selected conference
             (or selected conference of a certain year)
         """
-        conf_name = conf_name.upper() if conf_name.upper() == "AIST" or conf_name.upper() == "AINL" \
-            else "Dialogue"
+        conf_name = conf_name.upper() if conf_name.upper() == "AIST" \
+                                                    or conf_name.upper() == "AINL" else "Dialogue"
         what = "DISTINCT catalogue.common_id"
         where = "catalogue JOIN conference ON catalogue.conference_id=conference.id"
         condition = "conference.name='{}'".format(conf_name)
@@ -176,9 +174,9 @@ class ReaderDBase:
         condition = '''author_catalogue.affiliation_id="{}"'''.format(cluster_id)
         return [res[0] for res in self._bd.select(what, where, condition)]
 
-    # ==================================================================================================
+    # ==========================================================================================
     # STATISTICS
-    # ==================================================================================================
+    # ==========================================================================================
 
     def get_statistics(self):
         return {
@@ -191,7 +189,8 @@ class ReaderDBase:
 
     def get_dict_of_conference_description(self, confname):
         self._bd.cursor.execute(
-            'SELECT description_ru, description_en, url FROM conference WHERE conference.name="{}"'.format(confname))
+            'SELECT description_ru, description_en, url FROM conference WHERE conference.name="{}"'.
+                format(confname))
         result = self._bd.cursor.fetchall()[0]
         return {"ru": result[0], "en": result[1], "url": result[2]}
 

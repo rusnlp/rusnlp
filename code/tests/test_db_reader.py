@@ -1,6 +1,5 @@
 import json
 import os
-
 from code.web.db_classes.db import DBaseRusNLP
 from code.web.db_classes.db_writer import WriterDBase
 from code.web.db_classes.db_reader import ReaderDBase
@@ -14,18 +13,18 @@ hash2url = create_hash2url(os.path.join(base_path, 'hash_title_url.tsv'))
 
 
 def test_title_by_id():
-    for (title, conference, year), hash in title2hash.items():
-        new_titles = reader.select_title_by_id(hash)
-        if reader.select_language_by_id(hash) == 'en':
-            assert len(new_titles) == 1, "{}, {}, {}".format(new_titles, title, hash)
+    for (title, conference, year), article_hash in title2hash.items():
+        new_titles = reader.select_title_by_id(article_hash)
+        if reader.select_language_by_id(article_hash) == 'en':
+            assert len(new_titles) == 1, "{}, {}, {}".format(new_titles, title, article_hash)
             assert new_titles[0][0].lower() == title.lower().replace("'", ' ').replace('"', ' '), \
-                "{}, {}, {}".format(new_titles, title, hash)
+                "{}, {}, {}".format(new_titles, title, article_hash)
 
 
 def test_authors_by_id():
-    for title, hash in title2hash.items():
-        if reader.select_language_by_id(hash) == 'en':
-            authors = reader.select_author_by_id(hash)
+    for title, article_hash in title2hash.items():
+        if reader.select_language_by_id(article_hash) == 'en':
+            authors = reader.select_author_by_id(article_hash)
             assert authors
 
 
@@ -35,26 +34,27 @@ def test_all_authors():
 
 
 def test_year_by_id():
-    for _, hash in title2hash.items():
-        if reader.select_language_by_id(hash) == 'en':
-            assert int(hash.split("_")[1]) == reader.select_year_by_id(hash)
+    for _, article_hash in title2hash.items():
+        if reader.select_language_by_id(article_hash) == 'en':
+            assert int(article_hash.split("_")[1]) == reader.select_year_by_id(article_hash)
 
 
 def test_conference_by_id():
-    for _, hash in title2hash.items():
-        if reader.select_language_by_id(hash) == 'en':
-            assert hash.split("_")[0].lower() == reader.select_conference_by_id(hash).lower()
+    for _, article_hash in title2hash.items():
+        if reader.select_language_by_id(article_hash) == 'en':
+            assert article_hash.split("_")[0].lower() == reader.select_conference_by_id(
+                article_hash).lower()
 
 
 def test_url_by_id():
-    for hash in hash2url:
-        if reader.select_language_by_id(hash) == 'en':
-            assert hash2url[hash] == reader.select_url_by_id(hash)
+    for article_hash in hash2url:
+        if reader.select_language_by_id(article_hash) == 'en':
+            assert hash2url[article_hash] == reader.select_url_by_id(article_hash)
 
 
 def test_abstract_by_id():
-    for hash in hash2url:
-        print(reader.select_abstract_by_id(hash))
+    for article_hash in hash2url:
+        print(reader.select_abstract_by_id(article_hash))
 
 
 def test_select_articles_from_conference():
@@ -94,13 +94,13 @@ def test_select_articles_from_years():
                 articles_true.add(metadata['hash'])
     articles_hashes = set()
     articles_absent = set()
-    for hash in hash2url.keys():
-        year = int(hash.split("_")[1])
+    for article_hash in hash2url.keys():
+        year = int(article_hash.split("_")[1])
         if year_min <= year <= year_max:
-            if hash in articles and hash in articles_true:
-                articles_hashes.add(hash)
+            if article_hash in articles and article_hash in articles_true:
+                articles_hashes.add(article_hash)
             else:
-                articles_absent.add(hash)
+                articles_absent.add(article_hash)
     assert len(articles_hashes) + len(articles_absent) == 89
     assert len(articles_absent) == 25
     assert len(articles_true) == len(articles), "{}".format(articles.difference(articles_true))
@@ -133,11 +133,11 @@ def test_select_aff_cluster_by_affiliation():
 
 
 def test_select_cluster_author_by_common_id():
-    hash = "dialogue_2012_be2fb882e4f57d648998046ecf2bfdf0757f8fb3"
-    assert reader.select_cluster_author_by_common_id(hash) == {288, 776, 442, 860}
+    test_hash = "dialogue_2012_be2fb882e4f57d648998046ecf2bfdf0757f8fb3"
+    assert reader.select_cluster_author_by_common_id(test_hash) == {288, 776, 442, 860}
 
-    hash = "ainl_2015_860916ac622ec0a6242f810c5702fb9eb36e52c4"
-    assert reader.select_cluster_author_by_common_id(hash) == {467, 688}
+    test_hash = "ainl_2015_860916ac622ec0a6242f810c5702fb9eb36e52c4"
+    assert reader.select_cluster_author_by_common_id(test_hash) == {467, 688}
 
 
 def test_get_dict_of_conference_description():
@@ -165,7 +165,8 @@ def test_select_articles_by_cluster():
             "dialogue_2015_6e1f13dd827d92f1a0900435f28e1829c76fcd01",
             "dialogue_2016_3dbd5431a9535b9f758f3512e3e32ff150d1b0d8",
             "dialogue_2016_9385c1fb0119d54169158dff324dd43fb25e0e37",
-            "dialogue_2017_c3891ca5834982ee8e7fc5585002508bf40f0f52"} == set(reader.select_articles_by_cluster(185))
+            "dialogue_2017_c3891ca5834982ee8e7fc5585002508bf40f0f52"} == set(
+        reader.select_articles_by_cluster(185))
 
 
 def test_select_articles_of_author():

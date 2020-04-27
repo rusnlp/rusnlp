@@ -26,10 +26,10 @@ class DBaseRusNLP:
         query = "CREATE TABLE IF NOT EXISTS " + name + " ("
         columns = ', '.join([key + " " + val for key, val in columns_dict.items()])
         last = ")"
-        constraints = ", "+", ".join(operations_list[1:]) if len(operations_list) > 1 else ""
+        constraints = ", " + ", ".join(operations_list[1:]) if len(operations_list) > 1 else ""
         # TODO: Replace prints with logging
         # print(query + columns + last+constraints)
-        self.cursor.execute(query + columns + constraints+last)
+        self.cursor.execute(query + columns + constraints + last)
         self.conn.commit()
 
     def update(self, table, column, value, what, condition):
@@ -43,7 +43,7 @@ class DBaseRusNLP:
         :return:
         """
         query = '''UPDATE {}'''.format(table)
-        set_col = ''' SET ''' + column + '''= '''+ self.check(value)
+        set_col = ''' SET ''' + column + '''= ''' + self.check(value)
         where = ''' WHERE ''' + what + ''' = ''' + self.check(condition)
         try:
             self.cursor.execute(query + set_col + where)
@@ -51,8 +51,8 @@ class DBaseRusNLP:
         except Exception as e:
             pass
             # TODO: Replace prints with logging
-            print(query + set_col + where)
-    
+            print(query + set_col + where, e)
+
     def alter(self, table, operation, column, name, type_column):
         """
 
@@ -66,10 +66,10 @@ class DBaseRusNLP:
         query = """ALTER TABLE """ + table + """ """ + operation + """ """
         col_query = column + """ """ + name + """ """ + type_column
         # TODO: Replace prints with logging
-        print(query+col_query)
+        print(query + col_query)
         self.cursor.execute(query + col_query)
         self.conn.commit()
-    
+
     def alter_add_column(self, table, name, type_col):
         """
         Add column to the right
@@ -186,7 +186,7 @@ class DBaseRusNLP:
         query += ''' (''' + ''', '''.join(columns) + ''') '''
         values = ''' VALUES(''' + ''', '''.join([self.check(i) for i in value]) + '''); '''
         # TODO: Replace prints with logging
-        print(query+values)
+        print(query + values)
         self.cursor.execute(query + values)
         self.conn.commit()
         # TODO: Replace prints with logging
@@ -205,9 +205,9 @@ class DBaseRusNLP:
         if type(value) == int:
             return str(value)
         elif type(value) == str:
-            value = value.replace("'",""" """).replace('"', """ """)
+            value = value.replace("'", """ """).replace('"', """ """)
             value = ''.join([x for x in value if ord(x)])
-            return u''+'''"''' + value + '''"'''
+            return u'' + '''"''' + value + '''"'''
         elif not value:
             return '''NULL'''
         else:

@@ -25,10 +25,12 @@ class WriterDBase:
         self.db.insert('affiliation', (id_, affiliation_id, name),
                        ["id", "affiliation_id", "name"])
 
-    def insert_into_catalogue(self, conference_id, language, common_id, url, title, abstract, keywords):
+    def insert_into_catalogue(self, conference_id, language, common_id, url, title, abstract,
+                              keywords):
         id_ = self.db.select_max('catalogue') + 1
-        self.db.insert('catalogue', (id_, conference_id, language, common_id, url, title, abstract, keywords),
-                       ["id", "conference_id", "language", "common_id", "url", "title", "abstract", "keywords"])
+        self.db.insert('catalogue', (id_, conference_id, language, common_id, url, title, abstract,
+                                     keywords), ["id", "conference_id", "language", "common_id",
+                                                 "url", "title", "abstract", "keywords"])
 
     def insert_into_author_catalogue(self, common_id, author_id, email, affiliation_id):
         id_ = self.db.select_max('author_catalogue') + 1
@@ -96,7 +98,8 @@ class WriterDBase:
             abstract = metadata['article']['abstract']
             keywords = metadata['article']['keywords']
 
-            self.insert_into_catalogue(conference_id, language, common_id, url, title, abstract, ", ".join(keywords))
+            self.insert_into_catalogue(conference_id, language, common_id, url, title, abstract,
+                                       ", ".join(keywords))
 
             # ------------- insert into author catalogue -------------
             for author in metadata['article']['authors']:
@@ -106,11 +109,13 @@ class WriterDBase:
 
                     for affiliation in author["affiliations"]:
                         affiliation_id = affiliation["affiliation_id"]
-                        self.insert_into_author_catalogue(common_id, author_id, email, affiliation_id)
+                        self.insert_into_author_catalogue(common_id, author_id, email,
+                                                          affiliation_id)
 
                     if len(author["affiliations"]) == 0:  # TODO: replace with logging to file
                         with open("empty_affiliations.txt", 'a', encoding='utf-8') as f:
                             f.write(common_id+"\t"+author_id+"\t"+language+"\t"+title+"\n")
                 else:  # TODO: delete line (not all authors are found)
-                    with open("empty_authors.txt", 'a', encoding='utf-8') as f:  # TODO: replace with logging to file
+                    # TODO: replace with logging to file
+                    with open("empty_authors.txt", 'a', encoding='utf-8') as f:
                         f.write(common_id+"\t"+language+"\t"+title+"\n")

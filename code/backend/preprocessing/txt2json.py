@@ -1,11 +1,10 @@
-import sys
-from langdetect import detect_langs
-from platform import system
-from hashlib import sha1
-from transliterate import translit
-import re
-import os
 import json
+import os
+import re
+import sys
+from hashlib import sha1
+from langdetect import detect_langs
+from transliterate import translit
 from helper import *
 
 splitter = '%\n%\n'
