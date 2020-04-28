@@ -1,11 +1,17 @@
-{% extends "rusnlp_base.html" %}
+{%- extends "rusnlp_base.html" %}
+
+{% set meta_title = [strings['topicresult4'], metadata['title']]|join(': ')  %}
 
 {%- block title %}
 	{% if not error %}
-	<title>{{strings['topicresult4']}}: {{metadata['title']}} </title>
+	    <title>{{strings['topicresult4']}}: {{metadata['title']}} </title>
 	{% endif %}
 
 {%- endblock title %}
+
+{%- block metas -%}
+{{ super() }}
+{%- endblock metas -%}
 
 {% block content %}
 	<div class="row" style="text-align: center;">
@@ -82,7 +88,7 @@
 						</td>
 						<td>
 					            {% for affiliation in res[6] %}
-					            <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
+					    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
 					                <br/>
 						    {% endfor %}
 						</td>

@@ -20,6 +20,7 @@ topic17	Можно использовать метасимволы * и ?	You ca
 topic18	Начните набирать аффилиацию...	Start typing an affiliation name...
 topic19	Статьи с аффилиацией	Papers with the affiliation
 topic20	Статьи с конференции	Papers from the conference
+topic21	У нас краудсорсинг: помогите нам разметить качество двуязычного поиска!	We are crowdsourcing: help us evaluate our forthcoming bilingual search engine!
 topicresult1	Вот что мы нашли для вас	What we found for you
 topicresult2	Кликните по заголовку статьи для поиска похожих публикаций	Click on the paper title to search for similar publications
 topicresult3	Заголовок	Paper title
@@ -36,7 +37,7 @@ topicresult13	Кликните чтобы узнать больше об это�
 topicresult14	Кликните, чтобы увидеть все публикации за этот год	Click to search for all papers published this year
 topicresult15	Число результатов	Number of results
 topicresult16	Кликните, чтобы увидеть все публикации с этой аффилиацией	Click to search for all papers with this affiliation
-topicalstructure1	Тематическая структура публикаций на российских NLP-конференциях	Topical structure of publications in Russian NLP conferences
+topicalstructure1	Тематическая структура публикаций на российских NLP-конференциях в 2001-2017	Topical structure of publications in Russian NLP conferences (2001-2017)
 topicalstructure2	PyLDA-визуализации	PyLDA visualisations
 topicalstructure3	Глобальная структура	Global structure
 topicalstructure4	Конференции	Conferences
@@ -44,17 +45,19 @@ topicalstructure5	Годы	Years
 topicabout1	О сервисе	About the service
 topicabout2	<strong>RusNLP</strong> - это поисковик по англоязычным статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for English-language papers presented in Russian NLP conferences:
 topicabout3	Диалог	Dialogue
-topicabout4	Он позволяет искать по авторам, годам и конференциям, а также по ключевым словам (с использованием TF/IDF). Публикации снабжены богатыми метаданными, включая исходный URL и автоматически определенные тематики.	You can search by author, year and conference and even by keywords (using TF-IDF). Papers are accompanied with vast metadata, including the original URLs and automatically defined relevant tasks.
-topicabout5	Это часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>. Данный сервис пока находится в стадии подготовки и не претендует на полноту или точность.	It is a part of a larger project called <strong>"Analysis of publication activity in Russian comutational linguistics"</strong>. The current web service is a work in progress and does not claim to be 100% complete or accurate.
+topicabout41	Мы обкачали все публикации на этих конференциях, начиная с 2001 года, и тщательно разметили статьи по авторам и их аффилиациям.	We crawled all papers from these venues, starting from 2001, and rigorously extracted author names and affiliations.
+topicabout4	Наш поисковик позволяет искать публикации по вашим запросам и отображает списки статей на схожую тему. Результаты поиска можно фильтровать по любому сочетанию авторов, аффилиаций, годов и конференций.	You can search papers by your query and immediately see lists of papers relevant to the target one. Search results can be filtered by any combination of author names, their affiliations, years and conference venues.
+topicabout5	RusNLP - часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>.	It is a part of a larger project called <strong>"Analysis of publication activity in Russian comutational linguistics"</strong>.
 topicabout6	Скачать весь датасет в виде базы данных Sqlite	Download the dataset as Sqlite database
-topicabout7	Публикации по проекту	Publications describing the project
-topicabout8	"<i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"	"<i>Bakarov A, Kutuzov A., Nikishina I.</i> <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"
-topicabout9	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // Принято на AIST-2018"	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // Accepted to AIST-2018"
-topicabout10	Команда проекта	Project team
+topicabout7	Публикации по проекту	Publications about the project
+topicabout8	"<i>Amir Bakarov, Andrey Kutuzov and Irina Nikishina</i>. <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"	"<i>Amir Bakarov, Andrey Kutuzov and Irina Nikishina</i>. <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"
+topicabout9	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // AIST-2018"	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // AIST-2018"
+topicabout36	"<i>Irina Nikishina and Andrey Kutuzov</i>. Double-Blind Peer-Reviewing And Inclusiveness In Russian NLP Conferences // AIST-2019"	"<i>Irina Nikishina and Andrey Kutuzov</i>. Double-Blind Peer-Reviewing And Inclusiveness In Russian NLP Conferences» // AIST-2019"
+topicabout10	Основная команда проекта	Project core team
 topicabout11	В алфавитном порядке:	In alphabetic order:
-topicabout12	Амир Бакаров (НИУ ВШЭ)	Amir Bakarov (NRU HSE)
+topicabout12	Амир Бакаров (Huawei)	Amir Bakarov (Huawei)
 topicabout13	Андрей Кутузов (Университет Осло)	Andrey Kutuzov(University of Oslo)
-topicabout14	Ирина Никишина (НИУ ВШЭ)	Irina Nikishina (NRU HSE)
+topicabout14	Ирина Никишина (Сколтех)	Irina Nikishina (Skoltech)
 topicabout15	AIST	AIST
 topicabout16	AINL	AINL
 topicabout17	Уникальных аффилиаций	Unique affiliations
@@ -64,7 +67,7 @@ topicabout20	Всего статей	Total papers
 topicabout21	Статей на русском	Papers in Russian
 topicabout22	Статей на английском	Papers in English
 topicabout23	Уникальных аффилиаций в англоязычных статьях	Affiliations in papers in English
-topicabout24	Статистика датасета	Dataset stats
+topicabout24	Текущая статистика датасета	Current dataset stats
 topicabout25	Исходный код веб-сервиса	Web service source code
 topicabout26	Вы можете использовать его наподобие <a href="https://scholar.google.com">Google Scholar</a> или <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>	You can use it in the same way as <a href="https://scholar.google.com">Google Scholar</a> or <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>
 topicabout27	Искать публикации, о которых вы не знали	Discover academic knowledge you were not aware of
@@ -74,5 +77,9 @@ topicabout30	Вопросы, на которые может ответить <st
 topicabout31	Какие есть публикации в российском NLP, похожие на уже известную мне статью?	I know this paper, what other similar papers are there in Russian NLP?
 topicabout32	Что публиковали в 2008 году компьютерные лингвисты из МГУ?	What was published in 2008 by NLP scholars from Moscow State University?
 topicabout33	Представляли ли в 2015 году на конференции AINL какие-либо исследования, связанные с перифразированием?	Were there any papers about paraphrases detection at the AINL conference in 2015?
-topicabout34	И так далее...	Etc...
+topicabout34	и так далее...	etc...
 topicabout35	Слайды	Slides
+topicabout37	Студенты магистратуры "<a href="https://www.hse.ru/ma/ling/">Компьютерная лингвистика</a>" Высшей Школы Экономики, Москва	Students of the <a href="https://www.hse.ru/ma/ling/">Computational Linguistics masters program</a> at the Higher School of Economics, Moscow
+topicabout38	Анна Сафарян	Anna Safaryan
+topicabout39	Петр Фильченков	Petr Filchenkov
+topicabout40	Weijia Yan	Weijia Yan

@@ -1,41 +1,46 @@
 {% extends "rusnlp_base.html" %}
+{% set meta_title = ['RusNLP', strings['topic2']]|join(': ')  %}
+
 
 {%- block title %}
      <title>RusNLP: {{strings['topic2']}}</title>
  {%- endblock title %}
 
+{%- block metas -%}
+{{ super() }}
+{%- endblock metas -%}
 
 {% block content %}
 <div>
 <h1>{{strings['topicalstructure1']}}</h1>
 <h3>{{strings['topicalstructure2']}}</h3>
 <ul>
-    <li><strong><a href="http://rusvectores.org/static/rusnlp/global.html">{{strings['topicalstructure3']}}</a></strong></li>
+    <li><strong><a href="https://rusvectores.org/static/rusnlp/global.html">{{strings['topicalstructure3']}}</a></strong></li>
     <li><strong>{{strings['topicalstructure4']}}</strong>
     <ol>
-        <li><a href="http://rusvectores.org/static/rusnlp/conferences/dialog.html">{{strings['topicabout3']}}</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/conferences/ainl.html">{{strings['topicabout16']}}</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/conferences/aist.html">{{strings['topicabout15']}}</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/conferences/dialog.html">{{strings['topicabout3']}}</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/conferences/ainl.html">{{strings['topicabout16']}}</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/conferences/aist.html">{{strings['topicabout15']}}</a></li>
     </ol>
     </li>
     <li><strong>{{strings['topicalstructure5']}}</strong>
     <ol>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2001.html">2001</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2003.html">2003</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2004.html">2004</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2005.html">2005</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2006.html">2006</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2007.html">2007</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2008.html">2008</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2009.html">2009</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2010.html">2010</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2011.html">2011</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2012.html">2012</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2013.html">2013</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2014.html">2014</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2015.html">2015</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2016.html">2016</a></li>
-        <li><a href="http://rusvectores.org/static/rusnlp/years/2017.html">2017</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2001.html">2001</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2003.html">2003</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2004.html">2004</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2005.html">2005</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2006.html">2006</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2007.html">2007</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2008.html">2008</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2009.html">2009</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2010.html">2010</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2011.html">2011</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2012.html">2012</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2013.html">2013</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2014.html">2014</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2015.html">2015</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2016.html">2016</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/years/2017.html">2017</a></li>
     </ol>
     </li>
 </ul>

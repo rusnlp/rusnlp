@@ -1,16 +1,28 @@
-{% extends "rusnlp_base.html" %}
+{%- extends "rusnlp_base.html" %}
 
-{%- block title %}
+
 {% if '/author/' in request.path %}
     <title>RusNLP: {{ author_query }}</title>
+    {% set meta_title = ['RusNLP', author_query]|join(': ')  %}
 {% elif '/affiliation/' in request.path %}
     <title>RusNLP: {{ affiliation_query }}</title>
+    {% set meta_title = ['RusNLP', affiliation_query]|join(': ')  %}
 {% elif '/conf/' in request.path %}
     <title>RusNLP: {{ conf_query[0] }}</title>
+    {% set meta_title = ['RusNLP', conf_query[0]]|join(': ')  %}
 {% else %}
     <title>{{strings['topic4']}}</title>
+    {% set meta_title = strings['topic4']  %}
 {% endif %}
-{%- endblock title %}
+
+{%- block title -%}
+<title>{{ meta_title }}</title>
+{%- endblock title -%}
+
+
+{%- block metas -%}
+{{ super() }}
+{%- endblock metas -%}
 
 {% block content %}
     <div class="row" style="text-align:center;">
@@ -20,7 +32,7 @@
             
 
               <div class="form-group center-block" style="text-align:center">
-	      <p style="margin-top:15px;font-size:30px;"><strong>{{strings['topic6']}}</strong></p>
+	      <h2 style="margin-top:15px;font-size:30px;"><strong>{{strings['topic6']}}</strong></h2>
     {% if keywords %}
        	   <input type="text" title="{{strings['topic1']}}" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
         {% else %}
@@ -83,9 +95,9 @@
         <p style="margin-top:10px;width:auto;">
         {{strings['topicresult5']}}:
         {% if affiliation_query %}
-        <input type="text" class="typeahead" id="affiliation_query" name="affiliation_query" value="{{ affiliation_query }}" maxlength=100 style="font-size:15px;" >
+        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="affiliation_query" name="affiliation_query" value="{{ affiliation_query }}" maxlength=100 style="font-size:15px;" >
         {% else %}
-        <input type="text" class="typeahead" id="affiliation_query" name="affiliation_query" placeholder="{{strings['topic18']}}" maxlength=100 style="font-size:15px;">
+        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="affiliation_query" name="affiliation_query" placeholder="{{strings['topic18']}}" maxlength=100 style="font-size:15px;">
         {% endif %}
         </p>
         </div>
@@ -111,7 +123,7 @@
     {% if error %}
         <h2> <strong>{{ error }}</strong></h2>
     {% endif %}
-     {% if result %}
+{% if result %}
      <hr/>
     {% if '/author/' in request.path %}
     <h3>{{strings['topic9']}}: {{ author_query }}</h3>
@@ -155,7 +167,7 @@
     	    </td>
     	    <td style="text-align:center;">
     	    {% for affiliation in res[6] %}
-                <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
+    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
     		<br/>
     	    {% endfor %}
     	    
@@ -178,5 +190,9 @@
         {% endfor %}
         </table>
     </div>
+{% else %}
+<img width=100 src="/static/nlp.png" class="pull-right img-rounded img-responsive" title="RusNLP" alt="RusNLP">
+<h3>{{strings['topicabout2'][:-1]}}</h3>
+<p class="lead"><a href="/poll/" target="_blank">{{strings['topic21']}}</a></p>
 {% endif %}
 {% endblock %}

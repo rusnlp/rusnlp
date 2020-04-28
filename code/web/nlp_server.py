@@ -212,7 +212,7 @@ def stats(_, __):
     return statistics
 
 
-def descriptions(query):
+def descriptions(query, _):
     entity = query['field']
     ids = query['ids']
     if entity == 'conference':
