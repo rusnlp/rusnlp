@@ -2,7 +2,7 @@ id	ru	en
 base1	RusNLP	RusNLP
 base2	Switch language	Сменить язык
 base3	RusNLP: поиск	RusNLP: search
-topic1	Пишите имена собственные, например, названия языков, с большой буквы	Proper names (language names, etc) must be capitalized
+topic1	На английском! Пишите имена собственные, например, названия языков, с большой буквы.	In English! Proper names (language names, etc) must be capitalized.
 topic2	Тематическая структура	Topical structure
 topic3	О проекте	About
 topic4	RusNLP: поиск по научным статьям на российских конференциях в области natural language processing	RusNLP: searcn engine for papers in natural language processing, Russian conferences

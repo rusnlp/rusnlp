@@ -115,6 +115,10 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             affiliation = request.form['affiliation_query'].strip()
             title = request.form['query'].strip()
             conference = request.form.getlist('conf_query')
+            if conference:
+                query = {'field': 'conference', 'ids': conference}
+                message = [5, query, 10]
+                descriptions['conferences'] = json.loads(serverquery(message))['neighbors']
             year_min = request.form['year_query_min']
             if year_min:
                 year_min = int(year_min)
@@ -273,6 +277,16 @@ def about_page(lang):
     stats = json.loads(serverquery(message))["neighbors"]
     return render_template('/about.html', url=url, other_lang=other_lang, languages=languages,
                            stats=stats)
+
+
+@nlpsearch.route('/poll/')
+def poll_page():
+    # pass all required variables to template
+    # repeated within each @nlpsearch.route function
+    g.lang = "ru"
+    g.strings = language_dicts["ru"]
+    return render_template('/poll.html', url=url, other_lang="ru", languages=languages)
+
 
 
 # redirecting requests with no lang:
