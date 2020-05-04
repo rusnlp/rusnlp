@@ -111,7 +111,7 @@ class DBaseRusNLP:
         self.cursor.execute("DROP TABLE {}".format(table))
         self.conn.commit()
 
-    def select(self, what, where, condition=None):
+    def _select_query(self, what, where, condition=None):
         """
         Get rows by query
 
@@ -126,9 +126,39 @@ class DBaseRusNLP:
         query = '''SELECT {} FROM {}'''.format(what, where)
         if condition:
             query += ''' WHERE {}'''.format(condition)
-        # TODO: Replace prints with logging
+        return query
+
+    def select(self, what, where, condition=None):
+        """
+        Get rows by query
+
+        :param what: list of strings
+            Columns from which the values should be selected
+        :param where: string
+            The name of the specified table
+        :param condition: list of strings
+            The optional condition according to which the rows would be selected
+        :return:
+        """
+        query = self._select_query(what, where, condition)
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def select_one(self, what, where, condition=None):
+        """
+        Get rows by query
+
+        :param what: list of strings
+            Columns from which the values should be selected
+        :param where: string
+            The name of the specified table
+        :param condition: list of strings
+            The optional condition according to which the rows would be selected
+        :return:
+        """
+        query = self._select_query(what, where, condition)
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
 
     def select_max(self, table):
         """

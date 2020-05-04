@@ -14,11 +14,10 @@ hash2url = create_hash2url(os.path.join(base_path, 'hash_title_url.tsv'))
 
 def test_title_by_id():
     for (title, conference, year), article_hash in title2hash.items():
-        new_titles = reader.select_title_by_id(article_hash)
         if reader.select_language_by_id(article_hash) == 'en':
-            assert len(new_titles) == 1, "{}, {}, {}".format(new_titles, title, article_hash)
-            assert new_titles[0][0].lower() == title.lower().replace("'", ' ').replace('"', ' '), \
-                "{}, {}, {}".format(new_titles, title, article_hash)
+            new_title = reader.select_title_by_id(article_hash)
+            assert new_title.lower() == title.lower().replace("'", ' ').replace('"', ' '), \
+                "{}, {}, {}".format(new_title, title, article_hash)
 
 
 def test_authors_by_id():
@@ -54,7 +53,8 @@ def test_url_by_id():
 
 def test_abstract_by_id():
     for article_hash in hash2url:
-        print(reader.select_abstract_by_id(article_hash))
+        if reader.select_language_by_id(article_hash) == 'en':
+            print(reader.select_abstract_by_id(article_hash))
 
 
 def test_select_articles_from_conference():

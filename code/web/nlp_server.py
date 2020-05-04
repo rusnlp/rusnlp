@@ -71,11 +71,11 @@ def find_nearest(q_vector, q, number, restrict=None):
                         and cossim(q_vector, text_vectors[d]) > 0.01}
     neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
     results = [
-        (i, reader.select_title_by_id(i)[0][0], list(reader.select_cluster_author_by_common_id(i)),
+        (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
          reader.select_year_by_id(i),
          reader.select_conference_by_id(i), reader.select_url_by_id(i),
          list(reader.select_aff_clusters_by_id(i)),
-         reader.select_abstract_by_id(i)[0][:300] + '...', similarities[i]) for i in neighbors]
+         reader.select_abstract_by_id(i)[:300] + '...', similarities[i]) for i in neighbors]
     return results
 
 
@@ -138,11 +138,11 @@ def search(sets, number, keywords=None):
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
         results = [
-            (i, reader.select_title_by_id(i)[0][0], list(reader.select_cluster_author_by_common_id(i)),
+            (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
              reader.select_year_by_id(i),
              reader.select_conference_by_id(i), reader.select_url_by_id(i),
              list(reader.select_aff_clusters_by_id(i)),
-             reader.select_abstract_by_id(i)[0][:300] + '...') for i in
+             reader.select_abstract_by_id(i)[:300] + '...') for i in
             valid]
     return results
 
@@ -171,12 +171,12 @@ def queryparser(query):
             return output
         q_vector = text_vectors[article_id]
         output = {'neighbors': operations[operation](q_vector, article_id, number),
-                  'meta': {'title': reader.select_title_by_id(article_id)[0][0],
+                  'meta': {'title': reader.select_title_by_id(article_id),
                            'author': list(reader.select_cluster_author_by_common_id(article_id)),
                            'year': reader.select_year_by_id(article_id),
                            'conference': reader.select_conference_by_id(article_id),
                            'affiliation': list(reader.select_aff_clusters_by_id(article_id)),
-                           'abstract': reader.select_abstract_by_id(article_id)[0][:300] + '...',
+                           'abstract': reader.select_abstract_by_id(article_id)[:300] + '...',
                            'url': reader.select_url_by_id(article_id)},
                   'topics': {}
                   }
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     for el in id_index:
         cur_authors = reader.select_author_by_id(el)
         authorsindex |= set(cur_authors)
-    titlesindex = {reader.select_title_by_id(ident)[0][0]: ident for ident in id_index}
+    titlesindex = {reader.select_title_by_id(ident): ident for ident in id_index}
 
     maxthreads = 2  # Maximum number of threads
     threadLimiter = threading.BoundedSemaphore(maxthreads)
