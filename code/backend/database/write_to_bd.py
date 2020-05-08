@@ -4,10 +4,10 @@ from code.web.db_classes.db import DBaseRusNLP
 from code.web.db_classes.db_writer import WriterDBase
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
-        raise Exception("Please specify paths: <data-txt> <db name> <metadata path>")
-    basepath = sys.argv[1]  # "../../../data-txt"
-    db = DBaseRusNLP(sys.argv[2], sys.argv[3])  # "rusnlp2.0.db", "metadata.json"
+    if len(sys.argv) < 5:
+        raise Exception("Please specify paths: <data-txt> <db name> <metadata db path> <metadate jsonlines path>")
+    basepath = sys.argv[1]
+    db = DBaseRusNLP(sys.argv[2], sys.argv[3])
     for i in db.get_db_info():
         print(i[1], db.select_columns_name(i[1]))
 
@@ -26,6 +26,6 @@ if __name__ == '__main__':
     # Add json data
     # -------------------------------------------------------------------
 
-    with open(os.path.join(basepath, "metadata.jsonlines"), 'r', encoding='utf-8') as f:
+    with open(os.path.join(basepath, sys.argv[4]), 'r', encoding='utf-8') as f:
         for line in f:
             db_writer.add_jsonline(line)
