@@ -1,1 +1,3 @@
-tfidf	Модель TF/IDF	models/
+general_model	Cross-lingual MUSE	models/cross_muse.vec.gz
+document_model	Corpus vector model	models/common_lem_muse.vec.gz
+nlpub_model	NLPub vector model	models/nlpub.vec.gz

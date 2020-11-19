@@ -1,24 +1,24 @@
 description	terms	url
-Токенизация	tokenization_NOUN	https://nlpub.ru/%D0%93%D1%80%D0%B0%D1%84%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
-Морфологический анализ	lemmatization_NOUN morphology_NOUN tagging_NOUN	https://nlpub.ru/%D0%9C%D0%BE%D1%80%D1%84%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
-Синтаксический анализ	syntax_NOUN parsing_NOUN	https://nlpub.ru/%D0%A1%D0%B8%D0%BD%D1%82%D0%B0%D0%BA%D1%81%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
-Проверка правописания	spell_NOUN checking_NOUN spellchecking_NOUN	https://nlpub.ru/%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0_%D0%BF%D1%80%D0%B0%D0%B2%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D1%8F
-Проверка грамматики	grammar_NOUN checking_NOUN	https://nlpub.ru/%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0
-Построение конкордансов	concordance_NOUN	https://nlpub.ru/%D0%9F%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BA%D0%BE%D0%BD%D0%BA%D0%BE%D1%80%D0%B4%D0%B0%D0%BD%D1%81%D0%BE%D0%B2
-Извлечение ключевых слов	keyword_NOUN extraction_NOUN	https://nlpub.ru/%D0%98%D0%B7%D0%B2%D0%BB%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D1%85_%D1%81%D0%BB%D0%BE%D0%B2
-Автоматическое реферирование	summarization_NOUN	https://nlpub.ru/%D0%90%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5_%D1%80%D0%B5%D1%84%D0%B5%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
-Тематическая классификация	topic_NOUN classification_NOUN	https://nlpub.ru/%D0%A2%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F
-Тематическое моделирование	topic_NOUN modeling_NOUN	https://nlpub.ru/%D0%A2%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
-Извлечение именованных сущностей	name_NOUN entity_NOUN recognition_NOUN	https://nlpub.ru/%D0%98%D0%B7%D0%B2%D0%BB%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B8%D0%BC%D0%B5%D0%BD%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D1%85_%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D0%B5%D0%B9
-Извлечение отношений	relation_NOUN extraction_NOUN	https://nlpub.ru/%D0%98%D0%B7%D0%B2%D0%BB%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BE%D1%82%D0%BD%D0%BE%D1%88%D0%B5%D0%BD%D0%B8%D0%B9
-Анализ тональности	sentiment_NOUN analysis_NOUN	https://nlpub.ru/%D0%90%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7_%D1%82%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8
-Информационный поиск	information_NOUN retrieval_NOUN	https://nlpub.ru/%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA
-Машинный перевод	machine_NOUN translation_NOUN	https://nlpub.ru/%D0%9C%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4
-Обнаружение дубликатов	deduplication_NOUN duplicate_NOUN detection_NOUN	https://nlpub.ru/%D0%9E%D0%B1%D0%BD%D0%B0%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B4%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D0%B2
-Cегментация текста	text_NOUN segmentation_NOUN	https://nlpub.ru/C%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0
-Обработка речи	speech_NOUN processing_NOUN	https://nlpub.ru/%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0_%D1%80%D0%B5%D1%87%D0%B8
-Конечные преобразователи	finite_ADJ transducer_NOUN	https://nlpub.ru/%D0%A3%D1%82%D0%B8%D0%BB%D0%B8%D1%82%D1%8B#.D0.9A.D0.BE.D0.BD.D0.B5.D1.87.D0.BD.D1.8B.D0.B9_.D0.BF.D1.80.D0.B5.D0.BE.D0.B1.D1.80.D0.B0.D0.B7.D0.BE.D0.B2.D0.B0.D1.82.D0.B5.D0.BB.D1.8C
-Языковые модели	language_NOUN model_NOUN modeling_NOUN	https://nlpub.ru/%D0%A3%D1%82%D0%B8%D0%BB%D0%B8%D1%82%D1%8B#.D0.9E.D0.B1.D1.80.D0.B0.D0.B1.D0.BE.D1.82.D0.BA.D0.B0_.D1.8F.D0.B7.D1.8B.D0.BA.D0.BE.D0.B2.D1.8B.D1.85_.D0.BC.D0.BE.D0.B4.D0.B5.D0.BB.D0.B5.D0.B9
-Тезаурусы	thesaurus_NOUN thesauri_NOUN	https://nlpub.ru/%D0%A3%D1%82%D0%B8%D0%BB%D0%B8%D1%82%D1%8B#.D0.A0.D0.B5.D0.B4.D0.B0.D0.BA.D1.82.D0.BE.D1.80_.D1.82.D0.B5.D0.B7.D0.B0.D1.83.D1.80.D1.83.D1.81.D0.B0
-Корпусы	corpus_NOUN	https://nlpub.ru/%D0%A0%D0%B5%D1%81%D1%83%D1%80%D1%81%D1%8B#.D0.9A.D0.BE.D1.80.D0.BF.D1.83.D1.81_.D1.82.D0.B5.D0.BA.D1.81.D1.82.D0.BE.D0.B2
-Дистрибутивная семантика	embedding_NOUN model_NOUN distributive_ADJ distributional_ADJ semantic_NOUN	http://rusvectores.org/
+Токенизация	tokenization	https://nlpub.ru/%D0%93%D1%80%D0%B0%D1%84%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
+Морфологический_анализ	lemma morphology tagging	https://nlpub.ru/%D0%9C%D0%BE%D1%80%D1%84%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
+Синтаксический_анализ	syntax parsing	https://nlpub.ru/%D0%A1%D0%B8%D0%BD%D1%82%D0%B0%D0%BA%D1%81%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
+Проверка_правописания	spell checking spellcheck	https://nlpub.ru/%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0_%D0%BF%D1%80%D0%B0%D0%B2%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D1%8F
+Проверка_грамматики	grammar checking	https://nlpub.ru/%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0
+Построение_конкордансов	concordance	https://nlpub.ru/%D0%9F%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BA%D0%BE%D0%BD%D0%BA%D0%BE%D1%80%D0%B4%D0%B0%D0%BD%D1%81%D0%BE%D0%B2
+Извлечение_ключевых_слов	keyword extraction	https://nlpub.ru/%D0%98%D0%B7%D0%B2%D0%BB%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D1%85_%D1%81%D0%BB%D0%BE%D0%B2
+Автоматическое_реферирование	summarization	https://nlpub.ru/%D0%90%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5_%D1%80%D0%B5%D1%84%D0%B5%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
+Тематическая_классификация	topic classification	https://nlpub.ru/%D0%A2%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F
+Тематическое_моделирование	topic modeling	https://nlpub.ru/%D0%A2%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5
+Извлечение_именованных_сущностей	named entity recognition	https://nlpub.ru/%D0%98%D0%B7%D0%B2%D0%BB%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B8%D0%BC%D0%B5%D0%BD%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D1%85_%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D0%B5%D0%B9
+Извлечение_отношений	relation extraction	https://nlpub.ru/%D0%98%D0%B7%D0%B2%D0%BB%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BE%D1%82%D0%BD%D0%BE%D1%88%D0%B5%D0%BD%D0%B8%D0%B9
+Анализ_тональности	sentiment analysis	https://nlpub.ru/%D0%90%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7_%D1%82%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8
+Информационный_поиск	information retrieval	https://nlpub.ru/%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA
+Машинный_перевод	machine translation	https://nlpub.ru/%D0%9C%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4
+Обнаружение_дубликатов	deduplication duplicate detection	https://nlpub.ru/%D0%9E%D0%B1%D0%BD%D0%B0%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B4%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D0%B2
+Cегментация_текста	text segmentation	https://nlpub.ru/C%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0
+Обработка_речи	speech processing	https://nlpub.ru/%D0%9E%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0_%D1%80%D0%B5%D1%87%D0%B8
+Конечные_преобразователи	finite transducer	https://nlpub.ru/%D0%A3%D1%82%D0%B8%D0%BB%D0%B8%D1%82%D1%8B#.D0.9A.D0.BE.D0.BD.D0.B5.D1.87.D0.BD.D1.8B.D0.B9_.D0.BF.D1.80.D0.B5.D0.BE.D0.B1.D1.80.D0.B0.D0.B7.D0.BE.D0.B2.D0.B0.D1.82.D0.B5.D0.BB.D1.8C
+Языковые_модели	language model modeling	https://nlpub.ru/%D0%A3%D1%82%D0%B8%D0%BB%D0%B8%D1%82%D1%8B#.D0.9E.D0.B1.D1.80.D0.B0.D0.B1.D0.BE.D1.82.D0.BA.D0.B0_.D1.8F.D0.B7.D1.8B.D0.BA.D0.BE.D0.B2.D1.8B.D1.85_.D0.BC.D0.BE.D0.B4.D0.B5.D0.BB.D0.B5.D0.B9
+Тезаурусы	thesaurus thesauri	https://nlpub.ru/%D0%A3%D1%82%D0%B8%D0%BB%D0%B8%D1%82%D1%8B#.D0.A0.D0.B5.D0.B4.D0.B0.D0.BA.D1.82.D0.BE.D1.80_.D1.82.D0.B5.D0.B7.D0.B0.D1.83.D1.80.D1.83.D1.81.D0.B0
+Корпусы	corpus corpora	https://nlpub.ru/%D0%A0%D0%B5%D1%81%D1%83%D1%80%D1%81%D1%8B#.D0.9A.D0.BE.D1.80.D0.BF.D1.83.D1.81_.D1.82.D0.B5.D0.BA.D1.81.D1.82.D0.BE.D0.B2
+Дистрибутивная_семантика	embedding embeddings model distributive distributional semantic	http://rusvectores.org/
