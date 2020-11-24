@@ -5,7 +5,7 @@ from code.web.db_classes.db_writer import WriterDBase
 from code.web.db_classes.db_reader import ReaderDBase
 from helper import *
 
-db = DBaseRusNLP("..///backend/database/rusnlp2.0.db", "../backend/database/metadata.json")
+db = DBaseRusNLP("..///backend/database/rusnlp24112020.db", "../backend/database/metadata.json")
 reader = ReaderDBase(db)
 base_path = "<base path>"  # "../../../data-txt"
 title2hash = create_title2hash(os.path.join(base_path, 'hash_title_url.tsv'))
@@ -14,17 +14,15 @@ hash2url = create_hash2url(os.path.join(base_path, 'hash_title_url.tsv'))
 
 def test_title_by_id():
     for (title, conference, year), article_hash in title2hash.items():
-        if reader.select_language_by_id(article_hash) == 'en':
-            new_title = reader.select_title_by_id(article_hash)
-            assert new_title.lower() == title.lower().replace("'", ' ').replace('"', ' '), \
-                "{}, {}, {}".format(new_title, title, article_hash)
+        new_title = reader.select_title_by_id(article_hash)
+        assert new_title.lower() == title.lower().replace("'", ' ').replace('"', ' '), \
+            "{}, {}, {}".format(new_title, title, article_hash)
 
 
 def test_authors_by_id():
     for title, article_hash in title2hash.items():
-        if reader.select_language_by_id(article_hash) == 'en':
-            authors = reader.select_author_by_id(article_hash)
-            assert authors
+        authors = reader.select_author_by_id(article_hash)
+        assert authors
 
 
 def test_all_authors():
@@ -34,27 +32,23 @@ def test_all_authors():
 
 def test_year_by_id():
     for _, article_hash in title2hash.items():
-        if reader.select_language_by_id(article_hash) == 'en':
-            assert int(article_hash.split("_")[1]) == reader.select_year_by_id(article_hash)
+        assert int(article_hash.split("_")[1]) == reader.select_year_by_id(article_hash)
 
 
 def test_conference_by_id():
     for _, article_hash in title2hash.items():
-        if reader.select_language_by_id(article_hash) == 'en':
-            assert article_hash.split("_")[0].lower() == reader.select_conference_by_id(
-                article_hash).lower()
+        assert article_hash.split("_")[0].lower() == reader.select_conference_by_id(
+            article_hash).lower()
 
 
 def test_url_by_id():
     for article_hash in hash2url:
-        if reader.select_language_by_id(article_hash) == 'en':
-            assert hash2url[article_hash] == reader.select_url_by_id(article_hash)
+        assert hash2url[article_hash] == reader.select_url_by_id(article_hash)
 
 
 def test_abstract_by_id():
     for article_hash in hash2url:
-        if reader.select_language_by_id(article_hash) == 'en':
-            print(reader.select_abstract_by_id(article_hash))
+        print(reader.select_abstract_by_id(article_hash))
 
 
 def test_select_articles_from_conference():
@@ -67,18 +61,16 @@ def test_select_articles_from_conference():
     with open(os.path.join(base_path, "metadata.jsonlines"), 'r', encoding='utf-8') as f:
         for line in f:
             metadata = json.loads(line)
-            if metadata['language'] == "en":  # TODO: del if when both languages
-                assert metadata['hash'] in dialogue or metadata['hash'] in aist \
-                       or metadata['hash'] in ainl, "Not found: {}".format(metadata['hash'])
-                if metadata['hash'] not in hashes:
-                    hashes.add(metadata['hash'])
-                else:
-                    raise Exception(metadata['hash'])
+            assert metadata['hash'] in dialogue or metadata['hash'] in aist \
+                   or metadata['hash'] in ainl, "Not found: {}".format(metadata['hash'])
+            if metadata['hash'] not in hashes:
+                hashes.add(metadata['hash'])
+            else:
+                raise Exception(metadata['hash'])
 
-    # TODO: change when both languages
     assert len(ainl) == 93
-    assert len(aist) == 70
-    assert len(dialogue) == 353
+    assert len(aist) == 91
+    assert len(dialogue) == 1786
 
 
 def test_select_articles_from_years():
@@ -89,7 +81,7 @@ def test_select_articles_from_years():
     with open(os.path.join(base_path, "metadata.jsonlines"), 'r', encoding='utf-8') as f:
         for line in f:
             metadata = json.loads(line)
-            if year_min <= int(metadata['year']) <= year_max and metadata['language'] == 'en':
+            if year_min <= int(metadata['year']) <= year_max:
                 assert metadata['hash'] in articles
                 articles_true.add(metadata['hash'])
     articles_hashes = set()
@@ -102,7 +94,7 @@ def test_select_articles_from_years():
             else:
                 articles_absent.add(article_hash)
     assert len(articles_hashes) + len(articles_absent) == 89
-    assert len(articles_absent) == 25
+    assert len(articles_absent) == 0
     assert len(articles_true) == len(articles), "{}".format(articles.difference(articles_true))
 
 
@@ -179,7 +171,7 @@ def test_select_articles_of_author():
 
 def test_get_statistics():
     stats = reader.get_statistics()
-    assert stats['Overall amount of papers'] == 516
+    assert stats['Overall amount of papers'] == 1970
     authors = WriterDBase.convert_to_set(os.path.join(base_path, "current_authors.tsv"))
     affiliations = WriterDBase.convert_to_set(os.path.join(base_path, "current_affiliations.tsv"))
     assert stats['Amount of unique authors'] == len(authors)
