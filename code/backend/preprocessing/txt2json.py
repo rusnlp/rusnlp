@@ -44,8 +44,8 @@ def add_author_metadata(author, filename):
     metadata = {}
     name, affiliations, email = author.split('\n')[:3]
     metadata['email'] = email
-    metadata['name_id'], metadata['name'] = get_name_with_id(name, filename)
-    metadata['affiliations'] = get_affiliations_with_id(affiliations, filename)
+    metadata['name_id'], metadata['name'] = get_name_with_id(name.strip(", "), filename)
+    metadata['affiliations'] = get_affiliations_with_id(affiliations.strip(", "), filename)
     return metadata
 
 
