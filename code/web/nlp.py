@@ -310,6 +310,7 @@ def paper(lang, fname):
             topn=topn,
             other_lang=other_lang,
             languages=languages,
+            metadata=metadata
         )
 
     else:
