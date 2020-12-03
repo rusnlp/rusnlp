@@ -35,4 +35,4 @@ def url_for_other_page(page):
 app_rusnlp.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 if __name__ == '__main__':
-    app_rusnlp.run(debug=True)
+    app_rusnlp.run()

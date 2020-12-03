@@ -16,18 +16,17 @@ model = TfidfModel.load(modelfile)
 
 dictionary = model.id2word
 
-# print(dictionary)
-
-files = [f for f in listdir(corpusdir) if f.endswith('.conllu')]
+files = [f for f in listdir(corpusdir) if f.endswith('.conll')]
 
 texts = {}
 
 for doc in files:
     label = doc.split('.')[0]
-    # print('Loading', doc, file=sys.stderr)
+    print('Loading', doc, file=sys.stderr)
     data = open(path.join(corpusdir, doc), errors='replace').readlines()
     text = extract_lemmas(data)
     texts[label] = model[dictionary.doc2bow(text)]
 
 corpus = json.dumps(texts, ensure_ascii=False, indent=4, sort_keys=True)
-open('tfidf_corpus.json', 'w', encoding='utf-8').write(corpus)
+
+print(corpus)

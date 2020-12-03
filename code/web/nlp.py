@@ -136,7 +136,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
         or request.method == "POST"
     ):
         if request.method == "POST":
-            keywords = request.form["keywords"].strip().lower().split()
+            keywords = request.form["keywords"].strip().split()
             author = request.form["author_query"].strip()
             affiliation = request.form["affiliation_query"].strip()
             title = request.form["query"].strip()
@@ -156,7 +156,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
         else:
             title = ""
             if keywords:
-                keywords = keywords.strip().lower().split("+")
+                keywords = keywords.strip().split("+")
             if conference:
                 conference = [conference]
                 query = {"field": "conference", "ids": conference}
@@ -179,14 +179,20 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                 )
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
-
+        if keywords:
+            tagged_keywords = [
+                word.lower() + "_PROPN" if word.istitle() else word.lower() + "_NOUN"
+                for word in keywords
+            ]
+        else:
+            tagged_keywords = keywords
         query = {
             "f_author": author,
             "f_year": year,
             "f_conf": conference,
             "f_title": title,
             "f_affiliation": affiliation,
-            "keywords": keywords,
+            "keywords": tagged_keywords,
         }
         if (
             query["f_author"] == ""

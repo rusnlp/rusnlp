@@ -24,7 +24,7 @@ def extract_lemmas(lines):
 if __name__ == '__main__':
     textdirectory = sys.argv[1]
 
-    files = [f for f in os.listdir(textdirectory) if f.endswith('.conllu')]
+    files = [f for f in os.listdir(textdirectory) if f.endswith('.conll')]
 
     order = json.dumps(files, indent=4, sort_keys=True)
     orderfile = open('docorder.json', 'w')
@@ -34,18 +34,15 @@ if __name__ == '__main__':
     texts = []
 
     for doc in files:
-        # print(doc, file=sys.stderr)
+        print(doc, file=sys.stderr)
         data = open(os.path.join(textdirectory, doc), errors='replace').readlines()
         text = extract_lemmas(data)
         texts.append(text)
-
-
 
     dictionary = Dictionary(texts)
     dictionary.save('tfidf.dic')
 
     corpus = [dictionary.doc2bow(line) for line in texts]
-    # print(corpus)
 
     model = TfidfModel(corpus, id2word=dictionary)
     model.save('tfidf.model')

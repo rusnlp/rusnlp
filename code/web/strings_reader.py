@@ -22,7 +22,7 @@ root = config.get('Files and directories', 'root')
 l10nfile = config.get('Files and directories', 'l10n')
 
 # open the strings database:
-csvfile = open(root + l10nfile, 'rU', encoding='utf-8')
+csvfile = open(root + l10nfile, 'rU')
 acrobat = csv.reader(csvfile, dialect='excel', delimiter='\t')
 
 # initialize a dictionary for each language:
