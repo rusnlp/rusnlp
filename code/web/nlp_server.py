@@ -61,11 +61,30 @@ def clientthread(connection, address):
 
 
 # Model functions
+w2v_path_binarity = {
+    '.bin.gz': True,
+    '.bin': True,
+    '.txt.gz': False,
+    '.txt': False,
+    '.vec.gz': False,
+    '.vec': False
+}
+
+
+def get_binarity(path):
+    binary = 'NA'
+    for format in w2v_path_binarity:
+        if path.endswith(format):
+            binary = w2v_path_binarity.get(format)
+            break
+    return binary
+
+
 def load_model(identifier):
     model_path = model_data[identifier]['path']
     model_description = model_data[identifier]['description']
-
-    model = KeyedVectors.load_word2vec_format(model_path, binary=True, unicode_errors='replace')
+    binary = get_binarity(model_path)
+    model = KeyedVectors.load_word2vec_format(model_path, binary=binary, unicode_errors='replace')
     print("Model {} from file {} loaded successfully.".format(model_description, model_path),
           file=sys.stderr)
     return model
