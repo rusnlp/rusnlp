@@ -1,1 +1,2 @@
-tfidf	Модель TF/IDF	models/
+general_model	Cross-lingual MUSE	models/cross_muse.bin.gz
+document_model	Corpus vector model	models/common_tok_muse.bin.gz
