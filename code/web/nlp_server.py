@@ -10,12 +10,12 @@ import socket
 import sys
 from os import path
 import threading
-from gensim.models import TfidfModel
-from gensim.matutils import cossim
 from db_classes.db import DBaseRusNLP
 from db_classes.db_reader import ReaderDBase
 import csv
 from smart_open import open
+from backend.search_muse.utils.loaders import load_embeddings, format_task_name
+from backend.search_muse.utils.vectorization import vectorize_text
 
 
 class SrvThread(threading.Thread):
@@ -40,7 +40,7 @@ def clientthread(connection, address):
     # infinite loop so that function do not terminate and thread do not end.
     while True:
         # Receiving from client
-        data = connection.recv(4096)
+        data = connection.recv(8192)
         if not data:
             break
         data = data.decode("utf-8")
@@ -51,7 +51,6 @@ def clientthread(connection, address):
               file=sys.stderr)
 
         output = queryparser(query)
-        # print(output)
 
         reply = json.dumps(output, ensure_ascii=False) + '&&&'
         connection.sendall(reply.encode('utf-8'))
@@ -61,15 +60,27 @@ def clientthread(connection, address):
     connection.close()
 
 
-# Vector functions
-def find_nearest(q_vector, q, number, restrict=None):
+# Model functions
+def load_model(identifier):
+    model_path = model_data[identifier]['path']
+    model_description = model_data[identifier]['description']
+    model = load_embeddings(model_path)
+    print("Model {} from file {} loaded successfully.".format(model_description, model_path),
+          file=sys.stderr)
+    return model
+
+
+def find_nearest(q_vector, q, number, restrict=None, threshold=0.01):
+    similarities = {d: sim for d, sim
+                    in text_model.similar_by_vector(q_vector, len(text_model.vocab))
+                    if not d.startswith('TASK::')}
+    neighbor_ds = [d for d in similarities.keys() if d != q and similarities[d] > threshold]
+
     if restrict:
-        similarities = {d: cossim(q_vector, text_vectors[d]) for d in restrict
-                        if cossim(q_vector, text_vectors[d]) > 0.01}
+        neighbors = [d for d in neighbor_ds if d in restrict][:number]
     else:
-        similarities = {d: cossim(q_vector, text_vectors[d]) for d in text_vectors.keys() if d != q
-                        and cossim(q_vector, text_vectors[d]) > 0.01}
-    neighbors = sorted(similarities, key=similarities.get, reverse=True)[:number]
+        neighbors = neighbor_ds[:number]
+
     results = [
         (i, reader.select_title_by_id(i), list(reader.select_cluster_author_by_common_id(i)),
          reader.select_year_by_id(i),
@@ -134,7 +145,7 @@ def search(sets, number, keywords=None):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
     if keywords:
-        q_vector = model[dictionary.doc2bow(keywords)]
+        q_vector = vectorize_text(keywords, word_model)
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
         results = [
@@ -169,7 +180,7 @@ def queryparser(query):
         if article_id not in id_index:
             output = {'meta': 'Publication not found'}
             return output
-        q_vector = text_vectors[article_id]
+        q_vector = text_model[article_id]
         output = {'neighbors': operations[operation](q_vector, article_id, number),
                   'meta': {'title': reader.select_title_by_id(article_id),
                            'author': list(reader.select_cluster_author_by_common_id(article_id)),
@@ -185,9 +196,12 @@ def queryparser(query):
         output = {'topics': {}, 'neighbors': operations[operation](searchstring, number)}
     if operation < 3:
         for n in output['neighbors']:
-            text_vector = text_vectors[n[0]]
-            candidates = [(topic, nlpub_terms[topic]['url']) for topic in nlpub_terms if
-                          cossim(text_vector, nlpub_terms[topic]['terms']) > 0.03]
+            text_vector = text_model[n[0]]
+            topics = {t: sim for t, sim
+                      in text_model.similar_by_vector(text_vector, len(text_model.vocab))
+                      if t.startswith('TASK::') and sim > 0.2}
+            candidates = [(nlpub_terms[topic]['description'], nlpub_terms[topic]['url'])
+                          for topic in sorted(topics, key=topics.get, reverse=True)][:3]
             if candidates:
                 output['topics'][n[0]] = candidates
     return output
@@ -244,38 +258,48 @@ if __name__ == "__main__":
                        path.join('data', metadatafile))
     reader = ReaderDBase(bd_m)
 
-    model = None
-    dictionary = None
-    text_vectors = None
-    # Loading model
+    # Loading models
+    model_data = {}
     for line in open(path.join(root, config.get('Files and directories', 'models')),
                      'r').readlines():
         if line.startswith("#"):
             continue
-        res = line.strip().split('\t')
-        (mod_identifier, mod_description, mod_path) = res
-        model = TfidfModel.load(path.join(mod_path, 'tfidf.model'))
-        dictionary = model.id2word
-        text_vectors_file = open(path.join(mod_path, 'tfidf_corpus.json.gz'), 'r').read()
-        text_vectors = json.loads(text_vectors_file)
-        print("Model", model, "from file", path.join(mod_path, 'tfidf.model'),
-              "loaded successfully.", file=sys.stderr)
+        mod_identifier, mod_description, mod_path = line.strip().split('\t')
+        model_data[mod_identifier] = {'description': mod_description, 'path': mod_path}
 
-    nlpub_terms = {}
-    with open(nlpubfile, 'r') as csvfile:
-        csvreader = csv.DictReader(csvfile, delimiter='\t')
-        for row in csvreader:
-            nlpub_terms[row['description']] = {}
-            nlpub_terms[row['description']]['terms'] = model[
-                dictionary.doc2bow(row['terms'].strip().split())]
-            nlpub_terms[row['description']]['url'] = row['url'].strip()
+    # cross-lingual model with words
+    word_model = load_model('general_model')
 
-    id_index = text_vectors.keys()
+    # cross-lingual model with texts
+    text_model = load_model('document_model')
+
+    id_index = text_model.vocab.keys()
     authorsindex = set()
     for el in id_index:
         cur_authors = reader.select_author_by_id(el)
         authorsindex |= set(cur_authors)
-    titlesindex = {reader.select_title_by_id(ident): ident for ident in id_index}
+    titlesindex = {}
+    fail = []
+    for ident in id_index:
+        try:
+            title = reader.select_title_by_id(ident)
+            titlesindex[title] = ident
+        except TypeError:
+            # если в модели есть тексты, которых нет в базе (кроме вектора задач nlpub)
+            if not ident.startswith('TASK::'):
+                fail.append(ident)
+    if fail:
+        print('Not presented in db ({}): {}'.format(len(fail), fail), file=sys.stderr)
+
+    nlpub_terms = {}
+    with open(path.join('data', nlpubfile), 'r', encoding='utf-8') as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter='\t')
+        for row in csvreader:
+            descript = row['description']
+            task_name = format_task_name(descript)
+            nlpub_terms[task_name] = {}
+            nlpub_terms[task_name]['description'] = descript
+            nlpub_terms[task_name]['url'] = row['url'].strip()
 
     maxthreads = 2  # Maximum number of threads
     threadLimiter = threading.BoundedSemaphore(maxthreads)
