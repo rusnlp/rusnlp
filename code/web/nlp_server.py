@@ -135,9 +135,9 @@ def f_title(q):
     if q in titlesindex:
         results.add(titlesindex[q])
     else:
-        for title in titlesindex:
-            if fnmatch.fnmatch(title.lower(), q.lower()):
-                results.add(titlesindex[title])
+        for cur_title in titlesindex:
+            if fnmatch.fnmatch(cur_title.lower(), q.lower()):
+                results.add(titlesindex[cur_title])
     return results
 
 

@@ -6,14 +6,10 @@ this module reads strings.tsv, which contains all
 the strings, and lets the main app use it
 """
 
-from future import standard_library
-
-standard_library.install_aliases()
-from builtins import next
-import sys
-import csv
-from flask import Markup
 import configparser
+import csv
+from builtins import next
+from flask import Markup
 
 config = configparser.RawConfigParser()
 config.read('rusnlp.cfg')
@@ -38,7 +34,4 @@ for langname in langnames:
 for row in acrobat:
     for i in included_columns:  # range(1, len(row)):
         # Markup() is used to prevent autoescaping in templates
-        if sys.version_info[0] < 3:
-            language_dicts[header[i]][row[0]] = Markup(row[i].decode('utf-8'))
-        else:
-            language_dicts[header[i]][row[0]] = Markup(row[i])
+        language_dicts[header[i]][row[0]] = Markup(row[i])
