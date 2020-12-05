@@ -33,17 +33,17 @@
 <h2>{{strings['topicabout24']}}</h2>
 <ul>
 {% for el in stats %}
-    {% if el == 'Amount of English papers'%}
+    {% if el == 'Overall amount of papers'%}
 	<li>
-	{{ strings['topicabout22'] }}: {{ stats[el]}}
+	{{ strings['topicabout20'] }}: {{ stats[el]}}
 	</li>
     {% elif el == 'Amount of unique authors' %}
 	<li>
-	{{ strings['topicabout18'] }}: {{ stats[el]}}
+	{{ strings['topicabout19'] }}: {{ stats[el]}}
 	</li>
     {% elif el == 'Amount of unique affiliations'%}
 	<li>
-	{{ strings['topicabout23'] }}: {{ stats[el]}}
+	{{ strings['topicabout17'] }}: {{ stats[el]}}
 	</li>
     {% endif %}
 {% endfor %}
