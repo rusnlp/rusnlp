@@ -6,7 +6,7 @@ config = configparser.RawConfigParser()
 config.read('rusnlp.cfg')
 url = config.get('Other', 'url')
 
-app_rusnlp = Flask(__name__, static_url_path='/data/')
+app_rusnlp = Flask(__name__, static_url_path='data/')
 
 
 @app_rusnlp.route('/data/<path:query>/')

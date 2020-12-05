@@ -43,7 +43,7 @@ topicalstructure3	Глобальная структура	Global structure
 topicalstructure4	Конференции	Conferences
 topicalstructure5	Годы	Years
 topicabout1	О сервисе	About the service
-topicabout2	<strong>RusNLP</strong> - это поисковик по англоязычным статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for English-language papers presented in Russian NLP conferences:
+topicabout2	<strong>RusNLP</strong> - это поисковик по статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for papers presented in Russian NLP conferences:
 topicabout3	Диалог	Dialogue
 topicabout41	Мы обкачали все публикации на этих конференциях, начиная с 2001 года, и тщательно разметили статьи по авторам и их аффилиациям.	We crawled all papers from these venues, starting from 2001, and rigorously extracted author names and affiliations.
 topicabout4	Наш поисковик позволяет искать публикации по вашим запросам и отображает списки статей на схожую тему. Результаты поиска можно фильтровать по любому сочетанию авторов, аффилиаций, годов и конференций.	You can search papers by your query and immediately see lists of papers relevant to the target one. Search results can be filtered by any combination of author names, their affiliations, years and conference venues.

@@ -199,7 +199,7 @@ def queryparser(query):
             text_vector = text_model[n[0]]
             topics = {t: sim for t, sim
                       in text_model.similar_by_vector(text_vector, len(text_model.vocab))
-                      if t.startswith('TASK::') and sim > 0.2}
+                      if t.startswith('TASK::') and sim > 0.65}
             candidates = [(nlpub_terms[topic]['description'], nlpub_terms[topic]['url'])
                           for topic in sorted(topics, key=topics.get, reverse=True)][:3]
             if candidates:
