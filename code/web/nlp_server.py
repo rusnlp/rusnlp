@@ -5,17 +5,17 @@ import configparser
 import datetime
 import fnmatch
 import json
-import numpy as np
 import logging
 import socket
 import sys
 from os import path
 import threading
-from gensim.models import KeyedVectors
 from db_classes.db import DBaseRusNLP
 from db_classes.db_reader import ReaderDBase
 import csv
 from smart_open import open
+from backend.search_muse.utils.loaders import load_embeddings, format_task_name
+from backend.search_muse.utils.vectorization import vectorize_text
 
 
 class SrvThread(threading.Thread):
@@ -61,51 +61,13 @@ def clientthread(connection, address):
 
 
 # Model functions
-w2v_path_binarity = {
-    '.bin.gz': True,
-    '.bin': True,
-    '.txt.gz': False,
-    '.txt': False,
-    '.vec.gz': False,
-    '.vec': False
-}
-
-
-def get_binarity(path):
-    binary = 'NA'
-    for format in w2v_path_binarity:
-        if path.endswith(format):
-            binary = w2v_path_binarity.get(format)
-            break
-    return binary
-
-
 def load_model(identifier):
     model_path = model_data[identifier]['path']
     model_description = model_data[identifier]['description']
-    binary = get_binarity(model_path)
-    model = KeyedVectors.load_word2vec_format(model_path, binary=binary, unicode_errors='replace')
+    model = load_embeddings(model_path)
     print("Model {} from file {} loaded successfully.".format(model_description, model_path),
           file=sys.stderr)
     return model
-
-
-# Vector functions
-def vectorize_text(tokens):
-    words = [token for token in tokens if token in word_model]
-    vecs = np.zeros((len(words), word_model.vector_size))
-
-    if not words:
-        return np.zeros(word_model.vector_size)
-
-    for i, token in enumerate(words):
-        vecs[i, :] = word_model[token]
-
-    vec = np.sum(vecs, axis=0)
-    vec = np.divide(vec, len(words))
-    vec = vec / np.linalg.norm(vec)
-
-    return vec
 
 
 def find_nearest(q_vector, q, number, restrict=None, threshold=0.01):
@@ -183,7 +145,7 @@ def search(sets, number, keywords=None):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
     if keywords:
-        q_vector = vectorize_text(keywords)
+        q_vector = vectorize_text(keywords, word_model)
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
         results = [
@@ -330,11 +292,11 @@ if __name__ == "__main__":
         print('Not presented in db ({}): {}'.format(len(fail), fail), file=sys.stderr)
 
     nlpub_terms = {}
-    with open(nlpubfile, 'r', encoding='utf-8') as csvfile:
+    with open(path.join('data', nlpubfile), 'r', encoding='utf-8') as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter='\t')
         for row in csvreader:
             descript = row['description']
-            task_name = 'TASK::{}'.format(descript.replace(' ', '_'))
+            task_name = format_task_name(descript)
             nlpub_terms[task_name] = {}
             nlpub_terms[task_name]['description'] = descript
             nlpub_terms[task_name]['url'] = row['url'].strip()

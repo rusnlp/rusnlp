@@ -5,7 +5,7 @@ import logging
 import zipfile
 import os
 from tqdm import tqdm
-from utils.preprocessing import clean_ext
+from backend.search_muse.utils.preprocessing import clean_ext
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -22,9 +22,9 @@ w2v_path_binarity = {
 
 def get_binarity(path):
     binary = 'NA'
-    for format in w2v_path_binarity:
-        if path.endswith(format):
-            binary = w2v_path_binarity.get(format)
+    for ext in w2v_path_binarity:
+        if path.endswith(ext):
+            binary = w2v_path_binarity.get(ext)
             break
     return binary
 
@@ -114,13 +114,17 @@ def save_text_vectors(vectors, output_path, remove_source=True):
             logging.info('Saved vectors to {}'.format(output_path))
 
 
+def format_task_name(description):
+    return 'TASK::{}'.format(description.replace(' ', '_'))
+
+
 def load_task_terms(file_path, column_name):
     task_terms = {}
     with open(file_path, 'r', encoding='utf-8') as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter='\t')
         for row in csvreader:
             descript = row['description']
-            task_name = 'TASK::{}'.format(descript.replace(' ', '_'))
+            task_name = format_task_name(descript)
             terms = row[column_name].split()
             # print(task_name, terms, url)
             task_terms[task_name] = terms
