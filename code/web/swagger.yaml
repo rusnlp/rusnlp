@@ -1,0 +1,92 @@
+swagger: '2.0'
+info:
+  description: 'This is an online swagger codegen server.  You can find out more at https://github.com/swagger-api/swagger-codegen or on [irc.freenode.net, #swagger](http://swagger.io/irc/).'
+  version: 2.4.17
+  title: Swagger Generator
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    name: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+basePath: /127.0.0.1:5000/
+
+paths:
+  '/api/get_statistics':
+    get:
+      summary: Shows server statiss
+      description: 'Some info about statistics'
+      operationId: returnStatus
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: string
+            additionalProperties:
+              $ref: '#/definitions/GeneratorInput'
+            
+  '/api/keywords':
+    post:
+      summary: Shows server statiss
+      description: 'Some info about keywords'
+      operationId: returtInfo
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: parameters
+          required: true
+          schema:
+            $ref: '#/definitions/GeneratorInput'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: string
+            additionalProperties:
+              $ref: '#/definitions/ResponseCode'
+  
+
+  
+definitions:
+  ResponseCode:
+    type: object
+    properties:
+      optionName:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+        description: Data type is based on the types supported by the JSON-Schema
+      default:
+        type: string
+      enum:
+        type: object
+        additionalProperties:
+          type: string
+  GeneratorInput:
+    type: object
+    properties:
+      f_author:
+        type: string
+      f_year:
+        type: string
+      f_conf: 
+        type: "array"
+        items:
+          type: string
+        example: ['AIST', 'AINL', 'Dialogue']
+      f_title:
+        type: string
+      f_affiliation:
+        type: string
+      keywords: 
+        type: "array"
+        items:
+          type: string
+        example: ['lemma', 'syntax']
+
