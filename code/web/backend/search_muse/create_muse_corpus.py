@@ -4,13 +4,15 @@ python code/web/backend/search_muse/create_muse_corpus.py --texts_path=texts/en_
 '''
 
 import argparse
+import logging
 import os
-import sys
 from tqdm import tqdm
 
 from utils.loaders import load_embeddings, save_text_vectors, load_task_terms
 from utils.preprocessing import get_text, clean_ext
 from utils.vectorization import vectorize_text, vectorize_corpus
+
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 def parse_args():
@@ -19,14 +21,18 @@ def parse_args():
     parser.add_argument('--texts_path', type=str, required=True,
                         help='Путь к текстам в формате conllu (можно перечислить через +)')
     parser.add_argument('--lemmatize', type=int, required=True,
-                        help='Брать ли леммы текстов (0/1)')
+                        help='Брать ли леммы текстов (0|1)')
     parser.add_argument('--keep_pos', type=int, default=0,
-                        help='Возвращать ли леммы, помеченные pos-тегами (0|1; default: 0)')
+                        help='Возвращать ли слова, помеченные pos-тегами (0|1; default: 0)')
     parser.add_argument('--keep_punct', type=int, default=0,
                         help='Сохранять ли знаки препинания (0|1; default: 0)')
     parser.add_argument('--keep_stops', type=int, default=0,
                         help='Сохранять ли слова, получившие тег функциональной части речи '
                              '(0|1; default: 0)')
+    parser.add_argument('--join_propn', type=int, default=0,
+                        help='Склеивать ли именованные сущности (0|1; default: 0)')
+    parser.add_argument('--join_token', type=str, default='::',
+                        help='Как склеивать именованные сущности (default: ::)')
     parser.add_argument('--unite', type=int, default=1,
                         help='Убирать ли деление на предложения (0|1; default: 1)')
     parser.add_argument('--no_duplicates', type=int, default=0,
@@ -59,22 +65,24 @@ def split_paths(joint_path, texts_paths):
     return paths
 
 
-def get_corpus(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, unite):
-    """собираем тексты из conllu в список"""
+def get_corpus(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, join_propn, join_token, unite):
+    """собираем файлы conllu в словарь {файл: список токенов}"""
     texts = {}
-    for file in tqdm(os.listdir(texts_path)):
+    for file in tqdm(os.listdir(texts_path), desc='Collecting'):
         text = open('{}/{}'.format(texts_path, file), encoding='utf-8').read().strip()
-        preprocessed = get_text(text, lemmatize, keep_pos, keep_punct, keep_stops, unite)
+        preprocessed = get_text(text, lemmatize, keep_pos, keep_punct, keep_stops,
+                                join_propn, join_token, unite)
         texts[clean_ext(file)] = preprocessed
 
     return texts
 
 
-def main_onepath(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, unite, embed_model,
-                 no_duplicates, dir_vectors_path, mis_path):
+def main_onepath(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, join_propn, join_token,
+                 unite, embed_model, no_duplicates, dir_vectors_path, mis_path):
     """делаем словарь векторов для папки"""
     # собираем тексты из conllu
-    text_corpus = get_corpus(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, unite)
+    text_corpus = get_corpus(texts_path, lemmatize, keep_pos, keep_punct, keep_stops,
+                             join_propn, join_token, unite)
 
     vec_corpus, not_vectorized = vectorize_corpus(text_corpus, embed_model, no_duplicates)
 
@@ -82,7 +90,7 @@ def main_onepath(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, unite,
         save_text_vectors(vec_corpus, dir_vectors_path)
 
     if not_vectorized:
-        print('Не удалось векторизовать текстов: {}'.format(len(not_vectorized)), file=sys.stderr)
+        logging.info('Not vectorized texts: {}'.format(len(not_vectorized)))
         if mis_path:
             open(mis_path, 'w', encoding='utf-8').write('\n'.join(not_vectorized))
 
@@ -100,9 +108,9 @@ def main():
     common_vectors = {}
 
     for texts_path, dir_vectors_path, mis_path in zip(texts_paths, dir_vectors_paths, mis_paths):
-        print('Векторизую {}'.format(texts_path), file=sys.stderr)
+        logging.info('Vectorizing {}...'.format(texts_path))
         text_vectors = main_onepath(texts_path, args.lemmatize, args.keep_pos, args.keep_punct,
-                                    args.keep_stops, args.unite, embed_model, args.no_duplicates,
+                                    args.keep_stops, args.join_propn, args.join_token, args.unite, embed_model, args.no_duplicates,
                                     dir_vectors_path, mis_path)
 
         common_vectors.update(text_vectors)

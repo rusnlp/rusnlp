@@ -29,24 +29,40 @@ def x_replace(word):
     return newtoken
 
 
-def clean_token(token, misc):
-    out_token = token.strip().replace(' ', '').replace('́', '')
-    if token == 'Файл' and 'SpaceAfter=No' in misc:
-        return None
-    return out_token
+# def clean_token(token, misc):
+#     out_token = token.strip().replace(' ', '').replace('́', '')
+#     if token == 'Файл' and 'SpaceAfter=No' in misc:
+#         return None
+#     return out_token
 
 
-def clean_lemma(lemma, pos):
-    out_lemma = lemma.strip().replace(' ', '').replace('_', '').lower()
-    out_lemma = out_lemma.replace('́', '')  # так не видно, но тут ударение
+# def clean_lemma(lemma, pos):
+#     out_lemma = lemma.strip().replace(' ', '').replace('_', '').lower()
+#     out_lemma = out_lemma.replace('́', '')  # так не видно, но тут ударение
+#
+#     if '|' in out_lemma or out_lemma.endswith('.jpg') or out_lemma.endswith('.png'):
+#         return None
+#
+#     if pos != 'PUNCT':
+#         out_lemma = out_lemma.strip(punctuation)
+#
+#     return out_lemma
 
-    if '|' in out_lemma or out_lemma.endswith('.jpg') or out_lemma.endswith('.png'):
+
+def clean_word(word, pos, misc):
+    # clean_token + clean_lemma
+    out_word = word.strip().lower().replace(' ', '')
+    out_word = out_word.replace('́', '')  # так не видно, но тут ударение
+    out_word = out_word.replace('_', '')  # TODO: надо, если так соединяют сущности в muse?
+
+    if '|' in out_word or out_word.endswith('.jpg') or out_word.endswith('.png')\
+            or word == 'Файл' and 'SpaceAfter=No' in misc:
         return None
 
     if pos != 'PUNCT':
-        out_lemma = out_lemma.strip(punctuation)
+        out_word = out_word.strip(punctuation)
 
-    return out_lemma
+    return out_word
 
 
 def list_replace(search, replacement, text):
@@ -160,7 +176,24 @@ def parse_file(conllu_text):
     return sents
 
 
-def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1):
+def hold_propn(memory, tagged_toks, join_propn, join_token='::'):
+    if join_propn:  # соединяем memory
+        tagged_toks.append(Token(join_token.join(memory['token']),
+                                 join_token.join(memory['lemma']),
+                                 'PROPN'))
+    else:  # добавляем токены из memory по отдельности
+        for i in range(len(memory['token'])):
+            tagged_toks.append(Token(memory['token'][i], memory['lemma'][i], 'PROPN'))
+    named = False
+    memory = {'token': [], 'lemma': []}
+    return named, memory, tagged_toks
+
+
+def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1,
+                 join_propn=0, join_token='::'):
+    # join_propn в текущей реализации работает только для русского,
+    # потому что опирается на падеж и число
+
     # если подали строку -- делим на абзацы
     if isinstance(content, str):
         content = content.split('\n')
@@ -181,8 +214,10 @@ def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1):
             continue
 
         (word_id, token, lemma, pos, xpos, feats, head, deprel, deps, misc) = line_tags
-        token = clean_token(token, misc)
-        lemma = clean_lemma(lemma, pos)
+        # token = clean_token(token, misc)
+        # lemma = clean_lemma(lemma, pos)
+        token = clean_word(token, pos, misc)
+        lemma = clean_word(lemma, pos, misc)
 
         if not lemma or not token:
             continue
@@ -206,19 +241,11 @@ def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1):
                 memory['token'].append(token)
                 memory['lemma'].append(lemma)
                 if 'SpacesAfter=\\n' in misc or 'SpacesAfter=\s\\n' in misc:
-                    named = False
-                    tagged_toks.append(Token('::'.join(memory['token']),
-                                             '::'.join(memory['lemma']),
-                                             'PROPN'))
-                    memory = {'token': [], 'lemma': []}
+                    named, memory, tagged_toks = hold_propn(memory, tagged_toks, join_propn, join_token)
 
             else:
-                named = False
-                tagged_toks.append(Token('::'.join(memory['token']),
-                                         '::'.join(memory['lemma']),
-                                         'PROPN'))
+                named, memory, tagged_toks = hold_propn(memory, tagged_toks, join_propn, join_token)
                 tagged_toks.append(Token(token, lemma, pos))
-                memory = {'token': [], 'lemma': []}
 
         else:  # pos not in entities
             if not named:
@@ -227,12 +254,8 @@ def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1):
                 tagged_toks.append(Token(token, lemma, pos))
 
             else:
-                named = False
-                tagged_toks.append(Token('::'.join(memory['token']),
-                                         '::'.join(memory['lemma']),
-                                         'PROPN'))  # TODO: функцию бы сделать -- повтор, по ходу
+                named, memory, tagged_toks = hold_propn(memory, tagged_toks, join_propn, join_token)
                 tagged_toks.append(Token(token, lemma, pos))
-                memory = {'token': [], 'lemma': []}
 
     if not keep_punct:
         tagged_toks = [tok for tok in tagged_toks if tok.pos != 'PUNCT']
@@ -253,13 +276,15 @@ def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1):
     return words
 
 
-def get_text(conllu_text, lemmatize, keep_pos, keep_punct, keep_stops, unite=1):
+def get_text(conllu_text, lemmatize, keep_pos, keep_punct, keep_stops,
+             join_propn, join_token, unite=1):
     # соединяем предложения из conllu в текст
     sents = parse_file(conllu_text)
     lines = []
     for sent in sents:
         # print(sent)
-        line = process_line(sent['parsed'], lemmatize, keep_pos, keep_punct, keep_stops)
+        line = process_line(sent['parsed'], lemmatize, keep_pos, keep_punct, keep_stops,
+                            join_propn, join_token)
         if unite:
             lines.extend(line)
         else:
@@ -267,12 +292,5 @@ def get_text(conllu_text, lemmatize, keep_pos, keep_punct, keep_stops, unite=1):
     return lines
 
 
-def process_unified(line, keep_pos, keep_punct, keep_stops):
-    line = unify_sym(line.strip())
-    line_lems = process_line(line, keep_pos, keep_punct, keep_stops)
-    return line_lems
-
-
 def clean_ext(name):
-    name = '.'.join(name.split('.')[:-1])
-    return name
+    return '.'.join(name.split('.')[:-1])

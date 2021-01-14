@@ -3,10 +3,11 @@ import logging
 import os
 from utils.loaders import load_embeddings, send_to_archieve
 
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Преобразование вкторв из текстового формата в бинарный')
+        description='Преобразование векторов из текстового формата в бинарный')
     parser.add_argument('--text_path', type=str, required=True,
                         help='Путь к векторам в текстовом формате')
     parser.add_argument('--bin_path', type=str, required=True,

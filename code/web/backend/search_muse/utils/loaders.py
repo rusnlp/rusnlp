@@ -5,7 +5,10 @@ import logging
 import zipfile
 import os
 from tqdm import tqdm
-from backend.search_muse.utils.preprocessing import clean_ext
+try:
+    from utils.preprocessing import clean_ext
+except ModuleNotFoundError:
+    from backend.search_muse.utils.preprocessing import clean_ext
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -86,16 +89,16 @@ def save_text_vectors(vectors, output_path, remove_source=True):
         text_model_path = model_path
         bin_model_path = ''
 
-    print('''
-    text_model_path: {}
-    bin_model_path: {}
-    archieve_path: {}
-    '''.format(text_model_path, bin_model_path, archieve_path))
+    # print('''
+    # text_model_path: {}
+    # bin_model_path: {}
+    # archieve_path: {}
+    # '''.format(text_model_path, bin_model_path, archieve_path))
 
     # генерим текстовый формат w2v
     logging.info('Saving vectors in the text w2v format to {}'.format(text_model_path))
     vec_str = '{} {}'.format(len(vectors), len(list(vectors.values())[0]))
-    for word, vec in tqdm(vectors.items()):
+    for word, vec in tqdm(vectors.items(), desc='Formatting'):
         vec_str += '\n{} {}'.format(word, ' '.join(str(v) for v in vec))
     open(text_model_path, 'w', encoding='utf-8').write(vec_str)
 

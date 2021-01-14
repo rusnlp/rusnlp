@@ -1,6 +1,6 @@
 import numpy as np
-from tqdm import tqdm
 from numpy.linalg import norm
+from tqdm import tqdm
 
 
 def empty_vec(model):
@@ -58,7 +58,7 @@ def vectorize_corpus(corpus, model, no_duplicates=0):
     not_vectorized = []
     corp_vectors = {}
 
-    for name, text in tqdm(corpus.items()):
+    for name, text in tqdm(corpus.items(), desc='Vectorizing'):
         vector = vectorize_text(text, model, no_duplicates)
         if not np.array_equal(vector, empty_vec(model)):  # если это не зарезервированный вектор
             corp_vectors[name] = vector
