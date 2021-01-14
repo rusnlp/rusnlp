@@ -1,23 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
+
 from flask_wtf import FlaskForm
-from wtforms import TextField, BooleanField, IntegerField, Form
-import configparser
-import json
-import logging
-import socket
-import sys
-from nlp import *
-from flasgger import swag_from
-from flask import render_template, Blueprint, redirect
-from flask import request, Response
-from flask import g
-from strings_reader import language_dicts
+from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired
-import os
 
-
-
+from nlp import *
+from strings_reader import language_dicts
 
 config = configparser.RawConfigParser()
 config.read("rusnlp.cfg")
@@ -50,7 +39,6 @@ def serverquery(message):
     # Now receive initial data
     _ = s.recv(1024)
 
-
     # Send some data to remote server
     message = json.dumps(message, ensure_ascii=False)
     try:
@@ -70,27 +58,25 @@ def serverquery(message):
     return reply
 
 
-
 api_bp = Blueprint("api", __name__, template_folder="templates")
 
+
 class RequestForm(FlaskForm):
-    keywords = TextField('keywords')
+    keywords = StringField('keywords')
     num_pages = IntegerField('num_pages', validators=[DataRequired()])
+
 
 @nlpsearch.route("/" + "<lang:lang>/" + "/api", methods=["GET"])
 def ap_doc(lang):
     g.lang = lang
-    s = {lang}
-    other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
     return render_template('swagger.html', languages=languages)
+
 
 @nlpsearch.route("/" + "<lang:lang>/" + "/new", methods=["GET", "POST"])
 def nlp_new(lang):
     form = RequestForm()
     g.lang = lang
-    s = {lang}
-    other_lang = list(set(language_dicts.keys()) - s)[0]  # works only for two languages
     g.strings = language_dicts[lang]
     if form.validate_on_submit():
         print("here")
@@ -110,8 +96,8 @@ def per_request_callbacks(response):
 def api_get_statistics():
     query = {"dummy": "dummy"}
     message = [4, query, 10]
-    # results = json.loads(serverquery(message))
     return serverquery(message)
+
 
 @api_bp.route("/api/keywords", methods=["GET", "POST"])
 def api_search_keywords():

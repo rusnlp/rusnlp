@@ -1,5 +1,6 @@
-#!/usr/bin/python
-#
+#!/usr/bin/env python3
+# coding: utf-8
+
 #  Copyright 2017 Otto Seiskari
 #  Licensed under the Apache License, Version 2.0.
 #  See http://www.apache.org/licenses/LICENSE-2.0 for the full text.
@@ -12,7 +13,9 @@
 Usage:
     python swagger-yaml-to-html.py < /path/to/api.yaml > doc.html
 """
-import yaml, json, sys
+import json
+import sys
+import yaml
 
 TEMPLATE = """
 <!DOCTYPE html>

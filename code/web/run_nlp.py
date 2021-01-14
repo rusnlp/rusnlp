@@ -11,6 +11,7 @@ url = config.get('Other', 'url')
 app_rusnlp = Flask(__name__, static_url_path='data/')
 swagger = Swagger(app_rusnlp)
 
+
 @app_rusnlp.route('/data/<path:query>/')
 def send(query):
     if 'rus_nlp.db.gz' in query:
@@ -22,6 +23,7 @@ def send(query):
 app_rusnlp.url_map.converters['lang'] = LangConverter
 app_rusnlp.register_blueprint(nlpsearch)
 app_rusnlp.register_blueprint(api_bp)
+
 
 @app_rusnlp.context_processor
 def set_globals():
