@@ -1,13 +1,15 @@
 from flask import Flask, url_for, send_from_directory
 from lang_converter import LangConverter
 from nlp import *
+from api import api_bp
+from flasgger import Swagger
 
 config = configparser.RawConfigParser()
 config.read('rusnlp.cfg')
 url = config.get('Other', 'url')
 
 app_rusnlp = Flask(__name__, static_url_path='data/')
-
+swagger = Swagger(app_rusnlp)
 
 @app_rusnlp.route('/data/<path:query>/')
 def send(query):
@@ -19,7 +21,7 @@ def send(query):
 
 app_rusnlp.url_map.converters['lang'] = LangConverter
 app_rusnlp.register_blueprint(nlpsearch)
-
+app_rusnlp.register_blueprint(api_bp)
 
 @app_rusnlp.context_processor
 def set_globals():
