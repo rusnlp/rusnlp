@@ -3,8 +3,10 @@
 https://github.com/akutuzov/webvectors/blob/master/preprocessing/rus_preprocessing_udpipe.py
 """
 
+import os
 import re
 from string import punctuation
+from tqdm import tqdm
 
 punctuation = punctuation + '«»—…“”*№́–'
 stop_pos = {'AUX', 'NUM', 'DET', 'PRON', 'ADP', 'SCONJ', 'CCONJ', 'INTJ', 'PART', 'X'}
@@ -27,26 +29,6 @@ class Token:
 def x_replace(word):
     newtoken = 'x' * len(word)
     return newtoken
-
-
-# def clean_token(token, misc):
-#     out_token = token.strip().replace(' ', '').replace('́', '')
-#     if token == 'Файл' and 'SpaceAfter=No' in misc:
-#         return None
-#     return out_token
-
-
-# def clean_lemma(lemma, pos):
-#     out_lemma = lemma.strip().replace(' ', '').replace('_', '').lower()
-#     out_lemma = out_lemma.replace('́', '')  # так не видно, но тут ударение
-#
-#     if '|' in out_lemma or out_lemma.endswith('.jpg') or out_lemma.endswith('.png'):
-#         return None
-#
-#     if pos != 'PUNCT':
-#         out_lemma = out_lemma.strip(punctuation)
-#
-#     return out_lemma
 
 
 def clean_word(word, pos, misc):
@@ -161,7 +143,6 @@ def parse_file(conllu_text):
     :return: список словарей {sent_id, text, parsed=список строк-слов}
     """
     par_sents = (conllu_text.split('# newpar\n'))[1:]  # берём распаршенные предложения
-    # print(par_sents)
 
     sents = []
     for par_sent in par_sents:
@@ -169,7 +150,6 @@ def parse_file(conllu_text):
         sent = {'sent_id': parts[0].replace('# sent_id = ', ''),
                 'text': parts[1].replace('# text = ', ''),
                 'parsed': parts[2:]}
-        # print(sent)
 
         sents.append(sent)
 
@@ -214,8 +194,6 @@ def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1,
             continue
 
         (word_id, token, lemma, pos, xpos, feats, head, deprel, deps, misc) = line_tags
-        # token = clean_token(token, misc)
-        # lemma = clean_lemma(lemma, pos)
         token = clean_word(token, pos, misc)
         lemma = clean_word(lemma, pos, misc)
 
@@ -262,8 +240,8 @@ def process_line(content, lemmatize=1, keep_pos=1, keep_punct=0, keep_stops=1,
 
     if not keep_stops:  # убираем ещё слова длиной 1
         tagged_toks = [tok for tok in tagged_toks if tok.pos not in stop_pos
-                       or len(tok.lemma) > 1
-                       or len(tok.token) > 1]
+                       and len(tok.lemma) > 1
+                       and len(tok.token) > 1]
 
     if lemmatize:
         words = [tok.lemma for tok in tagged_toks]
@@ -282,15 +260,27 @@ def get_text(conllu_text, lemmatize, keep_pos, keep_punct, keep_stops,
     sents = parse_file(conllu_text)
     lines = []
     for sent in sents:
-        # print(sent)
         line = process_line(sent['parsed'], lemmatize, keep_pos, keep_punct, keep_stops,
                             join_propn, join_token)
         if unite:
             lines.extend(line)
         else:
-            lines.append(line)
+            if line:
+                lines.append(line)
     return lines
 
 
 def clean_ext(name):
     return '.'.join(name.split('.')[:-1])
+
+
+def get_corpus(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, join_propn, join_token, unite):
+    """собираем файлы conllu в словарь {файл: список токенов}"""
+    texts = {}
+    for file in tqdm(os.listdir(texts_path), desc='Collecting'):
+        text = open('{}/{}'.format(texts_path, file), encoding='utf-8').read().strip()
+        preprocessed = get_text(text, lemmatize, keep_pos, keep_punct, keep_stops,
+                                join_propn, join_token, unite)
+        texts[clean_ext(file)] = preprocessed
+
+    return texts

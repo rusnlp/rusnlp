@@ -1,9 +1,8 @@
 import csv
-from gensim import models
-import gzip
+from gensim import models, utils as gensim_utils
 import logging
+import numpy as np
 import zipfile
-import os
 from tqdm import tqdm
 try:
     from utils.preprocessing import clean_ext
@@ -60,61 +59,23 @@ def load_embeddings(embeddings_path):
     return model
 
 
-def send_to_archieve(archieve_path, model_path, remove_source=True):
-    with gzip.open(archieve_path, 'wb') as zipped_file:
-        logging.info('Saving vectors into archieve')
-        zipped_file.writelines(open(model_path, 'rb'))
-        logging.info('Vectors are saved into archieve')
-    if remove_source:
-        logging.info('Deleting source file {}'.format(model_path))
-        os.remove(model_path)
-    logging.info('Saved vectors {} to archive {}'.format(model_path, archieve_path))
-
-
-def save_text_vectors(vectors, output_path, remove_source=True):
-    # генерим пути
-    if output_path.endswith('gz'):  # если путь -- архив
-        model_path = clean_ext(output_path)
-        archieve_path = output_path
-    else:
-        model_path = output_path
-        archieve_path = ''
-
+def save_w2v(vocab, output_path):
+    """аналог save_word2vec_format для простого словаря, не сортируем по частотам"""
     binary = get_binarity(output_path)
-
-    if binary:  # если название бинарное, а нам нужно временное текстовое
-        text_model_path = clean_ext(model_path)+'.vec'
-        bin_model_path = output_path  # возможно, оно уже с архивом, gensim разберётся
-    else:
-        text_model_path = model_path
-        bin_model_path = ''
-
-    # print('''
-    # text_model_path: {}
-    # bin_model_path: {}
-    # archieve_path: {}
-    # '''.format(text_model_path, bin_model_path, archieve_path))
-
-    # генерим текстовый формат w2v
-    logging.info('Saving vectors in the text w2v format to {}'.format(text_model_path))
-    vec_str = '{} {}'.format(len(vectors), len(list(vectors.values())[0]))
-    for word, vec in tqdm(vectors.items(), desc='Formatting'):
-        vec_str += '\n{} {}'.format(word, ' '.join(str(v) for v in vec))
-    open(text_model_path, 'w', encoding='utf-8').write(vec_str)
-
-    if binary:  # конвертируем через gensim и сразу архивируем
-        logging.info('Converting text w2v format into binary to {}'.format(bin_model_path))
-        model = load_embeddings(text_model_path)
-        model.save_word2vec_format(bin_model_path, binary=True)
-        if remove_source:
-            logging.info('Deleting source file {}'.format(text_model_path))
-            os.remove(text_model_path)
-
-    else:  # если нужен текстовый формат, проверяем, нужно ли архивировать
-        if archieve_path:
-            send_to_archieve(archieve_path, text_model_path, remove_source)
-        else:
-            logging.info('Saved vectors to {}'.format(output_path))
+    total_vec = len(vocab)
+    vectors = np.array(list(vocab.values()))
+    vector_size = vectors.shape[1]
+    logging.info("storing {}x{} projection weights into {}".format(total_vec, vector_size, output_path))
+    assert (len(vocab), vector_size) == vectors.shape
+    with gensim_utils.open(output_path, 'wb') as fout:
+        fout.write(gensim_utils.to_utf8("%s %s\n" % (total_vec, vector_size)))
+        # TODO: store in sorted order: most frequent words at the top
+        for word, row in tqdm(vocab.items(), desc='Saving'):
+            if binary:
+                row = row.astype(np.float32)
+                fout.write(gensim_utils.to_utf8(word) + b" " + row.tostring())
+            else:
+                fout.write(gensim_utils.to_utf8("{} {}\n".format(word, ' '.join(repr(val) for val in row))))
 
 
 def format_task_name(description):
@@ -132,3 +93,12 @@ def load_task_terms(file_path, column_name):
             # print(task_name, terms, url)
             task_terms[task_name] = terms
         return task_terms
+
+
+def split_paths(joint_path, texts_paths):
+    # делим пути по + или задаём столько пустых, сколько пришло папок с текстами
+    if joint_path:
+        paths = joint_path.split('+')
+    else:
+        paths = [''] * len(texts_paths)
+    return paths
