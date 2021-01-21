@@ -1,6 +1,6 @@
 import numpy as np
-from tqdm import tqdm
 from numpy.linalg import norm
+from tqdm import tqdm
 
 
 def empty_vec(model):
@@ -26,8 +26,7 @@ def get_norm_vec(vec):
 
 def get_mean_vec(vecs, words):
     vec = np.sum(vecs, axis=0)
-    vec = np.divide(vec, len(words))  # TODO: почему не np.mean? Другая длина words?
-    # vec = np.mean(vec, axis=0)
+    vec = np.divide(vec, len(words))
     return vec
 
 
@@ -42,7 +41,6 @@ def vectorize_text(tokens, model, no_duplicates=0):
     words = get_words(tokens, model, no_duplicates)
 
     if not words:
-        # print('Я ничего не знаю из этих токенов: {}'.format(tokens), file=sys.stderr)
         return empty_vec(model)
 
     t_vecs = np.zeros((len(words), model.vector_size))
@@ -58,7 +56,7 @@ def vectorize_corpus(corpus, model, no_duplicates=0):
     not_vectorized = []
     corp_vectors = {}
 
-    for name, text in tqdm(corpus.items()):
+    for name, text in tqdm(corpus.items(), desc='Vectorizing'):
         vector = vectorize_text(text, model, no_duplicates)
         if not np.array_equal(vector, empty_vec(model)):  # если это не зарезервированный вектор
             corp_vectors[name] = vector
