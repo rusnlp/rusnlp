@@ -127,58 +127,39 @@ def homepage(lang, conference, year, author, affiliation, keywords):
 
     descriptions = {}
 
-    if (
-        conference
-        or year
-        or author
-        or affiliation
-        or keywords
-        or request.method == "POST"
-    ):
-        if request.method == "POST":
-            keywords = request.form["keywords"].strip().lower().split()
-            author = request.form["author_query"].strip()
-            affiliation = request.form["affiliation_query"].strip()
-            title = request.form["query"].strip()
-            conference = request.form.getlist("conf_query")
-            if conference:
-                query = {"field": "conference", "ids": conference}
-                message = [5, query, 10]
-                descriptions["conferences"] = json.loads(serverquery(message))[
-                    "neighbors"
-                ]
-            year_min = request.form["year_query_min"]
-            if year_min:
-                year_min = int(year_min)
-            year_max = request.form["year_query_max"]
-            if year_max:
-                year_max = int(year_max)
-        else:
-            title = ""
-            if keywords:
-                keywords = keywords.strip().lower().split("+")
-            if conference:
-                conference = [conference]
-                query = {"field": "conference", "ids": conference}
-                message = [5, query, 10]
-                descriptions["conferences"] = json.loads(serverquery(message))[
-                    "neighbors"
-                ]
-            year_min = year
-            year_max = year
-        year = (year_min, year_max)
-        if year[0] and year[1]:
-            if year[0] > year[1]:
-                return render_template(
-                    "rusnlp.html",
-                    error="Проверьте даты!",
-                    url=url,
-                    other_lang=other_lang,
-                    languages=languages,
-                    search=True,
-                )
+
+    if request.method == "POST":
+
+        keywords = request.form["keywords"].strip().lower().split()
+        author = request.form["author_query"].strip()
+        affiliation = request.form["affiliation_query"].strip()
+        title = request.form["query"].strip()
+        conference = request.form.getlist("conf_query")
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
+
+        query = {"field": "conference", "ids": conference}
+        message = [5, query, 10]
+        descriptions["conferences"] = json.loads(serverquery(message))[
+            "neighbors"
+        ]
+        year_min = request.form["year_query_min"]
+        if year_min:
+            year_min = int(year_min)
+        year_max = request.form["year_query_max"]
+        if year_max:
+            year_max = int(year_max)
+
+        if year[0] and year[1] and year[0] > year[1]:
+            return render_template(
+                "rusnlp.html",
+                error="Проверьте даты!",
+                url=url,
+                other_lang=other_lang,
+                languages=languages,
+                search=True,
+            )
+
         query = {
             "f_author": author,
             "f_year": year,
@@ -187,80 +168,78 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             "f_affiliation": affiliation,
             "keywords": keywords,
         }
-        if (
-            query["f_author"] == ""
-            and query["f_affiliation"] == ""
-            and query["f_title"] == ""
-            and len(query["f_conf"]) == 3
-            and query["keywords"] == []
-            and query["f_year"] == (2002, 2018)
-        ):
-            return render_template(
-                "rusnlp.html",
-                error="Введите какой-нибудь запрос!",
-                url=url,
-                other_lang=other_lang,
-                languages=languages,
-                search=True,
-            )
-        message = [2, query, 10]
-        results = json.loads(serverquery(message))
-        if len(results["neighbors"]) == 0:
-            return render_template(
-                "rusnlp.html",
-                conf_query=conference,
-                year_query=year,
-                author_query=author,
-                error="Поиск не дал результатов.",
-                search=True,
-                url=url,
-                affiliation_query=affiliation,
-                query=title,
-                keywords=" ".join(keywords),
-                other_lang=other_lang,
-                languages=languages,
-            )
-        author_ids = set()
-        for res in results["neighbors"]:
-            r_authors = res[2]
-            author_ids |= set(r_authors)
-        query = {"field": "author", "ids": list(author_ids)}
-        message = [3, query, 10]
-        author_map = json.loads(serverquery(message))["neighbors"]
-        if author.strip().isdigit():
-            author = author_map[author]
-
-        affiliation_ids = set()
-        for res in results["neighbors"]:
-            r_affiliations = res[6]
-            affiliation_ids |= set(r_affiliations)
-        query = {"field": "affiliation", "ids": list(affiliation_ids)}
-        message = [3, query, 10]
-        aff_map = json.loads(serverquery(message))["neighbors"]
-        if affiliation.strip().isdigit():
-            affiliation = aff_map[affiliation]
-
+    if (
+        query["f_author"] == ""
+        and query["f_affiliation"] == ""
+        and query["f_title"] == ""
+        and len(query["f_conf"]) == 3
+        and query["keywords"] == []
+        and query["f_year"] == (2002, 2018)
+    ):
         return render_template(
             "rusnlp.html",
-            result=results["neighbors"],
+            error="Введите какой-нибудь запрос!",
+            url=url,
+            other_lang=other_lang,
+            languages=languages,
+            search=True,
+        )
+    message = [2, query, 10]
+    results = json.loads(serverquery(message))
+    if len(results["neighbors"]) == 0:
+        return render_template(
+            "rusnlp.html",
             conf_query=conference,
-            author_query=author,
             year_query=year,
+            author_query=author,
+            error="Поиск не дал результатов.",
             search=True,
             url=url,
-            query=title,
             affiliation_query=affiliation,
-            descriptions=descriptions,
-            topics=results["topics"],
-            aff_map=aff_map,
+            query=title,
             keywords=" ".join(keywords),
-            author_map=author_map,
             other_lang=other_lang,
             languages=languages,
         )
+    author_ids = set()
+    for res in results["neighbors"]:
+        r_authors = res[2]
+        author_ids |= set(r_authors)
+    query = {"field": "author", "ids": list(author_ids)}
+    message = [3, query, 10]
+    author_map = json.loads(serverquery(message))["neighbors"]
+    if author.strip().isdigit():
+        author = author_map[author]
+
+    affiliation_ids = set()
+    for res in results["neighbors"]:
+        r_affiliations = res[6]
+        affiliation_ids |= set(r_affiliations)
+    query = {"field": "affiliation", "ids": list(affiliation_ids)}
+    message = [3, query, 10]
+    aff_map = json.loads(serverquery(message))["neighbors"]
+    if affiliation.strip().isdigit():
+        affiliation = aff_map[affiliation]
+
     return render_template(
-        "rusnlp.html", search=True, url=url, other_lang=other_lang, languages=languages
+        "rusnlp.html",
+        result=results["neighbors"],
+        conf_query=conference,
+        author_query=author,
+        year_query=year,
+        search=True,
+        url=url,
+        query=title,
+        affiliation_query=affiliation,
+        descriptions=descriptions,
+        topics=results["topics"],
+        aff_map=aff_map,
+        keywords=" ".join(keywords),
+        author_map=author_map,
+        other_lang=other_lang,
+        languages=languages,
     )
+
 
 
 @nlpsearch.route("/" + "<lang:lang>/" + "publ/<fname>", methods=["GET", "POST"])
