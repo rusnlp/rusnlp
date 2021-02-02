@@ -19,7 +19,7 @@ def choose_first(words, vocab):
 
 
 def find_substitution(token, model, max_end=3):
-    model_vocab = list(model.vocab)
+    model_vocab = model.index2word
     for i in range(1, max_end+1):
         dists = {word: levenshtein(token, word) for word in model_vocab
                     if word.startswith(token[:-i])}
