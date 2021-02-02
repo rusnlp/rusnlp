@@ -9,7 +9,6 @@ python code/web/backend/search_muse/create_muse_corpus.py --texts_paths=texts/en
 import argparse
 import logging
 
-
 from utils.loaders import load_embeddings, save_w2v, load_task_terms, split_paths
 from utils.preprocessing import get_corpus
 from utils.vectorization import vectorize_corpus
@@ -40,6 +39,12 @@ def parse_args():
     parser.add_argument('--no_duplicates', type=int, default=0,
                         help='Брать ли для каждого типа в тексте вектор только по одному разу '
                              '(0|1; default: 0)')
+    parser.add_argument('--substitute', type=int, default=0,
+                        help='Брать ли слова, не найденного в модели, ближайшее имеющееся '
+                             '(0|1; default: 0)')
+    parser.add_argument('--max_end', type=int, default=3,
+                        help='Максимальное окончание слова, которое убирается для поиска замены '
+                             '(default: 3)')
     parser.add_argument('--embeddings_path', type=str, required=True,
                         help='Путь к модели векторизации')
     parser.add_argument('--common_vectors_path', type=str, required=True,
@@ -61,13 +66,14 @@ def parse_args():
 
 
 def main_onepath(texts_path, lemmatize, keep_pos, keep_punct, keep_stops, join_propn, join_token,
-                 unite, embed_model, no_duplicates, dir_vectors_path, mis_path):
+                 unite, embed_model, no_duplicates, substitute,  max_end, dir_vectors_path, mis_path):
     """делаем словарь векторов для папки"""
     # собираем тексты из conllu
     text_corpus = get_corpus(texts_path, lemmatize, keep_pos, keep_punct, keep_stops,
                              join_propn, join_token, unite)
 
-    vec_corpus, not_vectorized = vectorize_corpus(text_corpus, embed_model, no_duplicates)
+    vec_corpus, not_vectorized = vectorize_corpus(text_corpus, embed_model, no_duplicates,
+                                                  substitute,  max_end)
 
     if dir_vectors_path:
         save_w2v(vec_corpus, dir_vectors_path)
@@ -93,13 +99,14 @@ def main():
     for texts_path, dir_vectors_path, mis_path in zip(texts_paths, dir_vectors_paths, mis_paths):
         logging.info('Vectorizing {}...'.format(texts_path))
         text_vectors = main_onepath(texts_path, args.lemmatize, args.keep_pos, args.keep_punct,
-                                    args.keep_stops, args.join_propn, args.join_token, args.unite, embed_model, args.no_duplicates,
+                                    args.keep_stops, args.join_propn, args.join_token, args.unite,
+                                    embed_model, args.no_duplicates, args.substitute,  args.max_end,
                                     dir_vectors_path, mis_path)
 
         common_vectors.update(text_vectors)
 
     task_terms = load_task_terms(args.task_path, args.task_column)
-    task_vectors, not_vectorized = vectorize_corpus(task_terms, embed_model)
+    task_vectors, not_vectorized = vectorize_corpus(task_terms, embed_model, args.substitute,  args.max_end)
     if not_vectorized:
         logging.info('Not vectorized tasks: {}'.format(len(not_vectorized)))
         if args.task_mis_path:
