@@ -1,2 +1,2 @@
-general_model	Cross-lingual MUSE	models/cross_muse.bin.gz
-document_model	Corpus vector model	models/common_tok_muse.bin.gz
+general_model	Cross-lingual MUSE	models/cross_muse_ext.bin.gz
+document_model	Corpus vector model	models/common_tok_muse_ext.bin.gz

@@ -145,7 +145,7 @@ def search(sets, number, keywords=None):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
     if keywords:
-        q_vector = vectorize_text(keywords, word_model)
+        q_vector = vectorize_text(keywords, word_model, substitute=True,  max_end=3)
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
         results = [
