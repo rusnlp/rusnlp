@@ -1,2 +1,3 @@
 langdetect
 transliterate
+leven
