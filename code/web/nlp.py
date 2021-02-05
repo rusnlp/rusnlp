@@ -16,10 +16,12 @@ config.read("rusnlp.cfg")
 root = config.get("Files and directories", "root")
 languages_list = config.get("Languages", "interface_languages").split(",")
 languages = "/".join(list(language_dicts.keys())).upper()
-year_dict = {'maxmin_min': config.getint('Maxmin years', 'year_min'),
-         'maxmin_max': config.getint('Maxmin years', 'year_min'),
-         'default_min': config.getint('Default years', 'year_min'),
-         'default_max': config.getint('Default years', 'year_max')}
+year_dict = {
+    'maxmin_min': config.getint('Maxmin years', 'year_min'),
+    'maxmin_max': config.getint('Maxmin years', 'year_max'),
+    'default_min': config.getint('Default years', 'year_min'),
+    'default_max': config.getint('Default years', 'year_max')
+    }
 url = config.get("Other", "url")
 
 # Establishing connection to model server
