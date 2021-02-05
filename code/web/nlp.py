@@ -198,7 +198,6 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             query["f_author"] == ""
             and query["f_affiliation"] == ""
             and query["f_title"] == ""
-            # если будут добавляться конференции, надо будет не забыть переделать
             and len(query["f_conf"]) == 3
             and query["keywords"] == []
             and query["f_year"] == (config.getint('Default years', 'year_min'),
