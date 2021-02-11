@@ -200,8 +200,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             and query["f_title"] == ""
             and len(query["f_conf"]) == 3
             and query["keywords"] == []
-            and query["f_year"] == (config.getint('Default years', 'year_min'),
-                                    config.getint('Default years', 'year_max'))
+            and query["f_year"] == (year_dict['default_min'], year_dict['default_max'])
         ):
             return render_template(
                 "rusnlp.html",

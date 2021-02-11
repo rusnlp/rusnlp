@@ -75,7 +75,7 @@ def find_nearest(q_vector, q, number, restrict=None):
                     in text_model.similar_by_vector(q_vector, len(text_model.vocab))
                     if not d.startswith('TASK::')}
     neighbor_ds = [d for d in similarities.keys() if d != q
-                   and similarities[d] > config.getfloat('Similarity thresholds', 'text_threshold')]
+                   and similarities[d] > text_threshold]
 
     if restrict:
         neighbors = [d for d in neighbor_ds if d in restrict][:number]
@@ -102,9 +102,9 @@ def f_conf(q):
 def f_year(q):
     (year_min, year_max) = q
     if year_min == "":
-        year_min = config.getint('Maxmin years', 'year_min')
+        year_min = year_min_default
     if year_max == "":
-        year_max = config.getint('Maxmin years', 'year_max')
+        year_max = year_max_default
     results = reader.select_articles_from_years(year_min, year_max)
     results = set(results)
     return results
@@ -146,9 +146,7 @@ def search(sets, number, keywords=None):
     intersect = set.intersection(*sets)
     valid = [doc for doc in intersect if doc in id_index]
     if keywords:
-        q_vector = vectorize_text(keywords, word_model,
-                                  substitute=config.getboolean('Vectorization', 'substitute'),
-                                  max_end=config.getint('Vectorization', 'max_end'))
+        q_vector = vectorize_text(keywords, word_model, substitute, max_end)
         results = find_nearest(q_vector, keywords, number, restrict=valid)
     else:
         results = [
@@ -203,7 +201,7 @@ def queryparser(query):
             topics = {t: sim for t, sim
                       in text_model.similar_by_vector(text_vector, len(text_model.vocab))
                       if t.startswith('TASK::')
-                      and sim > config.getfloat('Similarity thresholds', 'task_threshold')}
+                      and sim > task_threshold}
             candidates = [(nlpub_terms[topic]['description'], nlpub_terms[topic]['url'])
                           for topic in sorted(topics, key=topics.get, reverse=True)][:3]
             if candidates:
@@ -252,9 +250,19 @@ if __name__ == "__main__":
 
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
+    text_threshold = config.getfloat('Similarity thresholds', 'text_threshold')
+    task_threshold = config.getfloat('Similarity thresholds', 'task_threshold')
+
+    substitute = config.getboolean('Vectorization', 'substitute'),
+    max_end = config.getint('Vectorization', 'max_end')
+
+    year_min_default = config.getint('Maxmin years', 'year_min')
+    year_max_default = config.getint('Maxmin years', 'year_max')
+
     databasefile = config.get('Files and directories', 'database')
     metadatafile = config.get('Files and directories', 'database_meta')
     nlpubfile = config.get('Files and directories', 'nlpub_file')
+    modelfile = config.get('Files and directories', 'models')
 
     print('Loading database from', databasefile, file=sys.stderr)
 
@@ -264,7 +272,7 @@ if __name__ == "__main__":
 
     # Loading models
     model_data = {}
-    for line in open(path.join(root, config.get('Files and directories', 'models')),
+    for line in open(path.join(root, modelfile),
                      'r').readlines():
         if line.startswith("#"):
             continue
