@@ -73,11 +73,11 @@
        <p style="margin-top:10px;">
        {{strings['topic8']}}
         {% if year_query %}
-        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="2000" max="2020">
-        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="2000" max="2020">
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="{{ years['maxmin_min'] }}" max="{{ years['maxmin_max'] }}">
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="{{ years['maxmin_min'] }}" max="{{ years['maxmin_max'] }}">
         {% else %}
-        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="2002" min="2000" max="2020">
-        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="2019" min="2000" max="2020">
+        <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ years['default_min'] }}" min="{{ years['maxmin_min'] }}" max="{{ years['maxmin_max'] }}">
+        <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ years['default_max'] }}" min="{{ years['maxmin_min'] }}" max="{{ years['maxmin_max'] }}">
         {% endif %}
     	</p>
 	<div id="authorform">

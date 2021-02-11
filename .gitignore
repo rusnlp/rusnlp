@@ -108,3 +108,9 @@ ENV/
 .DS_Store
 */.DS_Store
 
+# Text directory
+texts/
+
+# Model directory
+models/
+

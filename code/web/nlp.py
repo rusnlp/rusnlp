@@ -16,6 +16,12 @@ config.read("rusnlp.cfg")
 root = config.get("Files and directories", "root")
 languages_list = config.get("Languages", "interface_languages").split(",")
 languages = "/".join(list(language_dicts.keys())).upper()
+year_dict = {
+    'maxmin_min': config.getint('Maxmin years', 'year_min'),
+    'maxmin_max': config.getint('Maxmin years', 'year_max'),
+    'default_min': config.getint('Default years', 'year_min'),
+    'default_max': config.getint('Default years', 'year_max')
+    }
 url = config.get("Other", "url")
 
 # Establishing connection to model server
@@ -176,6 +182,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                     other_lang=other_lang,
                     languages=languages,
                     search=True,
+                    years=year_dict
                 )
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
@@ -193,7 +200,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             and query["f_title"] == ""
             and len(query["f_conf"]) == 3
             and query["keywords"] == []
-            and query["f_year"] == (2002, 2018)
+            and query["f_year"] == (year_dict['default_min'], year_dict['default_max'])
         ):
             return render_template(
                 "rusnlp.html",
@@ -202,6 +209,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                 other_lang=other_lang,
                 languages=languages,
                 search=True,
+                years=year_dict
             )
         message = [2, query, 10]
         results = json.loads(serverquery(message))
@@ -219,6 +227,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                 keywords=" ".join(keywords),
                 other_lang=other_lang,
                 languages=languages,
+                years=year_dict
             )
         author_ids = set()
         for res in results["neighbors"]:
@@ -257,9 +266,15 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             author_map=author_map,
             other_lang=other_lang,
             languages=languages,
+            years=year_dict
         )
     return render_template(
-        "rusnlp.html", search=True, url=url, other_lang=other_lang, languages=languages
+        "rusnlp.html",
+        search=True,
+        url=url,
+        other_lang=other_lang,
+        languages=languages,
+        years=year_dict
     )
 
 
