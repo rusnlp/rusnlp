@@ -63,9 +63,7 @@ def get_name_with_id(name, filename):
     if name in name2author:
         return name2author[name]
     else:
-        (first_id, first_name), (second_id, second_name) = authors_handler.handle_author(name)
-        missing_authors.write("\t".join([filename.split("data-txt")[-1], name, str(first_id),
-                                         first_name, str(second_id), second_name]) + "\n")
+        missing_authors[name] = filename.split("data-txt")[-1]
         return None, None
 
 
@@ -79,7 +77,7 @@ def get_affiliations_with_id(names, filename):
             result_affiliations.append({"affiliation_id": affiliation_id,
                                         "affiliation_name": affiliation_name})
         else:
-            missing_affiliations.write(filename.split("data-txt")[-1] + "\t" + str([name]) + "\n")
+            missing_affiliations[name] = filename.split("data-txt")[-1]
     return result_affiliations
 
 
@@ -216,8 +214,8 @@ if __name__ == '__main__':
     name2author = create_name2author(params["name2author"])
     name2affiliation = create_name2affiliation(params["name2affiliation"])
 
-    missing_authors = open(params["missing_authors"], 'w', encoding='utf-8', newline='\n')
-    missing_affiliations = open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n')
+    missing_authors = {}
+    missing_affiliations = {}
 
     with open(params["out_metadata_path"], 'w', encoding='utf-8', newline='\n') as w:
         for basedir, dirs, files in os.walk(params["input_file"]):
@@ -226,5 +224,11 @@ if __name__ == '__main__':
                     meta_data = get_metadata_from_file(basedir, fname)
                     w.write(json.dumps(meta_data) + "\n")
 
-    missing_authors.close()
-    missing_affiliations.close()
+    with open(params["missing_authors"], 'w', encoding='utf-8', newline='\n') as w:
+        for name, filename in missing_authors.items():
+            first_id, first_name = authors_handler.handle_author(name)
+            w.write(f"{filename}\t{name}\t{str(first_id)}\t{first_name}\n")
+
+    with open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n') as w:
+        for name, filename in missing_affiliations.items():
+            w.write(f"{filename}\t{str([name])}\n")

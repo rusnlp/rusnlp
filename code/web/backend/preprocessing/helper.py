@@ -25,9 +25,13 @@ def create_hash2url(filename):
 def create_name2author(filename):
     name2author = {}
     with open(filename, 'r', encoding='utf-8') as f:
+        prev_cluster = None
         for line in f:
             id_, cluster, name = line.strip().split("\t")
-            assert name not in name2author, name
+            if prev_cluster == cluster:
+                assert name not in name2author, name
+            else:
+                name2author[cluster] = (id_, cluster)
             name2author[name] = (id_, cluster)
     return name2author
 
