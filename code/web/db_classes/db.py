@@ -158,7 +158,7 @@ class DBaseRusNLP:
         """
         query = self._select_query(what, where, condition)
         self.cursor.execute(query)
-        return self.cursor.fetchone()[0]
+        return self.cursor.fetchone()
 
     def select_max(self, table):
         """

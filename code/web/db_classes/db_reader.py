@@ -41,12 +41,14 @@ class ReaderDBase:
     def select_affiliation_by_cluster(self, cluster):  # TODO: rename
         where = "affiliation"
         condition = '''affiliation_id={}'''.format(cluster)
-        return self._bd.select_one("name", where, condition)
+        result = self._bd.select_one("name", where, condition)
+        return result[0] if result else "Unknown affiliation"
 
     def select_aff_cluster_by_affiliation(self, affiliation):
         where = "affiliation"
         condition = '''name="{}"'''.format(affiliation)
-        return self._bd.select_one("affiliation_id", where, condition)
+        result = self._bd.select_one("affiliation_id", where, condition)
+        return result[0] if result else None
 
     def select_aff_clusters_by_id(self, common_id):
         where = "author_catalogue"
@@ -73,7 +75,7 @@ class ReaderDBase:
         what = '''DISTINCT title'''
         where = '''catalogue '''
         condition = '''common_id="{}"'''.format(article_id)
-        return self._bd.select_one(what, where, condition)
+        return self._bd.select_one(what, where, condition)[0]
 
     # ==========================================================================================
     # CONFERENCE
@@ -89,7 +91,7 @@ class ReaderDBase:
         what = '''DISTINCT conference.{}'''.format(what)
         where = '''catalogue INNER JOIN conference ON conference_id=conference.id'''
         condition = '''common_id="{}"'''.format(article_id)
-        return self._bd.select_one(what, where, condition)
+        return self._bd.select_one(what, where, condition)[0]
 
     # ==========================================================================================
     # URL
@@ -99,7 +101,7 @@ class ReaderDBase:
         what = '''url'''
         where = '''catalogue'''
         condition = '''common_id="{}"'''.format(article_id)
-        return self._bd.select_one(what, where, condition)
+        return self._bd.select_one(what, where, condition)[0]
 
     # ==========================================================================================
     # ABSTRACT
@@ -109,7 +111,7 @@ class ReaderDBase:
         what = '''DISTINCT abstract'''
         where = '''catalogue'''
         condition = '''common_id = "{}"'''.format(article_id)
-        return self._bd.select_one(what, where, condition)
+        return self._bd.select_one(what, where, condition)[0]
     # ==========================================================================================
     # LANGUAGE
     # ==========================================================================================
@@ -205,5 +207,5 @@ class ReaderDBase:
         what = '''COUNT(id) '''
         where = '''catalogue'''
         condition = '''language="{}"'''.format(language)
-        result = self._bd.select_one(what, where, condition)
+        result = self._bd.select_one(what, where, condition)[0]
         return result
