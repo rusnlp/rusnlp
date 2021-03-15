@@ -6,17 +6,18 @@ class ParentHandler():
     """
     Parent class for classes - handlers used for semi-automated annotation.
     """
-    pass
+    def __init__(self):
+        pass
 
 
-class AuthorsHandler():
+class AuthorsHandler(ParentHandler):
     """
     Class for semi-automated authors annotation.
+    :param auth_tsv: str, path to authors.tsv file
     """
-    def __init__(self, auth_tsv='current_authors.tsv'):
-        """
-        :param auth_tsv: path to authors.tsv file
-        """
+    def __init__(self, auth_tsv: str = 'current_authors.tsv'):
+
+        super().__init__()
         self.auth_tsv = auth_tsv
         self.auth_df = pd.read_csv(auth_tsv, sep='\t', names=['index', 'dict_name', 'var_name'])
         self.auth_df['var_latine_name'] = \
@@ -30,8 +31,6 @@ class AuthorsHandler():
             surename = name_list[0].lower()
             # Если у автора указаны Фамилия И. О., отделяем фамилию и делаем ключом
             # словаря, в значении индекс.
-            # my_index = int(self.auth_df['index'][index])
-            # self.dict_names_mapping[surename] = [my_index]
             self.dict_names_mapping[surename] = [index]
 
     def search_lev(self, local_name, min=0, max=2, name_min_len=2):
@@ -89,7 +88,9 @@ class AuthorsHandler():
             my_max += 1
         return tuple(global_res[0])
 
-
+# Use case:
 # if __name__=='__main__':
 #     handler = AuthorsHandler()
 #     print(handler.handle_author('Митрофанова О. А.'))
+#     print(handler.handle_author('Елизавета Былинина'))
+#     print(handler.handle_author('Константинова Н.'))
