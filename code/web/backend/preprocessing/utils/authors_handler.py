@@ -2,10 +2,21 @@ import pandas as pd
 from transliterate import translit
 from Levenshtein import distance
 
+class ParentHandler():
+    """
+    Parent class for classes - handlers used for semi-automated annotation.
+    """
+    pass
+
 
 class AuthorsHandler():
-
+    """
+    Class for semi-automated authors annotation.
+    """
     def __init__(self, auth_tsv='current_authors.tsv'):
+        """
+        :param auth_tsv: path to authors.tsv file
+        """
         self.auth_tsv = auth_tsv
         self.auth_df = pd.read_csv(auth_tsv, sep='\t', names=['index', 'dict_name', 'var_name'])
         self.auth_df['var_latine_name'] = \
@@ -19,6 +30,8 @@ class AuthorsHandler():
             surename = name_list[0].lower()
             # Если у автора указаны Фамилия И. О., отделяем фамилию и делаем ключом
             # словаря, в значении индекс.
+            # my_index = int(self.auth_df['index'][index])
+            # self.dict_names_mapping[surename] = [my_index]
             self.dict_names_mapping[surename] = [index]
 
     def search_lev(self, local_name, min=0, max=2, name_min_len=2):
@@ -37,7 +50,7 @@ class AuthorsHandler():
                 name = auth_df['dict_name'][ind]
                 if len(dict_names_mapping.get(dict_name)) > 1:
                     name += dict_names_mapping.get(dict_name)[1]
-                res = (ind, name)
+                res = (auth_df['index'][ind], name)
                 return res
 
     def handle_author(self, name):
@@ -64,7 +77,7 @@ class AuthorsHandler():
         # постепенно сдвигается в большую сторону окно поиска, пока не будет двух кандидатов
         my_min = 0
         my_max = 1
-        while len(global_res) <= 2:
+        while len(global_res) <= 1:
             for variant in name_list:
                 local_res = self.search_lev(variant, max=my_max, min=my_min)
                 if local_res:
@@ -74,9 +87,9 @@ class AuthorsHandler():
                 break
             my_min += 1
             my_max += 1
-        return tuple(global_res[:2])
+        return tuple(global_res[0])
 
 
 # if __name__=='__main__':
 #     handler = AuthorsHandler()
-#     print(handler.handle_author('André Grüning'))
+#     print(handler.handle_author('Митрофанова О. А.'))
