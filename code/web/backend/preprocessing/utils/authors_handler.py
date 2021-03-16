@@ -2,10 +2,22 @@ import pandas as pd
 from transliterate import translit
 from Levenshtein import distance
 
+class ParentHandler():
+    """
+    Parent class for classes - handlers used for semi-automated annotation.
+    """
+    def __init__(self):
+        pass
 
-class AuthorsHandler():
 
-    def __init__(self, auth_tsv='current_authors.tsv'):
+class AuthorsHandler(ParentHandler):
+    """
+    Class for semi-automated authors annotation.
+    :param auth_tsv: str, path to authors.tsv file
+    """
+    def __init__(self, auth_tsv: str = 'current_authors.tsv'):
+
+        super().__init__()
         self.auth_tsv = auth_tsv
         self.auth_df = pd.read_csv(auth_tsv, sep='\t', names=['index', 'dict_name', 'var_name'])
         self.auth_df['var_latine_name'] = \
@@ -37,7 +49,7 @@ class AuthorsHandler():
                 name = auth_df['dict_name'][ind]
                 if len(dict_names_mapping.get(dict_name)) > 1:
                     name += dict_names_mapping.get(dict_name)[1]
-                res = (ind, name)
+                res = (auth_df['index'][ind], name)
                 return res
 
     def handle_author(self, name):
@@ -64,7 +76,7 @@ class AuthorsHandler():
         # постепенно сдвигается в большую сторону окно поиска, пока не будет двух кандидатов
         my_min = 0
         my_max = 1
-        while len(global_res) <= 2:
+        while len(global_res) <= 1:
             for variant in name_list:
                 local_res = self.search_lev(variant, max=my_max, min=my_min)
                 if local_res:
@@ -74,9 +86,11 @@ class AuthorsHandler():
                 break
             my_min += 1
             my_max += 1
-        return tuple(global_res[:2])
+        return tuple(global_res[0])
 
-
+# Use case:
 # if __name__=='__main__':
 #     handler = AuthorsHandler()
-#     print(handler.handle_author('André Grüning'))
+#     print(handler.handle_author('Митрофанова О. А.'))
+#     print(handler.handle_author('Елизавета Былинина'))
+#     print(handler.handle_author('Константинова Н.'))
