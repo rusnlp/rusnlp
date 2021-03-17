@@ -5,7 +5,8 @@ import sys
 from hashlib import sha1
 from langdetect import detect_langs
 from transliterate import translit
-from helper import *
+from backend.preprocessing.helper import *
+from backend.preprocessing.utils.authors_handler import AuthorsHandler
 
 splitter = '%\n%\n'
 english_label_p = re.compile('==ENGLISH==\n%\n%\n')
@@ -16,6 +17,8 @@ empty_symbol = '-'
 
 def get_data_from_filename(root):
     chunks = os.path.normpath(root).split(os.sep)
+    if chunks[~0] == 'CCIS' or chunks[~0] == 'LNCS':
+        return chunks[~1], chunks[~2]
     return chunks[~0], chunks[~1]
 
 
@@ -50,11 +53,17 @@ def add_author_metadata(author, filename):
 
 
 def get_name_with_id(name, filename):
-    name = name.replace("\n", " ").strip()
+    name_ = ""
+    for s in name:
+        if s == "[" or s.isdigit():
+            break
+        name_ += s
+    assert name_ != ''
+    name = name_.replace("\n", " ").strip()
     if name in name2author:
         return name2author[name]
     else:
-        missing_authors.write(filename + "\t" + str([name]) + "\n")
+        missing_authors[name] = filename.split("data-txt")[-1]
         return None, None
 
 
@@ -68,7 +77,7 @@ def get_affiliations_with_id(names, filename):
             result_affiliations.append({"affiliation_id": affiliation_id,
                                         "affiliation_name": affiliation_name})
         else:
-            missing_affiliations.write(filename + "\t" + str([name]) + "\n")
+            missing_affiliations[name] = filename.split("data-txt")[-1]
     return result_affiliations
 
 
@@ -76,7 +85,11 @@ def find_url(text, metadata):
     url = hash2url.get(metadata['hash'], None)
     if not url and text[0] == '%' and text[5] != '%':
         url = text.split('%\n%\n', 1)[0][2:].replace('\n', '')
-    assert url is not None and url != "-"
+    if url is None or url == '-':
+        print('No url for article title: %s, conference %s, year %s' % (metadata['article'].get('title'),
+                                                                        metadata['conference'],
+                                                                        metadata['year']))
+    # assert url is not None and url != "-"
     return url
 
 
@@ -89,8 +102,9 @@ def generate_hash(metadata):
         old_hash = title2hash.get((title, conference, year))
         if old_hash:
             return old_hash
-    print('No hash for article data: %s, title: %s' % ([metadata['article']],
-                                                       metadata['article'].get('title')))
+    print('No hash for article data: %s, conference %s, year %s' % (metadata['article'].get('title'),
+                                                                    metadata['conference'],
+                                                                    metadata['year']))
     title = metadata['article']['title']
     hasher = sha1()
     hasher.update(translit(title.replace(' ', '_').lower(), 'ru', reversed=True).encode())
@@ -193,20 +207,28 @@ if __name__ == '__main__':
     with open(sys.argv[1], "r", encoding="utf-8") as config:
         params = json.loads(config.read())
 
+    authors_handler = AuthorsHandler(params["name2author"])
+
     title2hash = create_title2hash(params["hash_title_url"])
     hash2url = create_hash2url(params["hash_title_url"])
     name2author = create_name2author(params["name2author"])
     name2affiliation = create_name2affiliation(params["name2affiliation"])
 
-    missing_authors = open(params["missing_authors"], 'w', encoding='utf-8', newline='\n')
-    missing_affiliations = open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n')
+    missing_authors = {}
+    missing_affiliations = {}
 
     with open(params["out_metadata_path"], 'w', encoding='utf-8', newline='\n') as w:
         for basedir, dirs, files in os.walk(params["input_file"]):
             for fname in files:
-                if fname.endswith('.txt'):
+                if fname.endswith('.txt') and fname != "annotation_guidelines.txt":
                     meta_data = get_metadata_from_file(basedir, fname)
                     w.write(json.dumps(meta_data) + "\n")
 
-    missing_authors.close()
-    missing_affiliations.close()
+    with open(params["missing_authors"], 'w', encoding='utf-8', newline='\n') as w:
+        for name, filename in missing_authors.items():
+            first_id, first_name = authors_handler.handle_author(name)
+            w.write(f"{filename}\t{name}\t{str(first_id)}\t{first_name}\n")
+
+    with open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n') as w:
+        for name, filename in missing_affiliations.items():
+            w.write(f"{filename}\t{str([name])}\n")
