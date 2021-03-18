@@ -1,16 +1,21 @@
 abbreviation	value
-NER	named entity recognition
-NEL	named entity linking
+ASR	automatic speech recognition
+CNN	convolutional neural network
+DL	deep learning
 IE	information extraction
 IR	information retrieval
-QA	question answering
-SMT	statistic machine translation
-NMT	neural machine translation
-NLU	natural language understanding
+NEL	named entity linking
+NER	named entity recognition
 NLI	natural language inference
+NLP	natural language processing
+NLU	natural language understanding
 ML	machine learning
-ASR	automatic speech recognition
-TTS	text to speech
+MT	machine translation
+NMT	neural machine translation
 POS	part of speech
+QA	question answering
 RNN	reсurrent neural network
-CNN	convolutional neural network
+SMT	statistical machine translation
+TTS	text to speech
+АОТ	автоматическая обработка языка
+МО	машинное обучение
