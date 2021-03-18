@@ -112,7 +112,7 @@ class AffiliationsHandler:
       :param affiliation: affiliation from the article
       """
       prediction = self.model.predict([affiliation])
-      return np.vectorize(self.ind2aff.get)(prediction)[0]
+      return prediction[0], np.vectorize(self.ind2aff.get)(prediction)[0]
 
 # Use case:
 # if __name__=='__main__':
