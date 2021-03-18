@@ -2,10 +2,12 @@
 # coding: utf-8
 
 import configparser
+import csv
 import json
 import logging
 import socket
 import sys
+from os import path
 from flask import render_template, Blueprint, redirect
 from flask import request, Response
 from flask import g
@@ -16,6 +18,7 @@ config.read("rusnlp.cfg")
 root = config.get("Files and directories", "root")
 languages_list = config.get("Languages", "interface_languages").split(",")
 languages = "/".join(list(language_dicts.keys())).upper()
+abbfile = config.get('Files and directories', 'abb_file')
 year_dict = {
     'maxmin_min': config.getint('Maxmin years', 'year_min'),
     'maxmin_max': config.getint('Maxmin years', 'year_max'),
@@ -23,6 +26,25 @@ year_dict = {
     'default_max': config.getint('Default years', 'year_max')
     }
 url = config.get("Other", "url")
+
+# Reading abbreviation dictionary
+abb_values = {}
+with open(path.join('data', abbfile), 'r', encoding='utf-8') as csvfile:
+    csvreader = csv.DictReader(csvfile, delimiter='\t')
+    for row in csvreader:
+        abb_values[row['abbreviation'].strip().lower()] = row['value'].strip().lower().split()
+print(abb_values)
+
+
+def extend_keywords_with_abbs(raw_keywords):
+    new_keywords = []
+    for keyword in raw_keywords:
+        new_keywords.append(keyword)
+        if keyword in abb_values:
+            new_keywords.extend(abb_values[keyword])
+    # print('keywords', new_keywords)
+    return new_keywords
+
 
 # Establishing connection to model server
 host = config.get("Sockets", "host")
@@ -143,6 +165,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
     ):
         if request.method == "POST":
             keywords = request.form["keywords"].strip().lower().split()
+            keywords = extend_keywords_with_abbs(keywords)
             author = request.form["author_query"].strip()
             affiliation = request.form["affiliation_query"].strip()
             title = request.form["query"].strip()
@@ -163,6 +186,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             title = ""
             if keywords:
                 keywords = keywords.strip().lower().split("+")
+                keywords = extend_keywords_with_abbs(keywords)
             if conference:
                 conference = [conference]
                 query = {"field": "conference", "ids": conference}
