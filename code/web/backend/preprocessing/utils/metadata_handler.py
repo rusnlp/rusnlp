@@ -11,6 +11,7 @@ class ParentHandler():
     def __init__(self, tsv_path):
         self.tsv = tsv_path
         self.df = pd.read_csv(self.tsv, sep='\t', names=['index', 'dict_name', 'var_name'])
+        self.dict_names_mapping = {}
         pass
 
 
@@ -24,7 +25,6 @@ class AuthorsHandler(ParentHandler):
         self.df['var_latine_name'] = \
             [translit(name, 'ru', reversed=True) for name in self.df['var_name']]
 
-        self.dict_names_mapping = {}
         # Сортируем словарные варианты написания, не учитывая инициалы вообще.
         for index, name in enumerate(self.df['dict_name']):
             name_list = name.split(' ')
@@ -98,9 +98,8 @@ class AffiliationsHandler(ParentHandler):
     :param model_path: str, path to model.pkl file
     """
     super().__init__(aff_tsv)
-    self.ind2aff = dict()
     for ind in self.df['index'].unique(): # получаем словарь {index: affiliation}
-      self.ind2aff[ind] = self.df[self.df['index'] == ind].dict_name.iloc[0]
+      self.dict_names_mapping[ind] = self.df[self.df['index'] == ind].dict_name.iloc[0]
     self.model = pickle.load(open(model_path, 'rb')) # загрузка модели
 
   def handle_affiliation(self, affiliation):
@@ -108,7 +107,7 @@ class AffiliationsHandler(ParentHandler):
       :param affiliation: affiliation from the article
       """
       prediction = self.model.predict([affiliation])
-      return prediction[0], np.vectorize(self.ind2aff.get)(prediction)[0]
+      return prediction[0], np.vectorize(self.dict_names_mapping.get)(prediction)[0]
 
 # Use case:
 # if __name__=='__main__':
@@ -119,4 +118,4 @@ class AffiliationsHandler(ParentHandler):
 #     handler = AffiliationsHandler()
 #     print(handler.handle_affiliation('Ломоносова '))
 #     print(handler.handle_affiliation('Московский лингвис'))
-#     print(handler.handle_affiliation('Moscow state'))
+ #    print(handler.handle_affiliation('Moscow state'))
