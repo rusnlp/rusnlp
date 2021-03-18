@@ -8,7 +8,9 @@ class ParentHandler():
     """
     Parent class for classes - handlers used for semi-automated annotation.
     """
-    def __init__(self):
+    def __init__(self, tsv_path):
+        self.tsv = tsv_path
+        self.df = pd.read_csv(self.tsv, sep='\t', names=['index', 'dict_name', 'var_name'])
         pass
 
 
@@ -18,16 +20,13 @@ class AuthorsHandler(ParentHandler):
     :param auth_tsv: str, path to authors.tsv file
     """
     def __init__(self, auth_tsv: str = 'current_authors.tsv'):
-
-        super().__init__()
-        self.auth_tsv = auth_tsv
-        self.auth_df = pd.read_csv(auth_tsv, sep='\t', names=['index', 'dict_name', 'var_name'])
-        self.auth_df['var_latine_name'] = \
-            [translit(name, 'ru', reversed=True) for name in self.auth_df['var_name']]
+        super().__init__(auth_tsv)
+        self.df['var_latine_name'] = \
+            [translit(name, 'ru', reversed=True) for name in self.df['var_name']]
 
         self.dict_names_mapping = {}
         # Сортируем словарные варианты написания, не учитывая инициалы вообще.
-        for index, name in enumerate(self.auth_df['dict_name']):
+        for index, name in enumerate(self.df['dict_name']):
             name_list = name.split(' ')
             name_list = list(filter(None, name_list))
             surename = name_list[0].lower()
@@ -43,7 +42,7 @@ class AuthorsHandler(ParentHandler):
         :param max:
         :return: tuple with author dict name and index
         """
-        auth_df = self.auth_df
+        auth_df = self.df
         dict_names_mapping = self.dict_names_mapping
         for dict_name in dict_names_mapping.keys():
             if min <= distance(dict_name, local_name) < max and len(local_name) > name_min_len:
@@ -91,20 +90,17 @@ class AuthorsHandler(ParentHandler):
         return tuple(global_res[0])
 
 
-class AffiliationsHandler:
+class AffiliationsHandler(ParentHandler):
 
   def __init__(self, aff_tsv: str = 'current_affiliations.tsv', model_path: str = 'aff_classifier.pkl'):
     """
-    Class for semi-automated affiliations annotation.
     :param aff_tsv: str, path to affiliations.tsv file
     :param model_path: str, path to model.pkl file
     """
-    super().__init__()
-    self.aff_tsv = aff_tsv
-    self.aff_df = pd.read_csv(aff_tsv, sep='\t', index_col=0, names=['aff', 'variation'])
+    super().__init__(aff_tsv)
     self.ind2aff = dict()
-    for ind in self.aff_df.index.unique(): # получаем словарь {index: affiliation}
-      self.ind2aff[ind] = self.aff_df[self.aff_df.index == ind].aff.iloc[0]
+    for ind in self.df['index'].unique(): # получаем словарь {index: affiliation}
+      self.ind2aff[ind] = self.df[self.df['index'] == ind].dict_name.iloc[0]
     self.model = pickle.load(open(model_path, 'rb')) # загрузка модели
 
   def handle_affiliation(self, affiliation):
