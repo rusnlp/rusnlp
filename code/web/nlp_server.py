@@ -113,7 +113,10 @@ def f_year(q):
 def f_author(q):
     results = set()
     if q.strip().isdigit():
-        q = reader.select_alias_name_by_author_cluster(int(q))
+        try:
+            q = reader.select_alias_name_by_author_cluster(int(q))
+        except IndexError:
+            q = "Unknown"
     if q in authorsindex:
         results = set(reader.select_articles_of_author(q))
     else:
