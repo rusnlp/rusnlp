@@ -33,7 +33,6 @@ with open(path.join('data', abbfile), 'r', encoding='utf-8') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter='\t')
     for row in csvreader:
         abb_values[row['abbreviation'].strip().lower()] = row['value'].strip().lower().split()
-print(abb_values)
 
 
 def extend_keywords_with_abbs(raw_keywords):
