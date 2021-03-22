@@ -7,7 +7,7 @@ import json
 import logging
 import socket
 import sys
-from os import path
+import os
 from flask import render_template, Blueprint, redirect
 from flask import request, Response
 from flask import g
@@ -29,7 +29,7 @@ url = config.get("Other", "url")
 
 # Reading abbreviation dictionary
 abb_values = {}
-with open(path.join('data', abbfile), 'r', encoding='utf-8') as csvfile:
+with open(os.path.join('data', abbfile), 'r', encoding='utf-8') as csvfile:
     csvreader = csv.DictReader(csvfile, delimiter='\t')
     for row in csvreader:
         abb_values[row['abbreviation'].strip().lower()] = row['value'].strip().lower().split()
@@ -41,7 +41,6 @@ def extend_keywords_with_abbs(raw_keywords):
         new_keywords.append(keyword)
         if keyword in abb_values:
             new_keywords.extend(abb_values[keyword])
-    # print('keywords', new_keywords)
     return new_keywords
 
 

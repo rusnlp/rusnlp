@@ -140,8 +140,8 @@ class ReaderDBase:
             Names of articles from the all year proceedings of the selected conference
             (or selected conference of a certain year)
         """
-        conf_name = conf_name.upper() if conf_name.upper() == "AIST" \
-                                                    or conf_name.upper() == "AINL" else "Dialogue"
+        conf_name = conf_name.upper() if conf_name.upper() == "AIST" or \
+                                         conf_name.upper() == "AINL" else "Dialogue"
         what = "DISTINCT catalogue.common_id"
         where = "catalogue JOIN conference ON catalogue.conference_id=conference.id"
         condition = "conference.name='{}'".format(conf_name)
@@ -190,8 +190,8 @@ class ReaderDBase:
 
     def get_dict_of_conference_description(self, confname):
         self._bd.cursor.execute(
-            'SELECT description_ru, description_en, url FROM conference WHERE conference.name="{}"'.
-                format(confname))
+            'SELECT description_ru, description_en, url FROM conference '
+            'WHERE conference.name="{}"'.format(confname))
         result = self._bd.cursor.fetchall()[0]
         return {"ru": result[0], "en": result[1], "url": result[2]}
 

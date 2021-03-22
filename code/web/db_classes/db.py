@@ -111,7 +111,8 @@ class DBaseRusNLP:
         self.cursor.execute("DROP TABLE {}".format(table))
         self.conn.commit()
 
-    def _select_query(self, what, where, condition=None):
+    @staticmethod
+    def _select_query(what, where, condition=None):
         """
         Get rows by query
 
