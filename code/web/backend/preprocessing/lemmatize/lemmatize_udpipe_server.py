@@ -1,14 +1,18 @@
-import sys
+#!/usr/bin/env python3
+# coding: utf-8
+
 import requests
 import json
+import argparse
+from smart_open import open
 
 
 def tag_ud(port, text='Do not forget to pass some text as a string!'):
     # UDPipe tagging for any language you have a model for.
-    # Demands UDPipe REST server (https://ufal.mff.cuni.cz/udpipe/users-manual#udpipe_server)
-    # running on a port defined in webvectors.cfg
+    # Requries UDPipe REST server (https://ufal.mff.cuni.cz/udpipe/users-manual#udpipe_server)
+    # running on a pre-defined port
     # Start the server with something like:
-    # udpipe_server --daemon 66666 MyModel MyModel /opt/my.model UD
+    # udpipe_server --daemon 46666 MyModel MyModel /opt/my.model UD
 
     # Sending user query to the server:
     ud_reply = requests.post('http://localhost:%s/process' % port,
@@ -19,14 +23,33 @@ def tag_ud(port, text='Do not forget to pass some text as a string!'):
     return processed
 
 
-file2process = sys.argv[1]
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    arg = parser.add_argument
+    arg(
+        "--file2process",
+        "-f",
+        help="Path to a text file to process",
+        type=str,
+        required=True,
+    )
+    arg(
+        "--port",
+        "-p",
+        help="UDPipe server port",
+        type=int,
+        default=46666,
+    )
+    args = parser.parse_args()
 
-data = open(file2process)
-text2process = data.read()
-data.close()
-tagged = tag_ud(66666, text2process)
+    file2process = args.file2process
 
-outfile = file2process.replace('.txt', '.conll')
-out = open(outfile, 'w')
-out.write(tagged)
-out.close()
+    data = open(file2process)
+    text2process = data.read()
+    data.close()
+    tagged = tag_ud(args.port, text2process)
+
+    outfile = file2process.replace('.txt', '.conllu')
+    out = open(outfile, 'w')
+    out.write(tagged)
+    out.close()
