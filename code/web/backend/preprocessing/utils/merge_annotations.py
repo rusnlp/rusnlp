@@ -35,7 +35,7 @@ def merge_annotations(current_file, updated_file, result_name="my_result.tsv"):
                 f"id: {i} "
             )
     merged_df = merged_df.sort_values(by=["index"])
-
+    merged_df = merged_df.drop_duplicates()
     if result_name:
         merged_df.to_csv(result_name, index=False, sep="\t", header=None)
 
