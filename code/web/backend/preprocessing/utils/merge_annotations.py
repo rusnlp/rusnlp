@@ -33,17 +33,28 @@ def merge_annotations(current_file, new_file, to_csv=False, result_name='my_resu
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     arg = parser.add_argument
-    arg("--current_file", "-c", help="Path to current affiliations or authors", required=True)
-    arg("--new_file", "-n", help="Path to annotated file", required=True)
-    arg("--to_csv", "-t", help="You can swith", required=False)
-    arg("--result_file", "-r", help="You can add result file name(path), result.tsv by default", required=False)
+    arg("--current_file", "-c", help="Path to current affiliations or authors",
+        type=str,
+        required=True)
+    arg("--new_file", "-n", help="Path to annotated file",
+        type=str,
+        required=True)
+    arg("--to_csv", "-t", help="You can just add this key with any argument to switch"
+                               "from false to true if you need csv-file result",
+        type=bool,
+        required=False)
+    arg("--result_file", "-r", help="You can add result file name(path), result.tsv by default",
+        type=str,
+        required=False)
 
     args = parser.parse_args()
     old_file = args.current_file
     new_file = args.new_file
     result_name = args.result_file
+    to_csv = args.to_csv
+
     if new_file and result_name:
-        merge_annotations(old_file, new_file, to_csv=new_file, result_name=result_name)
+        merge_annotations(old_file, new_file, to_csv=to_csv, result_name=result_name)
     elif new_file and not result_name:
         merge_annotations(old_file, new_file, to_csv=new_file)
     else:
