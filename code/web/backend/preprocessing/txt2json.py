@@ -6,7 +6,7 @@ from hashlib import sha1
 from langdetect import detect_langs
 from transliterate import translit
 from backend.preprocessing.helper import *
-from backend.preprocessing.utils.authors_handler import AuthorsHandler
+from backend.preprocessing.utils.metadata_handler import AuthorsHandler, AffiliationsHandler
 
 splitter = '%\n%\n'
 english_label_p = re.compile('==ENGLISH==\n%\n%\n')
@@ -208,6 +208,7 @@ if __name__ == '__main__':
         params = json.loads(config.read())
 
     authors_handler = AuthorsHandler(params["name2author"])
+    affiliations_handler = AffiliationsHandler(params["name2affiliation"], "utils/aff_classifier.pkl")
 
     title2hash = create_title2hash(params["hash_title_url"])
     hash2url = create_hash2url(params["hash_title_url"])
@@ -231,4 +232,5 @@ if __name__ == '__main__':
 
     with open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n') as w:
         for name, filename in missing_affiliations.items():
-            w.write(f"{filename}\t{str([name])}\n")
+            aff_id, aff_name = affiliations_handler.handle_affiliation(name)
+            w.write(f"{filename}\t{name}\t{str(aff_id)}\t{aff_name}\n")
