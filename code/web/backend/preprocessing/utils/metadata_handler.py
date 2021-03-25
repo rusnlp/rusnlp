@@ -118,4 +118,4 @@ class AffiliationsHandler(ParentHandler):
 #     handler = AffiliationsHandler()
 #     print(handler.handle_affiliation('Ломоносова '))
 #     print(handler.handle_affiliation('Московский лингвис'))
- #    print(handler.handle_affiliation('Moscow state'))
+#    print(handler.handle_affiliation('Moscow state'))

@@ -44,6 +44,24 @@
     <summary class="lead" style="cursor:pointer;">{{strings['topic14']}}</summary>
             <div class="form-group" id="advtab">
         <fieldset style="width:auto;text-align:center;">
+				{{strings['topicalstructure6']}}:
+				<select name="lang_query" multiple class="form-control" style="text-align:center;max-width:400px;margin-right:auto;margin-left:auto;">
+				 <option value="en"
+                    {% if lang_query  %}
+                    {% if 'English' in lang_query %}
+                     selected
+                    {% endif %}
+                    {% endif %}
+                        style="text-align:center;">{{strings['topicabout41']}}</option>
+				 <option value="ru"
+                    {% if lang_query  %}
+                    {% if 'Russian' in lang_query %}
+                     selected
+                    {% endif %}
+                    {% endif %}
+                        style="text-align:center;">{{strings['topicabout42']}}</option>
+				    </select>
+        	</fieldset>
                 {{strings['topicalstructure4']}}:
                  <select name="conf_query" multiple class="form-control" style="text-align:center;max-width:400px;margin-right:auto;margin-left:auto;">
         	    <option value="Dialogue"
