@@ -25,13 +25,10 @@ def create_hash2url(filename):
 def create_name2author(filename):
     name2author = {}
     with open(filename, 'r', encoding='utf-8') as f:
-        prev_cluster = None
         for line in f:
             id_, cluster, name = line.strip().split("\t")
-            if prev_cluster == cluster:
-                assert name not in name2author, name
-            else:
-                name2author[cluster] = (id_, cluster)
+            assert name not in name2author or name == cluster, name
+            name2author[cluster] = (id_, cluster)
             name2author[name] = (id_, cluster)
     return name2author
 
@@ -41,7 +38,8 @@ def create_name2affiliation(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
             id_, cluster, name = line.strip().split("\t")
-            assert name not in name2affiliation, '%s %s %s' % (id_, cluster, name)
             name = name.replace("\r\n", "").replace("\n", ' ').replace("  ", " ").replace(",  ", "")
+            assert name not in name2affiliation or name == cluster, '%s %s %s' % (id_, cluster, name)
             name2affiliation[name] = (id_, cluster)
+            name2affiliation[cluster] = (id_, cluster)
     return name2affiliation
