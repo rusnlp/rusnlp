@@ -8,7 +8,7 @@ config = configparser.RawConfigParser()
 config.read('rusnlp.cfg')
 url = config.get('Other', 'url')
 
-app_rusnlp = Flask(__name__, static_url_path='/C:/Users/79850/Desktop/rusnlp/code/web/data/')
+app_rusnlp = Flask(__name__, static_url_path='data/')
 swagger = Swagger(app_rusnlp)
 
 

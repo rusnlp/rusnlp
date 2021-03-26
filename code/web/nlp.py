@@ -95,41 +95,35 @@ def per_request_callbacks(response):
         "author": "",
         "affiliation": "",
         "keywords": "",
-        "language": "",
     },
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "conf/<conference>",
-    defaults={"year": "", "author": "", "affiliation": "", "keywords": "", "language": ""},
+    defaults={"year": "", "author": "", "affiliation": "", "keywords": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "year/<year>",
-    defaults={"conference": "", "author": "", "affiliation": "", "keywords": "", "language": ""},
+    defaults={"conference": "", "author": "", "affiliation": "", "keywords": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "author/<author>",
-    defaults={"conference": "", "year": "", "affiliation": "", "keywords": "", "language": ""},
+    defaults={"conference": "", "year": "", "affiliation": "", "keywords": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "affiliation/<affiliation>",
-    defaults={"conference": "", "year": "", "author": "", "keywords": "", "language": ""},
+    defaults={"conference": "", "year": "", "author": "", "keywords": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "kw/<keywords>",
-    defaults={"conference": "", "year": "", "author": "", "affiliation": "", "language": ""},
-    methods=["GET", "POST"],
-)
-@nlpsearch.route(
-    "/" + "<lang:lang>/" + "language/<language>",
     defaults={"conference": "", "year": "", "author": "", "affiliation": ""},
     methods=["GET", "POST"],
 )
-def homepage(lang, conference, year, author, affiliation, keywords, language):
+def homepage(lang, conference, year, author, affiliation, keywords):
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
@@ -145,7 +139,6 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
         or author
         or affiliation
         or keywords
-        or language
         or request.method == "POST"
     ):
         if request.method == "POST":
@@ -154,17 +147,10 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
             affiliation = request.form["affiliation_query"].strip()
             title = request.form["query"].strip()
             conference = request.form.getlist("conf_query")
-            language = request.form.getlist("lang_query")
             if conference:
                 query = {"field": "conference", "ids": conference}
                 message = [5, query, 10]
                 descriptions["conferences"] = json.loads(serverquery(message))[
-                    "neighbors"
-                ]
-            if language:
-                query = {"field": "language", "ids": language}
-                message = [5, query, 10]
-                descriptions["languages"] = json.loads(serverquery(message))[
                     "neighbors"
                 ]
             year_min = request.form["year_query_min"]
@@ -184,13 +170,6 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
                 descriptions["conferences"] = json.loads(serverquery(message))[
                     "neighbors"
                 ]
-            if language:
-                language = [language]
-                query = {"field": "language", "ids": language}
-                message = [5, query, 10]
-                descriptions["languages"] = json.loads(serverquery(message))[
-                    "neighbors"
-                ]
             year_min = year
             year_max = year
         year = (year_min, year_max)
@@ -207,8 +186,6 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
                 )
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
-        if len(language) == 0:
-            language = ["ru", "en"]
         query = {
             "f_author": author,
             "f_year": year,
@@ -216,12 +193,10 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
             "f_title": title,
             "f_affiliation": affiliation,
             "keywords": keywords,
-            "language": language,
         }
         if (
             query["f_author"] == ""
             and query["f_affiliation"] == ""
-            and query["language"] == ""
             and query["f_title"] == ""
             and len(query["f_conf"]) == 3
             and query["keywords"] == []
@@ -243,7 +218,6 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
                 "rusnlp.html",
                 conf_query=conference,
                 year_query=year,
-                lang_query=language,
                 author_query=author,
                 error="Поиск не дал результатов.",
                 search=True,
@@ -281,7 +255,6 @@ def homepage(lang, conference, year, author, affiliation, keywords, language):
             conf_query=conference,
             author_query=author,
             year_query=year,
-            lang_query=language,
             search=True,
             url=url,
             query=title,

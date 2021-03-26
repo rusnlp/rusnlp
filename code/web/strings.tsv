@@ -42,7 +42,6 @@ topicalstructure2	PyLDA-визуализации	PyLDA visualisations
 topicalstructure3	Глобальная структура	Global structure
 topicalstructure4	Конференции	Conferences
 topicalstructure5	Годы	Years
-topicalstructure6	Язык	Language
 topicabout1	О сервисе	About the service
 topicabout2	<strong>RusNLP</strong> - это поисковик по статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for papers presented in Russian NLP conferences:
 topicabout3	Диалог	Dialogue
@@ -84,5 +83,3 @@ topicabout37	Студенты магистратуры "<a href="https://www.hse
 topicabout38	Анна Сафарян	Anna Safaryan
 topicabout39	Петр Фильченков	Petr Filchenkov
 topicabout40	Weijia Yan	Weijia Yan
-topicabout41	Английский	English
-topicabout42	Русский	Russian
