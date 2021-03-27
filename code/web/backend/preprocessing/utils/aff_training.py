@@ -1,10 +1,10 @@
 import pandas as pd
-import numpy as np
 import pickle
 import argparse
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn import linear_model
+from sklearn.metrics import classification_report
 from sklearn.pipeline import Pipeline
+from sklearn import linear_model
 
 
 def parse_args():
@@ -19,11 +19,15 @@ def parse_args():
 
 def train_classifier(data_path, save_path):
     aff = pd.read_csv(data_path, sep='\t', index_col=0, names=['aff', 'variation'])
-    vect = CountVectorizer(analyzer='char', ngram_range=(1,4))
+    vect = CountVectorizer(analyzer='char', ngram_range=(1, 4))
     reg_model = linear_model.LogisticRegression(max_iter=5000)
     pipe = Pipeline([('vect', vect),  ('logreg', reg_model)])
     pipe.fit(aff.variation, aff.index)
+    cl_rep = classification_report(aff.index, pipe.predict(aff.variation), output_dict=True)
+    print("classification accuracy: {}\nmacro average f1-score: {}".format(cl_rep['accuracy'],
+                                                                           cl_rep['macro avg']['f1-score']))
     pickle.dump(pipe, open(save_path, 'wb'))
+    print('The model is saved in the following path: {}'.format(save_path))
 
 
 if __name__ == '__main__':
@@ -31,4 +35,3 @@ if __name__ == '__main__':
     train_classifier(args.data_path, args.save_path)
     # example of usage:
     # python aff_training.py --data_path=current_affiliations.tsv --save_path=aff_classifier.pkl
-    'C:/Users/79850/Desktop/'
