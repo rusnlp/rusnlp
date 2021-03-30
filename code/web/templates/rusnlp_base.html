@@ -6,32 +6,32 @@
   <head>
     {%- block head %}
     {%- block title %}
-    <title>{{strings['base3']}}</title>
+    <title>{{strings['base_search']}}</title>
     {%- endblock title %}
     {%- block metas %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
-    <meta name="description" content="{{strings['topic4']}}">
+    <meta name="description" content="{{strings['meta_descr']}}">
     <meta name="keywords" content="NLP, natural language processing, Russian, computational linguistics, search, поиск, компьютерная лингвистика, русский, обработка естественного языка" />
-    <link rel="shortcut icon" type="image/x-icon" href="https://nlp.rusvectores.org/static/favicon.ico"/>
-    <link rel="image_src" href="https://nlp.rusvectores.org/static/nlp.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="https://nlp.rusvectores.org/data/images/favicon.ico"/>
+    <link rel="image_src" href="https://nlp.rusvectores.org/data/images/nlp.png" />
     <link rel="canonical" href="https://nlp.rusvectores.org/" />
     <meta name="rights" content="Creative Commons Attribution-Share Alike 4.0 International" />
     <link rel="shortlink" href="https://nlp.rusvectores.org/" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="{{strings['base1']}}" />
+    <meta property="og:site_name" content="{{strings['base_name']}}" />
     <meta property="og:url" content="https://nlp.rusvectores.org/" />
     <meta property="og:title" content="{{ meta_title }}" />
-    <meta property="og:description" content="{{strings['topic4']}}" />
-    <meta property="og:image" content="https://nlp.rusvectores.org/static/nlp.png" />
+    <meta property="og:description" content="{{strings['meta_descr']}}" />
+    <meta property="og:image" content="https://nlp.rusvectores.org/data/images/nlp.png" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:url" content="https://nlp.rusvectores.org/" />
     <meta name="twitter:title" content="{{ meta_title }}" />
-    <meta name="twitter:description" content="{{strings['topic4']}}" />
-    <meta name="twitter:image" content="https://nlp.rusvectores.org/static/nlp.png" />
-    <meta property="vk:image" content="https://nlp.rusvectores.org/static/nlp.png" />
+    <meta name="twitter:description" content="{{strings['meta_descr']}}" />
+    <meta name="twitter:image" content="https://nlp.rusvectores.org/data/images/nlp.png" />
+    <meta property="vk:image" content="https://nlp.rusvectores.org/data/images/nlp.png" />
     <meta name="dcterms.title" content="{{ meta_title }}" />
-    <meta name="dcterms.description" content="{{strings['topic4']}}" />
+    <meta name="dcterms.description" content="{{strings['meta_descr']}}" />
     {%- endblock metas %}
 
     {%- block styles %}
@@ -39,6 +39,7 @@
      <link rel="stylesheet" href="{{ url }}data/css/bootstrap.css/">
      <link href="{{ url }}data/css/avatar.css/" rel="stylesheet" media="screen">
      <link rel="stylesheet" href="{{ url }}data/css/typeahead.css/">
+	 <link rel="stylesheet" href="{{ url }}data/css/styles.css/">
     {%- endblock styles %}
     {%- endblock head %}
   </head>
@@ -55,16 +56,16 @@
 	<span class="icon-bar"></span>
 	<span class="icon-bar"></span>
      </button>
-    <a class="navbar-brand" href="https://nlp.rusvectores.org/{{lang}}/">{{strings['base1']}}</a>
+    <a class="navbar-brand" href="https://nlp.rusvectores.org/{{lang}}/">{{strings['base_name']}}</a>
 </div>
 <div id="navbar" class="collapse navbar-collapse">
 <ul class="nav navbar-nav">
-        <li><a href="/{{lang}}/topical/">{{strings['topic2']}}</a></li>
-        <li><a href="/{{lang}}/about/">{{strings['topic3']}}</a></li>
+        <li><a href="/{{lang}}/topical/">{{strings['topic_topical']}}</a></li>
+        <li><a href="/{{lang}}/about/">{{strings['topic_about']}}</a></li>
      {% if lang=="en" %}
-	<li><a title="{{strings['base2']}}" href="{{request.script_root}}/{{ other_lang }}{{request.path[3:]}}">{{ languages }}</a></li>
+	<li><a title="{{strings['base_lang']}}" href="{{request.script_root}}/{{ other_lang }}{{request.path[3:]}}">{{ languages }}</a></li>
      {% else %}
-	<li><a title="{{strings['base2']}}" href="{{request.script_root}}/{{ other_lang }}{{request.path[3:]}}">{{ languages }}</a></li>
+	<li><a title="{{strings['base_lang']}}" href="{{request.script_root}}/{{ other_lang }}{{request.path[3:]}}">{{ languages }}</a></li>
      {% endif %}
     </ul>
 

@@ -1,0 +1,63 @@
+.tip-icon {
+   font-size: 16px;
+   color: green;
+   text-align: center;
+   line-height: 20px;
+   cursor: pointer;
+   position: relative;
+   display: inline-block;
+   width: 20px;
+   height: 20px;
+   position: relative;
+   border: 1.5px solid green;
+   border-radius: 50%;
+   margin-left: 5px;
+   padding-bottom: 20px;
+   vertical-align: middle;
+}
+
+.tip-icon:hover {
+   color: green;
+}
+
+.tip-icon i {
+   width: 250px;
+   display: none;
+   position: absolute;
+   left: -19px;
+   top: 27px;
+   font-size: 12px;
+   font-style:normal;
+   color: #fff;
+   text-align: left;
+   background-color: #1E2021;
+   opacity: 90%;
+   padding: 3px 5px;
+   z-index: 2;
+   border-radius: 3%;
+}
+
+.tip-icon:hover i {
+   display: block;
+}
+
+.tip-icon i::before {
+   display: inline-block;
+   width: 0;
+   height: 0;
+   content: '';
+   margin-left: 2px;
+   vertical-align: middle;
+   border-bottom: 6px solid #010101b3;
+   border-right: 6px solid transparent;
+   border-left: 6px solid transparent;
+   position: absolute;
+   top: -5px;
+   left: 20px;
+}
+
+
+summary{
+	display:list-item;
+	outline-style:none;
+}

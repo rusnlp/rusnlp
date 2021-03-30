@@ -29,9 +29,12 @@ included_columns = []
 for langname in langnames:
     language_dicts[langname] = {}
     included_columns.append(header.index(langname))
+n_cols = len(header)
 
 # read the tab-separated file, populate language_dicts:
-for row in acrobat:
-    for i in included_columns:  # range(1, len(row)):
+for i, row in enumerate(acrobat):
+    if len(row) != n_cols:
+        print('Invalid string № {}: {}'.format(i+2, row))
+    for coln in included_columns:  # range(1, len(row)):
         # Markup() is used to prevent autoescaping in templates
-        language_dicts[header[i]][row[0]] = Markup(row[i])
+        language_dicts[header[coln]][row[0]] = Markup(row[coln])

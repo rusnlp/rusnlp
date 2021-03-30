@@ -1,80 +1,102 @@
 {% extends "rusnlp_base.html" %}
 
 {%- block title %}
-     <title>RusNLP: {{strings['topic3']}}</title>
+     <title>RusNLP: {{strings['topic_about']}}</title>
  {%- endblock title %}
 
 
 {% block content %}
 <div>
-        <h1>{{strings['topicabout1']}}</h1>
-<img src="/static/nlp.png" class="pull-right img-rounded img-responsive" title="RusNLP" alt="RusNLP">
-<p>{{strings['topicabout2']}}</p>
+
+<img src="/data/images/nlp.png" class="pull-right img-responsive" title="RusNLP" alt="RusNLP" style="float:right;">
+
+<details>
+    <summary class="lead" style="cursor:pointer;">{{strings['about_content']}}</summary>
+  <ul>
+    <li><a href="#examp">{{strings['about_examp']}}</a>
+    <li><a href="#stats">{{strings['about_stats']}}</a>
+    <li><a href="#work">{{strings['about_work']}}</a>
+	<li><a href="#papers">{{strings['about_papers']}}</a>
+	<li><a href="#people">{{strings['about_people']}}</a>
+	<li><a href="#code">{{strings['about_code']}}</a>
+  </ul>
+</details>
+
+<p>{{strings['about_main_1']}}:</p>
 <ul>
-	<li><a href="http://www.dialog-21.ru">"{{strings['topicabout3']}}"</a></li>
-	<li><a href="https://aistconf.org/">{{strings['topicabout15']}}</a></li>
-	<li><a href="http://ainlconf.ru/">{{strings['topicabout16']}}</a></li>
+	<li><a href="http://www.dialog-21.ru"><p style="display:inline">{{strings['conf_1']}}</p></a></li>
+	<li><a href="https://aistconf.org/"><p style="display:inline">{{strings['conf_2']}}</p></a></li>
+	<li><a href="http://ainlconf.ru/"><p style="display:inline">{{strings['conf_3']}}</p></a></li>
 	</ul>
-<p>{{strings['topicabout41']}} {{strings['topicabout4']}} {{strings['topicabout26']}}:</p>
+<p>{{strings['about_main_2']}}</p>
+<p>{{strings[about_main_3]}}</p>
+
+
+<h2 id="examp">{{strings['about_examp']}}</h2>
+<p>  {{strings['about_examp_1']}}:</p>
 <ul>
-	<li><p>{{strings['topicabout27']}};</p></li>
-	<li><p>{{strings['topicabout28']}};</p></li>
-	<li><p>{{strings['topicabout29']}};</p></li>
+	<li><p style="display:inline">{{strings['about_examp_2']}};</p></li>
+	<li><p style="display:inline">{{strings['about_examp_3']}};</p></li>
+	<li><p style="display:inline">{{strings['about_examp_4']}}.</p></li>
 </ul>
-<p>{{strings['topicabout30']}}:</p>
+<p>{{strings['about_examp_5']}}:</p>
 <ul>
-	<li><p><i>{{strings['topicabout31']}}</i></p></li>
-	<li><p><i>{{strings['topicabout32']}}</i></p></li>
-	<li><p><i>{{strings['topicabout33']}}</i></p></li>
-	<li><p><i>{{strings['topicabout34']}}</i></p></li>
+	<li><p style="display:inline">{{strings['about_examp_6']}}</p></li>
+	<li><p style="display:inline">{{strings['about_examp_7']}}</p></li>
+	<li><p style="display:inline">{{strings['about_examp_8']}}</p></li>
+	<li><p style="display:inline">{{strings['about_examp_9']}}</p></li>
+	<li><p style="display:inline">{{strings['about_examp_10']}}</p></li>
 </ul>
 
 
-<h2>{{strings['topicabout24']}}</h2>
+<h2 id="stats">{{strings['about_stats']}}:</h2>
 <ul>
 {% for el in stats %}
     {% if el == 'Overall amount of papers'%}
-	<li>
-	{{ strings['topicabout20'] }}: {{ stats[el]}}
-	</li>
+	<li><p style="display:inline">
+	{{ strings['about_stats_1'] }}: {{ stats[el]}}
+	</p></li>
     {% elif el == 'Amount of unique authors' %}
-	<li>
-	{{ strings['topicabout19'] }}: {{ stats[el]}}
-	</li>
+	<li><p style="display:inline">
+	{{ strings['about_stats_4'] }}: {{ stats[el]}}
+	</p></li>
     {% elif el == 'Amount of unique affiliations'%}
-	<li>
-	{{ strings['topicabout17'] }}: {{ stats[el]}}
-	</li>
+	<li><p style="display:inline">
+	{{ strings['about_stats_7'] }}: {{ stats[el]}}
+	</p></li>
     {% endif %}
 {% endfor %}
 </ul>
-<p><strong><a href="/data/rus_nlp.db.gz/">{{strings['topicabout6']}}</a></strong></p>
+<p><strong><a href="/data/rus_nlp.db.gz/">{{strings['about_download']}}</a></strong></p>
 
-<h2>{{strings['topicabout7']}}</h2>
-<p>{{strings['topicabout5']}}</p>
+<h2 id="work">{{strings['about_work']}}</h2>
+<p>{{strings['about_work_1']}}</p>
+<p>{{strings['about_work_2']}}</p>
+
+<h2 id="papers">{{strings['about_papers']}}</h2>
+<p>{{strings['about_papers_1']}}</p>
 <ol>
-<li><p><i>Amir Bakarov, Andrey Kutuzov and Irina Nikishina</i>. <a href="http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf" target="_blank">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue-2018</p></li>
-<li><p><i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. <a href="/static/rusnlp-semantic-search.pdf">RusNLP: Semantic search engine for Russian NLP conference papers</a> // AIST-2018 (<a href="/static/rusnlp_slides.pdf">{{strings['topicabout35']}}</a>)</p></li>
-<li><p><i>Irina Nikishina and Andrey Kutuzov</i>. <a href="/static/aist_rusnlp_double_blind.pdf">Double-Blind Peer-Reviewing And Inclusiveness In Russian NLP Conferences</a> // AIST-2019 (<a href="/static/inclusiveness_slides.pdf">{{strings['topicabout35']}}</a>)</p></li>
-<li><p><i>Anna Safaryan, Petr Filchenkov, Weijia Yan, Andrey Kutuzov and Irina Nikishina</i>. <a href="/static/aist_rusnlp_cross.pdf">Semantic Recommendation System for Bilingual Corpus of Academic Papers</a> // AIST-2020 (<a href="/static/cross_slides.pdf">{{strings['topicabout35']}}</a>)</p></li>
-<li><p>...</p></li>
+	<li><p style="display:inline">Amir Bakarov, Andrey Kutuzov and Irina Nikishina. <a href="http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf" target="_blank">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue-2018</p></li>
+	<li><p style="display:inline">Irina Nikishina, Amir Bakarov and Andrey Kutuzov. <a href="/static/rusnlp-semantic-search.pdf">RusNLP: Semantic search engine for Russian NLP conference papers</a> // AIST-2018 (<a href="/static/rusnlp_slides.pdf">{{strings['about_slides']}}</a>)</p></li>
+	<li><p style="display:inline">Irina Nikishina and Andrey Kutuzov. <a href="/static/aist_rusnlp_double_blind.pdf">Double-Blind Peer-Reviewing And Inclusiveness In Russian NLP Conferences</a> // AIST-2019 (<a href="/static/inclusiveness_slides.pdf">{{strings['about_slides']}}</a>)</p></li>
+	<li><p style="display:inline">Anna Safaryan, Petr Filchenkov, Weijia Yan, Andrey Kutuzov and Irina Nikishina. <a href="/static/aist_rusnlp_cross.pdf">Semantic Recommendation System for Bilingual Corpus of Academic Papers</a> // AIST-2020 (<a href="/static/cross_slides.pdf">{{strings['about_slides']}}</a>)</p></li>
+	<li><p style="display:inline">...</p></li>
 </ol>
 
-<h2>{{strings['topicabout10']}}</h2>
-{{strings['topicabout11']}}
+<h2 id="people">{{strings['about_people']}}</h2>
+<p>{{strings['about_people_main']}}:</p>
 <ul>
-<li><p><a href="https://www.mn.uio.no/ifi/english/people/aca/andreku/" target="_blank">{{strings['topicabout13']}}</a></p></li>
-<li><p><a href="https://crei.skoltech.ru/cdise/people/irinanikishina" target="_blank">{{strings['topicabout14']}}</a></p></li>
+	<li><a href="https://www.mn.uio.no/ifi/english/people/aca/andreku/" target="_blank"><p style="display:inline">{{strings['about_people_main_2']}}</p></a></li>
+	<li><a href="https://crei.skoltech.ru/cdise/people/irinanikishina" target="_blank"><p style="display:inline">{{strings['about_people_main_3']}}</p></a></li>
+</ul>
+<p>{{strings['about_people_2019']}} {{strings['about_people_1']}}:</p>
+<ul>
+	<li><p style="display:inline">{{strings['about_people_2019_1']}}</p></li>
+	<li><p style="display:inline">{{strings['about_people_2019_2']}}</p></li>
+	<li><p style="display:inline">{{strings['about_people_2019_3']}}</p></li>
+	<li><p style="display:inline">{{strings['about_people_2019_4']}}</p></li>
 </ul>
 
-<h3>{{strings['topicabout37']}}</h3>
-{{strings['topicabout11']}}
-<ul>
-<li>{{strings['topicabout38']}}</li>
-<li>{{strings['topicabout39']}}</li>
-<li>{{strings['topicabout40']}}</li>
-</ul>
-
-<p><strong><a target="_blank" href="https://github.com/rusnlp/rusnlp/tree/master/code/web">{{strings['topicabout25']}}</a></strong></p>
+<h2 id="code"><a target="_blank" href="https://github.com/rusnlp/rusnlp/tree/master/code/web">{{strings['about_code']}}</a></h2>
 
 {% endblock %}

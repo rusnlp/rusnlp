@@ -26,6 +26,7 @@ year_dict = {
     'default_max': config.getint('Default years', 'year_max')
     }
 url = config.get("Other", "url")
+topn_papers = config.getint("Other", "topn_papers")
 
 # Reading abbreviation dictionary
 abb_values = {}
@@ -115,35 +116,37 @@ def per_request_callbacks(response):
         "author": "",
         "affiliation": "",
         "keywords": "",
+        "topn": topn_papers
     },
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "conf/<conference>",
-    defaults={"year": "", "author": "", "affiliation": "", "keywords": ""},
+    defaults={"year": "", "author": "", "affiliation": "", "keywords": "", "topn": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "year/<year>",
-    defaults={"conference": "", "author": "", "affiliation": "", "keywords": ""},
+    defaults={"conference": "", "author": "", "affiliation": "", "keywords": "", "topn": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "author/<author>",
-    defaults={"conference": "", "year": "", "affiliation": "", "keywords": ""},
+    defaults={"conference": "", "year": "", "affiliation": "", "keywords": "", "topn": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "affiliation/<affiliation>",
-    defaults={"conference": "", "year": "", "author": "", "keywords": ""},
+    defaults={"conference": "", "year": "", "author": "", "keywords": "", "topn": ""},
     methods=["GET", "POST"],
 )
 @nlpsearch.route(
     "/" + "<lang:lang>/" + "kw/<keywords>",
-    defaults={"conference": "", "year": "", "author": "", "affiliation": ""},
+    defaults={"conference": "", "year": "", "author": "", "affiliation": "", "topn": topn_papers},
     methods=["GET", "POST"],
 )
-def homepage(lang, conference, year, author, affiliation, keywords):
+def homepage(lang, conference, year, author, affiliation, keywords, topn):
+    # принимаются все значения, указанные в defaults в @nlpsearch.route
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
@@ -162,6 +165,12 @@ def homepage(lang, conference, year, author, affiliation, keywords):
         or request.method == "POST"
     ):
         if request.method == "POST":
+
+            try:
+                topn = int(request.form["topn"])
+            except ValueError:
+                pass
+
             keywords = request.form["keywords"].strip().lower().split()
             keywords = extend_keywords_with_abbs(keywords)
             author = request.form["author_query"].strip()
@@ -170,7 +179,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             conference = request.form.getlist("conf_query")
             if conference:
                 query = {"field": "conference", "ids": conference}
-                message = [5, query, 10]
+                message = [5, query, topn]
                 descriptions["conferences"] = json.loads(serverquery(message))[
                     "neighbors"
                 ]
@@ -188,7 +197,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             if conference:
                 conference = [conference]
                 query = {"field": "conference", "ids": conference}
-                message = [5, query, 10]
+                message = [5, query, topn]
                 descriptions["conferences"] = json.loads(serverquery(message))[
                     "neighbors"
                 ]
@@ -204,7 +213,8 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                     other_lang=other_lang,
                     languages=languages,
                     search=True,
-                    years=year_dict
+                    years=year_dict,
+                    topn=topn
                 )
         if len(conference) == 0:
             conference = ["Dialogue", "AIST", "AINL"]
@@ -231,9 +241,10 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                 other_lang=other_lang,
                 languages=languages,
                 search=True,
-                years=year_dict
+                years=year_dict,
+                topn=topn
             )
-        message = [2, query, 10]
+        message = [2, query, topn]
         results = json.loads(serverquery(message))
         if len(results["neighbors"]) == 0:
             return render_template(
@@ -249,14 +260,15 @@ def homepage(lang, conference, year, author, affiliation, keywords):
                 keywords=" ".join(keywords),
                 other_lang=other_lang,
                 languages=languages,
-                years=year_dict
+                years=year_dict,
+                topn=topn
             )
         author_ids = set()
         for res in results["neighbors"]:
             r_authors = res[2]
             author_ids |= set(r_authors)
         query = {"field": "author", "ids": list(author_ids)}
-        message = [3, query, 10]
+        message = [3, query, topn]
         author_map = json.loads(serverquery(message))["neighbors"]
         if author.strip().isdigit():
             author = author_map[author]
@@ -266,7 +278,7 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             r_affiliations = res[6]
             affiliation_ids |= set(r_affiliations)
         query = {"field": "affiliation", "ids": list(affiliation_ids)}
-        message = [3, query, 10]
+        message = [3, query, topn]
         aff_map = json.loads(serverquery(message))["neighbors"]
         if affiliation.strip().isdigit():
             affiliation = aff_map[affiliation]
@@ -288,7 +300,8 @@ def homepage(lang, conference, year, author, affiliation, keywords):
             author_map=author_map,
             other_lang=other_lang,
             languages=languages,
-            years=year_dict
+            years=year_dict,
+            topn=topn
         )
     return render_template(
         "rusnlp.html",
@@ -296,12 +309,14 @@ def homepage(lang, conference, year, author, affiliation, keywords):
         url=url,
         other_lang=other_lang,
         languages=languages,
-        years=year_dict
+        years=year_dict,
+        topn=topn
     )
 
 
-@nlpsearch.route("/" + "<lang:lang>/" + "publ/<fname>", methods=["GET", "POST"])
-def paper(lang, fname):
+@nlpsearch.route("/" + "<lang:lang>/" + "publ/<fname>",
+                 defaults={'topn': topn_papers}, methods=["GET", "POST"])
+def paper(lang, fname, topn):
     # pass all required variables to template
     # repeated within each @nlpsearch.route function
     g.lang = lang
@@ -320,7 +335,6 @@ def paper(lang, fname):
         )
 
     query = fname.strip()
-    topn = 10
     if request.method == "POST":
         try:
             topn = int(request.form["topn"])
@@ -349,7 +363,7 @@ def paper(lang, fname):
             r_authors = res[2]
             author_ids |= set(r_authors)
         query = {"field": "author", "ids": list(author_ids)}
-        message = [3, query, 10]
+        message = [3, query, topn]
         author_map = json.loads(serverquery(message))["neighbors"]
 
         affiliation_ids = set(metadata["affiliation"])
@@ -357,7 +371,7 @@ def paper(lang, fname):
             r_affiliations = res[6]
             affiliation_ids |= set(r_affiliations)
         query = {"field": "affiliation", "ids": list(affiliation_ids)}
-        message = [3, query, 10]
+        message = [3, query, topn]
         aff_map = json.loads(serverquery(message))["neighbors"]
 
         topics = results["topics"]
@@ -372,7 +386,7 @@ def paper(lang, fname):
             topn=topn,
             topics=topics,
             other_lang=other_lang,
-            languages=languages,
+            languages=languages
         )
 
 
