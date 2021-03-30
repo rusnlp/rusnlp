@@ -7,7 +7,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 5:
         raise Exception("Please specify paths: <data-txt> <db name> <metadata db path> <metadate jsonlines path>")
     basepath = sys.argv[1]
-    db = DBaseRusNLP(sys.argv[2], sys.argv[3])
+    db = DBaseRusNLP(sys.argv[2], os.path.join(sys.argv[3], "metadata.json"))
     for i in db.get_db_info():
         print(i[1], db.select_columns_name(i[1]))
 
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------
     db_writer = WriterDBase(db)
     if db.select_max('conference') == 0:
-        db_writer.add_conference_data()
+        db_writer.add_conference_data(sys.argv[3])
     if db.select_max('author') == 0:
         db_writer.add_author_data(os.path.join(basepath, "current_authors.tsv"))
     if db.select_max('affiliation') == 0:
