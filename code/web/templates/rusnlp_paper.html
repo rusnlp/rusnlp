@@ -29,12 +29,12 @@
 		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}" style="color:green;">{{ metadata['title'] }}</a>»</h2>
 		<p>
 		{% for author in metadata['author'] %}
-            <a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
+            <a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>;
             {% endfor %}
 		<br/>
 
 		{% for aff in metadata['affiliation'] %}
-		<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>;
 		{% endfor %}
 		
 		</p>
