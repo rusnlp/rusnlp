@@ -1,6 +1,5 @@
 {%- extends "rusnlp_base.html" %}
 
-
 {% if '/author/' in request.path %}
     <title>RusNLP: {{ author_query }}</title>
     {% set meta_title = ['RusNLP', author_query]|join(': ')  %}
@@ -11,8 +10,8 @@
     <title>RusNLP: {{ conf_query[0] }}</title>
     {% set meta_title = ['RusNLP', conf_query[0]]|join(': ')  %}
 {% else %}
-    <title>{{strings['topic4']}}</title>
-    {% set meta_title = strings['topic4']  %}
+    <title>{{strings['meta_descr']}}</title>
+    {% set meta_title = strings['meta_descr']  %}
 {% endif %}
 
 {%- block title -%}
@@ -25,26 +24,38 @@
 {%- endblock metas -%}
 
 {% block content %}
+
+	<div class="descript">
+	{% if not result %}
+		<img width=100 src="/data/images/nlp.png" class="pull-right img-responsive" title="RusNLP" alt="RusNLP" style="float:right;">
+		<h3>{{strings['main_decsr']}}</h3>
+	{% endif %}
+	</div>
+
     <div class="row" style="text-align:center;">
 	{% if search %}
         <div id="queryform">
             <form id="inputform" action="#" method=post>
-            
 
               <div class="form-group center-block" style="text-align:center">
-	      <h2 style="margin-top:15px;font-size:30px;"><strong>{{strings['topic6']}}</strong></h2>
+	      <h2 style="margin-top:15px;font-size:30px;"><strong>{{strings['search_words']}}:</strong>
+		  	<span class="tip-icon">?<i class="tip">{{strings['search_words_expl']}}</i></span>
+		  </h2>
+			
+		  
     {% if keywords %}
-       	   <input type="text" title="{{strings['topic1']}}" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
+	
+			<input type="text" title="{{strings['search_words_help']}}" class="tt-query" id="keywords" name="keywords" value="{{ keywords }}" maxlength=500>
         {% else %}
-               <input type="text" title="{{strings['topic1']}}" class="tt-query" id="keywords" name="keywords" placeholder="syntax Russian" maxlength=500>
+			<input type="text" title="{{strings['search_words_help']}}" class="tt-query" id="keywords" name="keywords" placeholder="{{strings['search_words_placeholder']}}" maxlength=500>
     {% endif %}
 	       </div>
     
     <details>
-    <summary class="lead" style="cursor:pointer;">{{strings['topic14']}}</summary>
+    <summary class="lead" style="cursor:pointer;"><strong>{{strings['search_more']}}</strong></summary>
             <div class="form-group" id="advtab">
         <fieldset style="width:auto;text-align:center;">
-                {{strings['topicalstructure4']}}:
+                <p>{{strings['search_conf']}}:</p>
                  <select name="conf_query" multiple class="form-control" style="text-align:center;max-width:400px;margin-right:auto;margin-left:auto;">
         	    <option value="Dialogue"
                     {% if conf_query  %}
@@ -52,26 +63,26 @@
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:center;">{{strings['topicabout3']}}</option>
+                        style="text-align:center;">{{strings["conf_1"]}}</option>
         	    <option value="AIST"
                            {% if conf_query  %}
                     {% if 'AIST' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:center;">{{strings['topicabout15']}}</option>
+                        style="text-align:center;">{{strings["conf_2"]}}</option>
                 <option value="AINL"
                                     {% if conf_query  %}
                     {% if 'AINL' in conf_query %}
                      selected
                     {% endif %}
                     {% endif %}
-                        style="text-align:center;">{{strings['topicabout16']}}</option>
+                        style="text-align:center;">{{strings["conf_3"]}}</option>
                  </select>
         	</fieldset>
 
        <p style="margin-top:10px;">
-       {{strings['topic8']}}
+       {{strings['search_years']}}:
         {% if year_query %}
         <input type="number" class="tt-tiny" id="year_query_min" name="year_query_min" value="{{ year_query[0] }}" min="{{ years['maxmin_min'] }}" max="{{ years['maxmin_max'] }}">
         <input type="number" class="tt-tiny" id="year_query_max" name="year_query_max" value="{{ year_query[1] }}" min="{{ years['maxmin_min'] }}" max="{{ years['maxmin_max'] }}">
@@ -82,116 +93,154 @@
     	</p>
 	<div id="authorform">
         <p style="margin-top:10px;width:auto;">
-        {{strings['topic11']}}:
+        {{strings['result_auth']}}:
         {% if author_query %}
-        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=100 style="font-size:15px;" >
+        <input type="text" title="{{strings['search_meta_help']}}" class="typeahead" id="author_query" name="author_query" value="{{ author_query }}" maxlength=100 style="font-size:15px;" >
         {% else %}
-        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="author_query" name="author_query" placeholder="{{strings['topic16']}}" maxlength=100 style="font-size:15px;">
+        <input type="text" title="{{strings['search_meta_help']}}" class="typeahead" id="author_query" name="author_query" placeholder="{{strings['search_auth_placeholder']}}" maxlength=100 style="font-size:15px;">
         {% endif %}
+		
+		<span class="tip-icon">?<i class="tip">{{strings['search_meta_help']}}</i>
+		</span>
+		
         </p>
         </div>
         
         <div id="affform">
         <p style="margin-top:10px;width:auto;">
-        {{strings['topicresult5']}}:
+        {{strings['result_affil']}}:
         {% if affiliation_query %}
-        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="affiliation_query" name="affiliation_query" value="{{ affiliation_query }}" maxlength=100 style="font-size:15px;" >
+        <input type="text" title="{{strings['search_meta_help']}}" class="typeahead" id="affiliation_query" name="affiliation_query" value="{{ affiliation_query }}" maxlength=100 style="font-size:15px;" >
         {% else %}
-        <input type="text" title="{{strings['topic15']}}" class="typeahead" id="affiliation_query" name="affiliation_query" placeholder="{{strings['topic18']}}" maxlength=100 style="font-size:15px;">
+        <input type="text" title="{{strings['search_meta_help']}}" class="typeahead" id="affiliation_query" name="affiliation_query" placeholder="{{strings['search_aff_placeholder']}}" maxlength=100 style="font-size:15px;">
         {% endif %}
+		
+		<span class="tip-icon">?<i class="tip">{{strings['search_meta_help']}}</i></span>
+		
         </p>
         </div>
 
     <p style="margin-top:10px;width:auto;">
-    {{strings['topicresult3']}}:
+    {{strings['result_title']}}:
+	
     {% if query %}
-       	   <input type="text" title="{{strings['topic17']}}" class="tt-left" id="query" name="query" value="{{ query }}" maxlength=500 size=80 style="font-size:15px;">
+       	   <input type="text" title="{{strings['search_title_help']}}" class="tt-left" id="query" name="query" value="{{ query }}" maxlength=500 size=80 style="font-size:15px;">
         {% else %}
-               <input type="text" title="{{strings['topic17']}}" class="tt-left" id="query" name="query" placeholder="*embedding*" maxlength=500 style="font-size:15px;">
+               <input type="text" title="{{strings['search_title_help']}}" class="tt-left" id="query" name="query" placeholder="{{strings['search_title_placeholder']}}" maxlength=500 style="font-size:15px;">
     {% endif %}
+	
+	<span class="tip-icon">?<i class="tip">{{strings['search_title_help']}}</i></span>
+	
     </p>
 
       </div>
       </details>
+	
+	<p style="margin-top:10px;width:auto;i">
+		{{strings['result_num']}}:
+         {% if topn  %}
+         	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" value="{{ topn }}">
+         {% else %}
+         	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" placeholder="{{strings['search_num_placeholder']}}">
+         {% endif %}
+	</p>
 
-      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;font-size: 40px;padding-top: 0px;margin-top:20px;">{{strings['topic13']}}</button>
+    <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;font-size: 40px;padding-top: 0px;margin-top:20px;">
+	{{strings['search_button']}}
+	</button>
+	  
             </form>
         </div>
     {% endif %}
 
-
     {% if error %}
         <h2> <strong>{{ error }}</strong></h2>
     {% endif %}
+	
 {% if result %}
      <hr/>
     {% if '/author/' in request.path %}
-    <h3>{{strings['topic9']}}: {{ author_query }}</h3>
-    {% elif '/affiliation/' in request.path %}
-    <h3>{{strings['topic19']}}: {{ affiliation_query }}</h3>
-    {% elif '/conf/' in request.path %}
-    <h3>{{strings['topic20']}}: {{ conf_query[0] }}</h3>
-    <p>
-    {% for par in descriptions['conferences'][lang].split('\n') %}
-	<i>{{ par }}</i><br/>
-    {% endfor %}
-    <a target="_blank" data-toggle="tooltip" data-placement="top" title="{{ conf_query[0] }}" href="{{ descriptions['conferences']['url'] }}" style="color: green;">{{ descriptions['conferences']['url'] }}</a>
-    </p>
-    {% else %}
-    <h3>{{strings['topicresult1']}}</h3>
+			<h3>{{strings['topic_author']}}: {{ author_query }}</h3>
+			{% elif '/affiliation/' in request.path %}
+			<h3>{{strings['topic_affil']}}: {{ affiliation_query }}</h3>
+			{% elif '/conf/' in request.path %}
+			<h3>{{strings['topic_conf']}}: {{ conf_query[0] }}</h3>
+			<p>
+			{% for par in descriptions['conferences'][lang].split('\n') %}
+				{{ par }}<br/>
+			{% endfor %}
+			<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{ conf_query[0] }}" href="{{ descriptions['conferences']['url'] }}" style="color: green;">{{ descriptions['conferences']['url'] }}</a>
+			</p>
+		{% else %}
+			<h2>{{strings['topic_result']}}:</h2>
+			<div style='display: flex; justify-content: center; align-items: flex-start;'>
+				<input type="checkbox" name="ru" checked value="ru" style='margin-right: 5px;'>
+				<label for="ru" style='margin-right: 20px;'>{{strings['ru_lang']}}</label>
+				<input type="checkbox" name="eng" checked value="eng" style='margin-right: 5px;'>
+				<label for="eng">{{strings['eng_lang']}}</label>
+			</div>
     {% endif %}
+	
     <div>
-        <h4>{{strings['topicresult2']}}</h4>
         <table class="sortable table table-hover">
         <tr style="border-bottom:1px solid black;">
-        <th style="text-align: left;">{{strings['topicresult3']}}</th>
-        <th style="text-align:center;">{{strings['topic11']}}</th>
-        <th style="text-align:center;">{{strings['topicresult5']}}</th>
-        <th  style="text-align:center;">{{strings['topicresult6']}}</th>
-        <th>{{strings['topicresult7']}}</th>
-        <th style="text-align:center;">{{strings['topicresult8']}}</th>
+        <th style="text-align:center;vertical-align:middle;">{{strings['result_title']}}</th>
+        <th style="text-align:center;vertical-align:middle;">{{strings['result_auth']}}</th>
+        <th style="text-align:center;vertical-align:middle;">{{strings['result_affil']}}</th>
+        <th style="text-align:center;vertical-align:middle;">{{strings['result_conf']}}</th>
+        <th style="text-align:center;vertical-align:middle;">{{strings['result_year']}}</th>
         {% if keywords %}
-        <th>{{strings['topicresult9']}}</th>
+			<th style="text-align:center;vertical-align:middle;">{{strings['result_sim']}}</th>
         {% endif %}
+        <th style="text-align:center;vertical-align:middle;">{{strings['result_tasks']}}</th>
         
         </tr>
 	{% for res in result if not "No results" in res and not 'is unknown' in res  %}
     	    <tr style="border-bottom:1px solid black;">
-    	    <td  style="text-align: left;"><a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}{{lang}}/publ/{{ res[0] }}">{{ res[1] }}</a>
-    	    (<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult10']}}" href="{{ res[5] }}" style="color: green;">URL</a>)</td>
+    	    <td  style="text-align: left;">
+				<a style="font-size:larger" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['title_click']}}" href="{{ url }}{{lang}}/publ/{{ res[0] }}">{{ res[1] }}</a>
+				<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['url_click']}}" href="{{ res[5] }}" style="color: green;"><img width="18" src="/data/images/url.png" title="{{strings['url_click']}}" alt="url"></a>
+				<img width="15" src="/data/images/annot.png" title="{{res[7]}}" alt="annotation">
+				
+			</td>
     	    <td style="text-align:center;">
-    	    {% for author in res[2] %}
-    	    <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
-    	    <br/>
-    	    {% endfor %}
+				{% for author in res[2] %}
+				<a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
+				<br/>
+				{% endfor %}
     	    </td>
     	    <td style="text-align:center;">
-    	    {% for affiliation in res[6] %}
-    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
-    		<br/>
-    	    {% endfor %}
-    	    
+				{% for affiliation in res[6] %}
+				<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
+				<br/>
+				{% endfor %}
     	    </td>
-    	    <td><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a></td>
-    	    <td><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a></td>
-                <td>
-                          {% if res[0] in topics %}
-                            {% for topic in topics[res[0]] %}
-                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult13']}}" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
-                             {% endfor %}
-                            {% else %}
-                            -
-                            {% endif%}
-                        </td>
-                {% if keywords %}
-    	    <td style="text-align:right;">{{ "{0:.3f}".format(res[-1]) }}
+    	    <td>
+				<a data-toggle="tooltip" data-placement="top" title="{{strings['conf_click']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a>
+			</td>
+    	    <td>
+				<a data-toggle="tooltip" data-placement="top" title="{{strings['year_click']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a>
+			</td>
+			{% if keywords %}
+    	    <td style="text-align:right;">
+				{{ "{0:.3f}".format(res[-1]) }}
+			</td>
     	    {% endif%}
+			<td>
+				<details>
+				<summary style="cursor:pointer;">{{strings['show_tasks']}}</summary>
+					{% if res[0] in topics %}
+						{% for topic in topics[res[0]] %}
+						<a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['task_click']}}" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
+						{% endfor %}
+					{% else %}
+					-
+					{% endif%}
+				</details>
+			</td>
     	    </tr>
         {% endfor %}
         </table>
     </div>
-{% else %}
-<img width=100 src="/static/nlp.png" class="pull-right img-rounded img-responsive" title="RusNLP" alt="RusNLP">
-<h3>{{strings['topicabout2'][:-1]}}</h3>
 {% endif %}
 {% endblock %}

@@ -1,85 +1,101 @@
 id	ru	en
-base1	RusNLP	RusNLP
-base2	Switch language	Сменить язык
-base3	RusNLP: поиск	RusNLP: search
-topic1	На английском! Пишите имена собственные, например, названия языков, с большой буквы.	In English! Proper names (language names, etc) must be capitalized.
-topic2	Тематическая структура	Topical structure
-topic3	О проекте	About
-topic4	RusNLP: поиск по научным статьям на российских конференциях в области natural language processing	RusNLP: searcn engine for papers in natural language processing, Russian conferences
+base_name	RusNLP	RusNLP
+base_lang	Switch language	Сменить язык
+base_search	RusNLP: поиск	RusNLP: search
+topic_topical	Тематическая структура	Topical structure
+topic_about	О проекте	About
+meta_descr	RusNLP: семантический поиск по научным статьям на российских конференциях в области natural language processing	RusNLP: semantic searcn engine for papers in natural language processing, Russian conferences
 topic5	Российские конференции, англоязычные статьи	Russian conferences, papers written in English
-topic6	Ключевые слова через пробел:	Space-separated keywords:
-topic7	Выберите одну или несколько конференций:	Select one or more conferences:
-topic8	Годы (от-до):	Years (since-till):
-topic9	Статьи автора	Papers by
-topic11	Автор	Paper author
-topic13	Искать	Search
-topic14	Показать дополнительные фильтры >>>	Show advanced filters >>>
-topic15	Латиницей! Также можно использовать метасимволы * и ?	In Latin script! You can also use metasymbols like * and ?
-topic16	Начните набирать фамилию...	Start typing a surname...
-topic17	Можно использовать метасимволы * и ?	You can use metasymbols like * and ?
-topic18	Начните набирать аффилиацию...	Start typing an affiliation name...
-topic19	Статьи с аффилиацией	Papers with the affiliation
-topic20	Статьи с конференции	Papers from the conference
-topic21	У нас краудсорсинг: помогите нам разметить качество двуязычного поиска!	We are crowdsourcing: help us evaluate our forthcoming bilingual search engine!
-topicresult1	Вот что мы нашли для вас	What we found for you
-topicresult2	Кликните по заголовку статьи для поиска похожих публикаций	Click on the paper title to search for similar publications
-topicresult3	Заголовок	Paper title
-topicresult4	Похожие публикации	Similar publications
-topicresult5	Аффилиация	Affiliation
-topicresult6	Конференция	Conference
-topicresult7	Год	Year
-topicresult8	Задачи	Tasks
-topicresult9	Близость к запросу	Similarity
-topicresult10	Кликните, чтобы перейти к оригиналу публикации	Click for the publication source
-topicresult11	Кликните, чтобы увидеть все публикации этого автора	Click to search for all papers by this author
-topicresult12	Кликните, чтобы увидеть все публикации на этой конференции	Click to search for all papers in this conference
-topicresult13	Кликните чтобы узнать больше об этой задаче	Click to learn more about this task
-topicresult14	Кликните, чтобы увидеть все публикации за этот год	Click to search for all papers published this year
-topicresult15	Число результатов	Number of results
-topicresult16	Кликните, чтобы увидеть все публикации с этой аффилиацией	Click to search for all papers with this affiliation
+main_decsr	<strong>RusNLP</strong> — это семантический мультиязычный поиск по статьям, опубликованным на российских конференциях по компьютерной лингвистике. Ищите статьи по смыслу сразу на двух языках!	<strong>RusNLP</strong> is a semantic search engine for papers presented in Russian NLP conferences. Search for relevant papers in two languages!
+conf_1	Диалог	Dialogue
+conf_2	AIST	AIST
+conf_3	AINL	AINL
+search_words	Слова запроса через пробел	Space-separated query words
+search_words_placeholder	syntax Russian	syntax Russian
+search_conf	Конференции	Conferences
+search_years	Годы (от-до)	Years (since-till)
+search_button	Искать	Search
+search_words_expl	Самое главное: это не полнотекстовый поиск по словам. Здесь в основе лежит принцип дистрибутивной семантики: составив вектор запроса на основе слов в нём, мы используем косинусное расстояние, чтобы подобрать ближайшие тексты в двуязычном векторном пространстве — так ищутся статьи, близкие по смыслу, вне зависимости от языка и наличия конкретных слов. Если вы хотите найти статьи, содержащие конкретные слова в заголовке, воспользуйтесь поиском по метаданным ниже.	One main thing: this is not a full-text word search. It is based on the principle of distributional semantics: having a query vector compiled from the query words, we use cosine distance to find the nearest texts in a bilingual vector space — this is how we search for papers that are close seamantically, regardless of the language and the presence of specific words. If you want to find papers that contain specific words in the title, use the metadata search below.
+search_words_help	Пишите имена собственные, например, названия языков, с большой буквы	Proper names (language names, etc) must be capitalized
+search_more	Показать дополнительные фильтры	Show advanced filters
+search_meta_help	Латиницей! Можно использовать метасимволы * (для соответствия 0 или более символов) и ? (для соответствия 1 символа)	In Latin script! You can use metasymbols * (to match 0 or more characters) and ? (to match 1 character)
+search_title_help	Используйте метасимволы * (для соответствия 0 или более символов) и ? (для соответствия 1 символа) для поиска заголовков, содержащих конкретные слова	You can use metasymbols * (to match 0 or more characters) and ? (to match 1 character) to find titles with specific words
+search_auth_placeholder	Начните набирать фамилию...	Start typing a surname...
+search_aff_placeholder	Начните набирать аффилиацию...	Start typing an affiliation name...
+search_title_placeholder	*embedding*	*embedding*
+search_num_placeholder	10	10
+topic_author	Статьи автора	Papers by
+topic_affil	Статьи с аффилиацией	Papers with the affiliation
+topic_conf	Статьи с конференции	Papers from the conference
+ask_croud	У нас краудсорсинг: помогите нам разметить качество двуязычного поиска!	We are crowdsourcing: help us evaluate our forthcoming bilingual search engine!
+topic_result	Вот что мы нашли для вас	What we found for you
+topic_similar	Похожие публикации	Similar publications
+result_title	Заголовок	Paper title
+result_auth	Автор	Paper author
+result_affil	Аффилиация	Affiliation
+result_conf	Конференция	Conference
+result_year	Год	Year
+result_tasks	Задачи	Tasks
+result_sim	Близость к&nbsp;запросу	Similarity
+result_num	Число результатов	Number of results
+title_click	Кликните по заголовку статьи для поиска похожих публикаций	Click on the paper title to search for similar publications
+url_click	Кликните, чтобы перейти к оригиналу публикации	Click for the publication source
+auth_click	Кликните, чтобы увидеть все публикации этого автора	Click to search for all papers by this author
+affil_click	Кликните, чтобы увидеть все публикации с этой аффилиацией	Click to search for all papers with this affiliation
+conf_click	Кликните, чтобы увидеть все публикации на этой конференции	Click to search for all papers in this conference
+year_click	Кликните, чтобы увидеть все публикации за этот год	Click to search for all papers published this year
+task_click	Кликните чтобы узнать больше об этой задаче	Click to learn more about this task
+show_tasks	Показать задачи (в разработке!)	Show tasks (experimental!)
 topicalstructure1	Тематическая структура публикаций на российских NLP-конференциях в 2001-2017	Topical structure of publications in Russian NLP conferences (2001-2017)
 topicalstructure2	PyLDA-визуализации	PyLDA visualisations
 topicalstructure3	Глобальная структура	Global structure
 topicalstructure4	Конференции	Conferences
 topicalstructure5	Годы	Years
-topicabout1	О сервисе	About the service
-topicabout2	<strong>RusNLP</strong> - это поисковик по статьям, опубликованным на российских конференциях по компьютерной лингвистике:	<strong>RusNLP</strong> is a search engine for papers presented in Russian NLP conferences:
-topicabout3	Диалог	Dialogue
-topicabout41	Мы обкачали все публикации на этих конференциях, начиная с 2001 года, и тщательно разметили статьи по авторам и их аффилиациям.	We crawled all papers from these venues, starting from 2001, and rigorously extracted author names and affiliations.
-topicabout4	Наш поисковик позволяет искать публикации по вашим запросам и отображает списки статей на схожую тему. Результаты поиска можно фильтровать по любому сочетанию авторов, аффилиаций, годов и конференций.	You can search papers by your query and immediately see lists of papers relevant to the target one. Search results can be filtered by any combination of author names, their affiliations, years and conference venues.
-topicabout5	RusNLP - часть большого проекта <strong>"Анализ публикационной активности в российской компьютерной лингвистике"</strong>.	It is a part of a larger project called <strong>"Analysis of publication activity in Russian comutational linguistics"</strong>.
-topicabout6	Скачать весь датасет в виде базы данных Sqlite	Download the dataset as Sqlite database
-topicabout7	Публикации по проекту	Publications about the project
-topicabout8	"<i>Amir Bakarov, Andrey Kutuzov and Irina Nikishina</i>. <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"	"<i>Amir Bakarov, Andrey Kutuzov and Irina Nikishina</i>. <a href=""http://www.dialog-21.ru/media/4249/bakarov_kutuzov.pdf"" target=""_blank"">Russian computational linguistics: topical structure in 2007-2017 conference papers</a> // Dialogue 2018"
-topicabout9	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // AIST-2018"	"<i>Irina Nikishina, Amir Bakarov and Andrey Kutuzov</i>. RusNLP: Semantic search engine for Russian NLP conference papers // AIST-2018"
-topicabout36	"<i>Irina Nikishina and Andrey Kutuzov</i>. Double-Blind Peer-Reviewing And Inclusiveness In Russian NLP Conferences // AIST-2019"	"<i>Irina Nikishina and Andrey Kutuzov</i>. Double-Blind Peer-Reviewing And Inclusiveness In Russian NLP Conferences» // AIST-2019"
-topicabout10	Основная команда проекта	Project core team
-topicabout11	В алфавитном порядке:	In alphabetic order:
-topicabout12	Амир Бакаров (Huawei)	Amir Bakarov (Huawei)
-topicabout13	Андрей Кутузов (Университет Осло)	Andrey Kutuzov(University of Oslo)
-topicabout14	Ирина Никишина (Сколтех)	Irina Nikishina (Skoltech)
-topicabout15	AIST	AIST
-topicabout16	AINL	AINL
-topicabout17	Уникальных аффилиаций	Unique affiliations
-topicabout18	Авторов статей на английском	Authors of papers in English
-topicabout19	Уникальных авторов	Unique authors
-topicabout20	Всего статей	Total papers
-topicabout21	Статей на русском	Papers in Russian
-topicabout22	Статей на английском	Papers in English
-topicabout23	Уникальных аффилиаций в англоязычных статьях	Affiliations in papers in English
-topicabout24	Текущая статистика датасета	Current dataset stats
-topicabout25	Исходный код веб-сервиса	Web service source code
-topicabout26	Вы можете использовать его наподобие <a href="https://scholar.google.com">Google Scholar</a> или <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>	You can use it in the same way as <a href="https://scholar.google.com">Google Scholar</a> or <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>
-topicabout27	Искать публикации, о которых вы не знали	Discover academic knowledge you were not aware of
-topicabout28	находить пробелы в русском NLP, требующие дальнейшего изучения	identify "gaps" in Russian NLP, where we still lack knowledge
-topicabout29	анализировать исследовательские сообщества и публикационные тренды	analyze academic communities and publishing patterns
-topicabout30	Вопросы, на которые может ответить <strong>RusNLP</strong>	Questions that <strong>RusNLP</strong> can answer
-topicabout31	Какие есть публикации в российском NLP, похожие на уже известную мне статью?	I know this paper, what other similar papers are there in Russian NLP?
-topicabout32	Что публиковали в 2008 году компьютерные лингвисты из МГУ?	What was published in 2008 by NLP scholars from Moscow State University?
-topicabout33	Представляли ли в 2015 году на конференции AINL какие-либо исследования, связанные с перифразированием?	Were there any papers about paraphrases detection at the AINL conference in 2015?
-topicabout34	и так далее...	etc...
-topicabout35	Слайды	Slides
-topicabout37	Студенты магистратуры "<a href="https://www.hse.ru/ma/ling/">Компьютерная лингвистика</a>" Высшей Школы Экономики, Москва	Students of the <a href="https://www.hse.ru/ma/ling/">Computational Linguistics masters program</a> at the Higher School of Economics, Moscow
-topicabout38	Анна Сафарян	Anna Safaryan
-topicabout39	Петр Фильченков	Petr Filchenkov
-topicabout40	Weijia Yan	Weijia Yan
+topicalstructure6	Язык	Language
+about_content	Содержание	Content
+about_main_1	<strong>RusNLP</strong> — это двуязычный семантический поисковик по статьям, опубликованным на российских конференциях по компьютерной лингвистике	<strong>RusNLP</strong> is a bilingual semantic search engine for papers presented in Russian NLP conferences
+about_main_2	Мы собрали все публикации на этих конференциях, начиная с 2001 года, и тщательно разметили статьи по авторам и их аффилиациям. Наш поисковик может искать публикации по запросам и показывает статьи на схожую тему, вне зависимости от того, на русском или английском они были написаны. Это позволяет не затеряться как большому массиву статей за всю историю Диалога, который долгое время оставался преимущественно русскоязычной конференцией, так и некоторым статьям с раннего АИСТа, принимавшего публикации на русском до 2014 года.	We crawled all papers from these venues, starting from 2001, and rigorously extracted author names and affiliations. You can search papers by your query and get lists of papers relevant to the target one or to the query words, regardless of the publication language. This allows a large number of papers from the entire history of the Dialogue, which had been remaining mainly a Russian-spoken conference for a long time, and some papers from the early AIST, which accepted publications in Russian until 2014, be included into the search.
+about_main_3	Результаты поиска можно фильтровать по любому сочетанию слов в заголовках, авторов, аффилиаций, годов и конференций и отображать статьи, написанные на одном или сразу двух языках.	Search results can be filtered by any combination of words in titles, authors, treir affiliations, years, and conference venues. You can also choose whether you want to see papers in only one language or both.
+about_examp	Примеры использования	Usage examples
+about_examp_1	Вы можете использовать его так же, как <a href="https://scholar.google.com">Google Scholar</a> или <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a>, чтобы	You can use it in the same way as <a href="https://scholar.google.com">Google Scholar</a> or <a href="http://arxiv-sanity.com">ArXiv Sanity Preserver</a> to
+about_examp_2	искать публикации, о которых вы не знали	discover academic knowledge you were not aware of
+about_examp_3	находить пробелы в русском NLP, требующие дальнейшего изучения	identify "gaps" in Russian NLP, where we still lack knowledge
+about_examp_4	анализировать исследовательские сообщества и публикационные тренды	analyze academic communities and publishing patterns
+about_examp_5	Вопросы, на которые может ответить <strong>RusNLP</strong>	Questions that <strong>RusNLP</strong> can answer
+about_examp_6	Что из статей российского NLP-сообщества можно почитать о синтаксическом парсинге?	What papers of the Russian NLP community members can you read about syntactic parsing?
+about_examp_7	Какие есть публикации в российском NLP, похожие на уже известную мне статью?	I know this paper, what other similar papers are there in Russian NLP?
+about_examp_8	Что публиковали в 2008 году компьютерные лингвисты из МГУ?	What was published in 2008 by NLP scholars from Moscow State University?
+about_examp_9	Представляли ли в 2015 году на конференции AINL какие-либо исследования, связанные с перифразированием?	Were there any papers about paraphrases detection at the AINL conference in 2015?
+about_examp_10	Чему были посвящены русскоязычные публикации в 2019 году?	What were the Russian publications devoted to in 2019?
+about_examp_11	и т.д.	etc.
+about_stats	Текущая статистика датасета	Current dataset stats
+about_stats_1	Всего статей	Total papers
+about_stats_2	Статей на английском	Papers in English
+about_stats_3	Статей на русском	Papers in Russian
+about_stats_4	Уникальных авторов	Unique authors
+about_stats_5	Авторов статей на английском	Authors of papers in English
+about_stats_6	Авторов статей на английском	Authors of papers in Russian
+about_stats_7	Уникальных аффилиаций	Unique affiliations
+about_stats_8	Уникальных аффилиаций в англоязычных статьях	Affiliations in papers in English
+about_stats_9	Уникальных аффилиаций в русскоязычных статьях	Affiliations in papers in Russian
+about_download	Скачать весь датасет в виде базы данных Sqlite	Download the dataset as Sqlite database
+about_work	Подробнее о принципе работы поиска	More details about how the search works
+about_work_1	В основе поиска лежит дистрибутивная семантика — концепция, предполагающая, что слова с общим значениям встречаются в общих контекстах. Сначала мы усреднили вектора всех словоформ в тексте, чтобы получить вектора статей. Так как мы использовали для этого специальные эмбеддинги, в которых русские и английские словоформы находятся в одном векторном пространстве*, получилось, что каждая статья в числе ближайших соседей — наиболее похожих по смыслу статей — может иметь текст, написанный на другом языке. Значение косинусной близости между вектором слов или статьи запроса и вектором каждой найденной статьи можно увидеть в столбце <i>Близость к запросу</i>. Кроме того, мы составили список из 24 основных задач в NLP и прописали для каждой из них ключевые слова, указывающие на принадлежность статьи к этой задаче. Предположительные задачи к каждой статье также подбираются при помощи косинусной близости — они отображаются в столбце <i>Задачи</i> в таблице результатов поиска.	Our search engine is based on distributive semantics — a concept that assumes that words with common meanings occur in common contexts. First, we averaged the vectors of all word forms in the text to get the paper vectors. Since we used special embeddings, in which Russian and English word forms are located in the same vector space*, it turned out that for each paper texts written in a different language can occur among the nearest neighbors — papers with the most similar meaning. Ypu can see the value of the cosine similarity between the query word/paper vector and the vector of each paper found in the <i>Similarity</i> column. In addition, we compiled a list of 24 main NLP tasks with keywords indicating that the paper belongs to this task. The <i>Tasks</i> column in the search results table displays the estimated tasks for each paper, which are also selected using cosine similarity.
+about_work_2	*В качестве кросс-языковых эмбеддингов мы использовали <a href="https://github.com/facebookresearch/MUSE">MUSE</a> — предобученные на Википедии fastText-модели от Facebook.	*As the cross-lingual embeddings we used <a href="https://github.com/facebookresearch/MUSE">MUSE</a> — fastText models pre-trained on Wikipedia by the Facebook.
+about_papers	Публикации по проекту	Publications about the project
+about_papers_1	<strong>RusNLP</strong> — часть большого проекта <strong><i>Анализ публикационной активности в российской компьютерной лингвистике</i></strong>.	<strong>RusNLP</strong> is a part of a larger project called <strong><i>Analysis of publication activity in Russian comutational linguistics</i></strong>.
+about_slides	Слайды	Slides
+about_people	Команда проекта	Project team
+about_people_main	Основная команда (в алфавитном порядке)	Core team (in alphabetic order)
+about_people_main_1	Амир Бакаров (Huawei)	Amir Bakarov (Huawei)
+about_people_main_2	Андрей Кутузов (Университет Осло)	Andrey Kutuzov(University of Oslo)
+about_people_main_3	Ирина Никишина (Сколтех)	Irina Nikishina (Skoltech)
+about_people_1	В алфавитном порядке	In alphabetic order
+about_people_2019	Переход на мультиязычный поиск был осуществлён студентами магистратуры <i><a href="https://www.hse.ru/ma/ling/">Компьютерная лингвистика</a></i> Высшей Школы Экономики, Москва в рамках студенческого проекта 2019-2021 гг.	The multilingual search was implemented by students of the <a href="https://www.hse.ru/ma/ling/">Computational Linguistics</a> masters program at the Higher School of Economics, Moscow during the student project of 2019-2021 years.
+about_people_2019_1	Анна Сафарян	Anna Safaryan
+about_people_2019_2	Дмитрий Куцев	Dmitry Kutsev
+about_people_2019_3	Петр Фильченков	Petr Filchenkov
+about_people_2019_4	Weijia Yan	Weijia Yan
+about_code	Исходный код веб-сервиса	Web service source code
+ru_lang	Русский	Russian
+eng_lang	Английский	English

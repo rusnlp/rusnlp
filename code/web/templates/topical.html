@@ -1,9 +1,9 @@
 {% extends "rusnlp_base.html" %}
-{% set meta_title = ['RusNLP', strings['topic2']]|join(': ')  %}
+{% set meta_title = ['RusNLP', strings['topic_topical']]|join(': ')  %}
 
 
 {%- block title %}
-     <title>RusNLP: {{strings['topic2']}}</title>
+     <title>RusNLP: {{strings['topic_topical']}}</title>
  {%- endblock title %}
 
 {%- block metas -%}
@@ -16,11 +16,11 @@
 <h3>{{strings['topicalstructure2']}}</h3>
 <ul>
     <li><strong><a href="https://rusvectores.org/static/rusnlp/global.html">{{strings['topicalstructure3']}}</a></strong></li>
-    <li><strong>{{strings['topicalstructure4']}}</strong>
+    <li><strong>{{strings['search_conf']}}</strong>
     <ol>
-        <li><a href="https://rusvectores.org/static/rusnlp/conferences/dialog.html">{{strings['topicabout3']}}</a></li>
-        <li><a href="https://rusvectores.org/static/rusnlp/conferences/ainl.html">{{strings['topicabout16']}}</a></li>
-        <li><a href="https://rusvectores.org/static/rusnlp/conferences/aist.html">{{strings['topicabout15']}}</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/conferences/dialog.html">{{strings['conf_1']}}</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/conferences/ainl.html">{{strings['conf_2']}}</a></li>
+        <li><a href="https://rusvectores.org/static/rusnlp/conferences/aist.html">{{strings['conf_3']}}</a></li>
     </ol>
     </li>
     <li><strong>{{strings['topicalstructure5']}}</strong>

@@ -1,10 +1,10 @@
 {%- extends "rusnlp_base.html" %}
 
-{% set meta_title = [strings['topicresult4'], metadata['title']]|join(': ')  %}
+{% set meta_title = [strings['topic_similar'], metadata['title']]|join(': ')  %}
 
 {%- block title %}
 	{% if not error %}
-	    <title>{{strings['topicresult4']}}: {{metadata['title']}} </title>
+	    <title>{{strings['topic_similar']}}: {{metadata['title']}} </title>
 	{% endif %}
 
 {%- endblock title %}
@@ -16,7 +16,7 @@
 {% block content %}
 	<div class="row" style="text-align: center;">
 		{% if not result %}
-		<h1>{{strings['topic4']}}</h1>
+		<h1>{{strings['meta_descr']}}</h1>
 		<p class="lead">{{strings['topic5']}}</p>
 		{% endif %}
 	</div>
@@ -27,33 +27,42 @@
 	
 	{% if result %}
 		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}" style="color:green;">{{ metadata['title'] }}</a>»</h2>
-		<p><i>
+		<p>
 		{% for author in metadata['author'] %}
-            <a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>;
-            {% endfor %}</i>
+            <a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
+            {% endfor %}
 		<br/>
-		<i>
+
 		{% for aff in metadata['affiliation'] %}
-		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>;
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>
 		{% endfor %}
 		
-		</i>
-		
 		</p>
-		<p><i><a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
-		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ metadata['year'] }}">{{metadata['year']}}</a>;</i></p>
-      <h3>{{strings['topicresult4']}}:</h3>
+		<p><a data-toggle="tooltip" data-placement="top" title="{{strings['conf_click']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ metadata['conference'] }}">{{metadata['conference']}}</a>,
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['year_click']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ metadata['year'] }}">{{metadata['year']}}</a></p>
+	  
         <div id="queryform">
    	<form id="inputform" action="#" method=post>
-      	<div class="form-group">
-                  <i>{{strings['topicresult15']}}:</i>
+      	
+		<div class="form-group">
+         {{strings['result_num']}}:
          {% if topn  %}
          	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" value="{{ topn }}">
          {% else %}
-         	<input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" placeholder="10">
+            <input type="number" class="tt-tiny" step="1" id="topn" name="topn" min="1" max="100" placeholder="{{strings['search_num_placeholder']}}">
          {% endif %}
-         <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;">{{strings['topic13']}}</button>
+         
+		 <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit" style="background-color: green;">{{strings['search_button']}}</button>
       	</div>
+		
+		<h3>{{strings['topic_similar']}}:</h3>
+		
+		<div style='display: flex; justify-content: center; align-items: flex-start;'>
+			<input type="checkbox" name="ru" checked value="ru" style='margin-right: 5px;'>
+			<label for="ru" style='margin-right: 20px;'>{{strings['ru_lang']}}</label>
+			<input type="checkbox" name="eng" checked value="eng" style='margin-right: 5px;'>
+			<label for="eng">{{strings['eng_lang']}}</label>
+		</div>
       	
       	
    	</form>
@@ -63,25 +72,26 @@
                                 <div style="max-width: 100%; overflow-y: auto;">
 				<table class="sortable table table-hover">
 					<tr style="border-bottom:1px solid black;">
-						<th style="text-align:center;">{{strings['topicresult3']}}</th>
-						<th style="text-align:center;">{{strings['topic11']}}</th>
-						<th style="text-align:center;">{{strings['topicresult5']}}</th>
-						<th>{{strings['topicresult6']}}</th>
-						<th>{{strings['topicresult7']}}</th>
-						<th style="text-align:center;">{{strings['topicresult8']}}</th>
-						<th>{{strings['topicresult9']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_title']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_auth']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_affil']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_conf']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_year']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_sim']}}</th>
+						<th style="text-align:center;vertical-align:middle;">{{strings['result_tasks']}}</th>
 					</tr>
 				{% for res in result if not "No results" in res and not 'is unknown' in res  %}
 					<tr style="border-bottom:1px solid black;">
-						<td>
-							<a style="font-size:larger;" data-toggle="tooltip" data-placement="top" title="{{ res[7] }}" href="{{ url }}{{lang}}/publ/{{ res[0] }}">
+						<td style="text-align: left;">
+							<a style="font-size:larger;text-align:left;" data-toggle="tooltip" data-placement="top" title="{{strings['title_click']}}" href="{{ url }}{{lang}}/publ/{{ res[0] }}">
 								{{ res[1] }}
 							</a> 
-							(<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult10']}}" href="{{ res[5] }}" style="color:green;">URL</a>)
+							<a target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['url_click']}}" href="{{ res[5] }}" style="color: green;"><img width="18" src="/data/images/url.png" title="{{strings['url_click']}}" alt="url"></a>
+							<img width="15" src="/data/images/annot.png" title="{{res[7]}}" alt="annotation">
 						</td> 
 						<td>
 						{% for author in res[2] %}
-        					<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult11']}}" target="_blank"
+        					<a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank"
         					href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
         					<br/>
 				                {% endfor %}
@@ -89,36 +99,36 @@
 						</td>
 						<td>
 					            {% for affiliation in res[6] %}
-					    		<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult16']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
+					    		<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ affiliation }}">{{ aff_map[affiliation|string] }}</a>
 					                <br/>
 						    {% endfor %}
 						</td>
 						<td>
-							<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult12']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a>
+							<a data-toggle="tooltip" data-placement="top" title="{{strings['conf_click']}}" target="_blank" href="{{ url }}{{lang}}/conf/{{ res[4] }}">{{ res[4] }}</a>
 						</td> 
 						<td>
-							<a data-toggle="tooltip" data-placement="top" title="{{strings['topicresult14']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a>
+							<a data-toggle="tooltip" data-placement="top" title="{{strings['year_click']}}" target="_blank" href="{{ url }}{{lang}}/year/{{ res[3] }}">{{ res[3] }}</a>
 						</td>
-                        <td>
-                          {% if res[0] in topics %}
-                            {% for topic in topics[res[0]] %}
-                            <a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['topicresult13']}}" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
-                             {% endfor %}
-                            {% else %}
-                            -
-                            {% endif%}
-                        </td>
 						<td style="text-align:right;">
 							{{ "{0:.4f}".format(res[-1]) }}
+						</td>
+						<td>
+							<details>
+							<summary style="cursor:pointer;">{{strings['show_tasks']}}</summary>
+								{% if res[0] in topics %}
+									{% for topic in topics[res[0]] %}
+									<a style="color:green;" target="_blank" data-toggle="tooltip" data-placement="top" title="{{strings['task_click']}}" href="{{  topic[1] }}">{{ topic[0] }}</a><br/>
+									{% endfor %}
+								{% else %}
+								-
+								{% endif%}
+							</details>
 						</td>
 					</tr>
 				{% endfor %}
 				</table>
 				</div>
 			</div>			
-
-        
-
 
 	{% endif %}
 	</div>
