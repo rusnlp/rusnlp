@@ -142,18 +142,18 @@ class ReaderDBase:
         """
         conf_name = conf_name.upper() if conf_name.upper() == "AIST" or \
                                          conf_name.upper() == "AINL" else "Dialogue"
-        what = "DISTINCT catalogue.common_id"
+        what = "DISTINCT catalogue.common_id, catalogue.language"
         where = "catalogue JOIN conference ON catalogue.conference_id=conference.id"
         condition = "conference.name='{}'".format(conf_name)
         if year:
             condition += " AND conference.year={}".format(str(year))
-        return [res[0] for res in self._bd.select(what, where, condition)]
+        return [res for res in self._bd.select(what, where, condition)]
 
     def select_articles_from_years(self, begin, end):
-        what = "DISTINCT catalogue.common_id"
+        what = "DISTINCT catalogue.common_id, catalogue.language"
         where = "catalogue JOIN conference ON conference_id=conference.id"
         condition = "year BETWEEN {} and {}".format(begin, end)
-        return [res[0] for res in self._bd.select(what, where, condition)]
+        return [res for res in self._bd.select(what, where, condition)]
 
     def select_articles_of_author(self, name):
         """
@@ -164,16 +164,16 @@ class ReaderDBase:
         :return list of strings
             Names of articles of the author
         """
-        what = "DISTINCT common_id"
-        where = "author_catalogue JOIN author ON author_catalogue.author_id=author.author_id "
+        what = "DISTINCT catalogue.common_id, catalogue.language"
+        where = "author_catalogue JOIN author JOIN catalogue ON author_catalogue.author_id=author.author_id and catalogue.common_id=author_catalogue.common_id"
         condition = '''author.name="{}"'''.format(name)
-        return [res[0] for res in self._bd.select(what, where, condition)]
+        return [res for res in self._bd.select(what, where, condition)]
 
     def select_articles_by_cluster(self, cluster_id):
-        what = "DISTINCT common_id"
-        where = "author_catalogue "
+        what = "DISTINCT catalogue.common_id, catalogue.language"
+        where = "author_catalogue JOIN catalogue ON catalogue.common_id=author_catalogue.common_id"
         condition = '''author_catalogue.affiliation_id="{}"'''.format(cluster_id)
-        return [res[0] for res in self._bd.select(what, where, condition)]
+        return [res for res in self._bd.select(what, where, condition)]
 
     # ==========================================================================================
     # STATISTICS

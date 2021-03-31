@@ -1,5 +1,6 @@
 from collections import Counter
 import json
+import os
 
 
 class WriterDBase:
@@ -41,8 +42,8 @@ class WriterDBase:
     # add static data
     # -------------------------------------------------------------------
 
-    def add_conference_data(self, end=2020):
-        with open("conference_data.json", 'r', encoding='utf-8') as f:
+    def add_conference_data(self, path, end=2020):
+        with open(os.path.join(path, "conference_data.json"), 'r', encoding='utf-8') as f:
             conferences = json.loads(f.read())
         for conference, (start, description_ru, description_en, url) in conferences.items():
             for year in range(start, end + 1):
