@@ -225,12 +225,14 @@ if __name__ == '__main__':
                     meta_data = get_metadata_from_file(basedir, fname)
                     w.write(json.dumps(meta_data) + "\n")
 
-    with open(params["missing_authors"], 'w', encoding='utf-8', newline='\n') as w:
-        for name, filename in missing_authors.items():
-            first_id, first_name = authors_handler.handle_author(name)
-            w.write(f"{filename}\t{name}\t{str(first_id)}\t{first_name}\n")
+    if len(missing_authors) > 0:
+        with open(params["missing_authors"], 'w', encoding='utf-8', newline='\n') as w:
+            for name, filename in missing_authors.items():
+                first_id, first_name = authors_handler.handle_author(name)
+                w.write(f"{filename}\t{name}\t{str(first_id)}\t{first_name}\n")
 
-    with open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n') as w:
-        for name, filename in missing_affiliations.items():
-            aff_id, aff_name = affiliations_handler.handle_affiliation(name)
-            w.write(f"{filename}\t{name}\t{str(aff_id)}\t{aff_name}\n")
+    if len(missing_affiliations) > 0:
+        with open(params["missing_affiliations"], 'w', encoding='utf-8', newline='\n') as w:
+            for name, filename in missing_affiliations.items():
+                aff_id, aff_name = affiliations_handler.handle_affiliation(name)
+                w.write(f"{filename}\t{name}\t{str(aff_id)}\t{aff_name}\n")

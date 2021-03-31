@@ -1,3 +1,4 @@
+import pandas as pd
 
 def create_title2hash(filename, lower=True):
     title2hash = {}
@@ -35,11 +36,9 @@ def create_name2author(filename):
 
 def create_name2affiliation(filename):
     name2affiliation = {}
-    with open(filename, 'r', encoding='utf-8') as f:
-        for line in f:
-            id_, cluster, name = line.strip().split("\t")
-            name = name.replace("\r\n", "").replace("\n", ' ').replace("  ", " ").replace(",  ", "")
-            assert name not in name2affiliation or name == cluster, '%s %s %s' % (id_, cluster, name)
-            name2affiliation[name] = (id_, cluster)
-            name2affiliation[cluster] = (id_, cluster)
+    for id_, cluster, name in pd.read_csv(filename, sep='\t', encoding='utf-8', header=None).values.tolist():
+        name = name.replace("\r\n", "").replace("\n", ' ').replace("  ", " ").replace(",  ", "")
+        assert name not in name2affiliation or name == cluster, '%s %s %s' % (id_, cluster, name)
+        name2affiliation[name] = (id_, cluster)
+        name2affiliation[cluster] = (id_, cluster)
     return name2affiliation
