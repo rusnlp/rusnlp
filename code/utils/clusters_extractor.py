@@ -1,5 +1,5 @@
 """
-python metahint_extractor.py --in_paths=current_authors.tsv+current_affiliations.tsv --out_paths=authors.json+affiliations.json
+python clusters_extractor.py --in_paths=current_authors.tsv+current_affiliations.tsv --out_paths=authors.json+affiliations.json
 """
 
 import argparse
@@ -83,7 +83,7 @@ def main(test=False):
     for in_path, out_path in zip(in_paths, out_paths):
         data = collect_data(in_path, args.tab_count)
         if data and not args.test:
-            dump(sorted(list(data)), open(out_path, 'w', encoding='utf-8'), indent=4)
+            dump(sorted(list(data)), open(out_path, 'w', encoding='utf-8'), indent=4, ensure_ascii=False)
             print('Кластеры сохранены в {}'.format(out_path))
         print()
 
