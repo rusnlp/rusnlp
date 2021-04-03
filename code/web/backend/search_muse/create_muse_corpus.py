@@ -106,6 +106,7 @@ def main():
         common_vectors.update(text_vectors)
 
     task_terms = load_task_terms(args.task_path, args.task_column)
+    logging.info('Vectorizing tasks...')
     task_vectors, not_vectorized = vectorize_corpus(task_terms, embed_model, args.substitute,  args.max_end)
     if not_vectorized:
         logging.info('Not vectorized tasks: {}'.format(len(not_vectorized)))
