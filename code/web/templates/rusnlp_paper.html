@@ -29,12 +29,12 @@
 		<h2>«<a target="_blank" href="{{ metadata['url']}}" data-toggle="tooltip" data-placement="top" title="{{ metadata['abstract'] }}" style="color:green;">{{ metadata['title'] }}</a>»</h2>
 		<p>
 		{% for author in metadata['author'] %}
-            <a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>
+            <a data-toggle="tooltip" data-placement="top" title="{{strings['auth_click']}}" target="_blank" href="{{ url }}{{lang}}/author/{{ author }}">{{ author_map[author|string] }}</a>;
             {% endfor %}
 		<br/>
 
 		{% for aff in metadata['affiliation'] %}
-		<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>
+		<a data-toggle="tooltip" data-placement="top" title="{{strings['affil_click']}}" target="_blank" href="{{ url }}{{lang}}/affiliation/{{ aff }}">{{ aff_map[aff|string] }}</a>;
 		{% endfor %}
 		
 		</p>
@@ -58,9 +58,9 @@
 		<h3>{{strings['topic_similar']}}:</h3>
 		
 		<div style='display: flex; justify-content: center; align-items: flex-start;'>
-			<input type="checkbox" name="ru" checked value="ru" style='margin-right: 5px;'>
+			<input type="checkbox" id="ru" name="ru" checked value="ru" style='margin-right: 5px;'>
 			<label for="ru" style='margin-right: 20px;'>{{strings['ru_lang']}}</label>
-			<input type="checkbox" name="eng" checked value="eng" style='margin-right: 5px;'>
+			<input type="checkbox" id="eng" name="eng" checked value="eng" style='margin-right: 5px;'>
 			<label for="eng">{{strings['eng_lang']}}</label>
 		</div>
       	
