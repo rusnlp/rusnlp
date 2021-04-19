@@ -88,7 +88,10 @@ class WriterDBase:
         metadata = json.loads(json_line)
         year = metadata['year']
         conference = metadata['conference']
-        language = metadata['language']
+        try:
+            language = metadata['language']
+        except KeyError:
+            raise Exception(f"no language for {json_line}")
         common_id = metadata['hash']
         url = metadata['url']
 

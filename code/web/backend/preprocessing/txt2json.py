@@ -221,7 +221,7 @@ if __name__ == '__main__':
     with open(params["out_metadata_path"], 'w', encoding='utf-8', newline='\n') as w:
         for basedir, dirs, files in os.walk(params["input_file"]):
             for fname in files:
-                if fname.endswith('.txt') and fname != "annotation_guidelines.txt":
+                if fname.endswith('.txt') and fname != "annotation_guidelines.txt" and "extracted_texts" not in basedir:
                     meta_data = get_metadata_from_file(basedir, fname)
                     w.write(json.dumps(meta_data) + "\n")
 
